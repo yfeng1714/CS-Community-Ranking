@@ -58,6 +58,18 @@ export async function seedDevelopmentData(database: Database): Promise<void> {
       .returning({ id: schema.editions.id });
     const edition = requireRow(editionRow, "development Edition");
 
+    const [activeEdition] = await transaction
+      .select({ id: schema.editions.id })
+      .from(schema.editions)
+      .where(eq(schema.editions.status, "ACTIVE"))
+      .limit(1);
+    if (!activeEdition) {
+      await transaction
+        .update(schema.editions)
+        .set({ status: "ACTIVE", updatedAt: new Date() })
+        .where(eq(schema.editions.id, edition.id));
+    }
+
     const sampleTeams = [
       { name: "Sample Alpha", shortName: "ALPHA", slug: "sample-alpha" },
       { name: "Sample Bravo", shortName: "BRAVO", slug: "sample-bravo" },

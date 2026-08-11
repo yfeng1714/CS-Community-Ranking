@@ -557,15 +557,21 @@ export class CandidatePoolService {
       const rows = await this.database
         .select({ playerId: poolPlayerEntries.playerId })
         .from(poolPlayerEntries)
+        .innerJoin(players, eq(players.id, poolPlayerEntries.playerId))
         .where(
           and(
             eq(poolPlayerEntries.editionId, editionId),
             eq(poolPlayerEntries.pairingEnabled, true),
+            eq(players.professionalStatus, "ACTIVE"),
           ),
         )
         .orderBy(asc(poolPlayerEntries.playerId));
       return rows.map((row) => row.playerId);
     });
+  }
+
+  invalidateActivePlayerIds(editionId: bigint): void {
+    this.cache.invalidate(editionId);
   }
 }
 

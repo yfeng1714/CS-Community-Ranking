@@ -15,8 +15,8 @@ You are implementing **CS Community Ranking / CS 野榜 V0.1**.
 
 ## Current handoff
 
-Milestones 0–2 are complete. The repository is stopped before Milestone 3: anonymous visitor identity
-and Ballot issuance. Do not begin M3 or any later work until the owner explicitly requests it.
+Milestones 0–3 are implemented. The repository is stopped before Milestone 4: locked, idempotent Vote
+resolution and ranking effects. Do not begin M4 or later work until the owner explicitly requests it.
 
 Always trust the latest `docs/PROGRESS.md` over this summary if they ever differ.
 
@@ -25,6 +25,9 @@ Always trust the latest `docs/PROGRESS.md` over this summary if they ever differ
 - Do not change the ranking rule: valid winner `+1`, loser `-1`, Skip `0`.
 - Do not add Elo, Bradley–Terry, fractional weighting, recommended pairing, or exposure balancing.
 - Pairing remains true uniform random among enabled Candidate Pool players.
+- A true manual refresh of the voting page resolves the reused open Ballot as Skip and then requests
+  a new pair; ordinary `/next` retries remain idempotent. Follow ADR 0003 and do not infer refresh on
+  the server from request repetition.
 - Do not require public login.
 - Admission category explains entry and never affects pairing probability or score.
 - Do not automatically remove candidates, approve imported changes, or delete historical Votes.

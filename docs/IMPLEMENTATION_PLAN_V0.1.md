@@ -1,9 +1,9 @@
 # CS Community Ranking / CS 野榜
 ## Implementation Plan V0.1
 
-**Status:** Implementation-ready after V0.1.1 review
+**Status:** Implementation-ready after V0.1.2 Owner refresh-flow revision
 
-**Date:** 2026-08-10
+**Date:** 2026-08-12
 **Primary audience:** Codex / Claude Code / Cursor and the human project owner  
 **Working repository name:** `cs-community-ranking`  
 **Working product name:** `CS Community Ranking` / `CS 野榜`  
@@ -18,6 +18,10 @@ This file is the implementation source of truth for V0.1.
 V0.1.1 is a review clarification, not a product-scope change. It closes schema,
 security, privacy, and lifecycle ambiguities found before Milestone 0. The frozen
 ranking, pairing, guest-first, and Candidate Pool decisions are unchanged.
+
+V0.1.2 records the Owner's 2026-08-12 interaction change: a true manual refresh of the voting page
+resolves the reused open Ballot as Skip and immediately obtains a new pair. Ordinary API retries
+remain idempotent. ADR 0003 defines the M4/M5 implementation boundary.
 
 An implementation agent must:
 
@@ -54,6 +58,10 @@ Open site
   -> inspect details if desired
   -> explicitly click Next
   -> repeat
+
+Manual reload while a Ballot is open
+  -> resolve the reused Ballot as Skip exactly once
+  -> request and render a new Ballot directly
 ```
 
 ## 1.2 Product personality
@@ -1165,7 +1173,15 @@ The database partial unique index is the final protection against two simultaneo
 }
 ```
 
-Repeated calls before resolution return the same Ballot and do not increment the ordinal.
+Repeated transport-level calls before resolution return the same Ballot and do not increment the
+ordinal. This protects retries, concurrent rendering, and multiple tabs; request repetition alone is
+never interpreted as a user refresh.
+
+The Owner's 2026-08-12 refresh decision is implemented at the public UI boundary after M4 supplies
+idempotent Skip resolution. On a true voting-page browser reload, M5 first calls `/next`. If the
+response has `reusedOpenBallot = true`, it resolves that Ballot as `SKIP`, then calls `/next` again and
+renders the new pair. If the first call already issued a new Ballot because the previous one expired
+or was resolved, the UI must not Skip the newly issued Ballot.
 
 Do not expose `SUSPICIOUS` or risk reason codes before resolution; doing so gives
 an attacker a feedback oracle. The response may distinguish normal eligible
@@ -1375,6 +1391,9 @@ The quota is assigned at Ballot issuance. Crossing midnight after issuance does 
 ## 14.2 Skip and abandonment
 
 - Skip consumes a Ballot opportunity.
+- A manual voting-page refresh resolves the current open Ballot as a normal auditable Skip, then
+  issues a new Ballot. The old opportunity is not refunded and the new Ballot consumes the next
+  ordinal.
 - Closing the page consumes the issued opportunity.
 - An expired Ballot does not refund the ordinal.
 
@@ -1386,7 +1405,10 @@ Initial TTL:
 edition.ballot_ttl_minutes = 30
 ```
 
-- A visitor returning before expiry receives the same open Ballot.
+- A normal revisit or transport retry before expiry receives the same open Ballot.
+- A true manual voting-page reload is the explicit exception: after M4/M5, the client resolves the
+  reused Ballot as Skip and requests a new one. The server does not infer reload from duplicate
+  `/next` calls.
 - `/next` marks an expired open Ballot `EXPIRED` before issuing another.
 - Resolving an expired Ballot returns `410` and does not create a Vote.
 - A cleanup job may batch-mark old open Ballots as expired, but correctness cannot depend on the cleanup job.
@@ -1951,7 +1973,7 @@ Do not use SQLite as a substitute.
 Required concurrency tests:
 
 1. Two simultaneous `/next` operations for one visitor create one open Ballot.
-2. Repeated `/next` returns the same Ballot and does not consume another ordinal.
+2. Repeated transport-level `/next` returns the same Ballot and does not consume another ordinal.
 3. One hundred concurrent resolves of one Ballot create exactly one Vote effect.
 4. Two different choices racing on the same Ballot produce one stored result only.
 5. A forced exception between winner and loser updates rolls back everything.
@@ -1986,12 +2008,16 @@ first visit
  -> no auto-next
  -> click Next
  -> new Ballot rendered
- -> refresh preserves open Ballot
+ -> manually refresh voting page
+ -> reused open Ballot resolves as exactly one SKIP
+ -> new Ballot with the next ordinal renders directly
 ```
 
 Additional E2E:
 
 - Skip.
+- Network retry or duplicate `/next` without a browser reload preserves the current Ballot.
+- Reload retry creates at most one Skip Vote and one subsequent open Ballot.
 - Throttled notice.
 - Ranking page.
 - Player page.
@@ -2292,6 +2318,7 @@ Tasks:
 - Implement ranking updates in stable lock order.
 - Implement PairAggregate upsert.
 - Implement skip behavior.
+- Ensure Skip resolution is idempotent for the later manual-refresh workflow.
 - Implement repeated-resolve behavior.
 - Reject new effects after an Edition leaves `ACTIVE` while preserving idempotent
   reads of already resolved Ballots.
@@ -2317,6 +2344,8 @@ Tasks:
 - Build responsive Vote page.
 - Build PlayerCard and detailed data expansion.
 - Build post-vote result state and explicit Next.
+- Detect true voting-page browser reload; when `/next` reuses the open Ballot, resolve it as Skip and
+  request the next Ballot without showing the result interstitial.
 - Build Ranking page with ties.
 - Build Player page.
 - Build About and Privacy pages.
@@ -2328,8 +2357,11 @@ Acceptance:
 
 - Full anonymous journey works on desktop and mobile.
 - No auto-next.
+- Manual voting-page refresh is the sole auto-advance exception: it records exactly one Skip and
+  renders a newly issued pair.
 - Throttled users are informed honestly and can continue.
-- Refresh preserves current open Ballot.
+- API retries and ordinary rerenders preserve the current open Ballot; manual browser reload does
+  not.
 - Public pages remain functional with stale/missing external stats.
 
 ## Milestone 6 — Admin and audit surface

@@ -110,8 +110,9 @@ V0.1 明确不使用：
 
 - Visitor 第一次访问时生成安全匿名 Cookie。
 - 同一个 Visitor、同一个 Edition 同时最多一张 OPEN Ballot。
-- 重复调用 Next、刷新页面、打开多个 Tab 都返回同一张 Ballot。
-- 只有投 Left、Right、Skip，或者 Ballot 过期后，才能拿到新 Ballot。
+- 重复调用 Next、网络重试和并发 Tab 都返回同一张 Ballot，避免传输重试误耗机会。
+- 投票页的真实手动刷新是明确例外：当前复用 Ballot 按 Skip 解决，然后直接取得新 Ballot。
+- 只有投 Left、Right、Skip、手动刷新记为 Skip，或者 Ballot 过期后，才能拿到新 Ballot。
 - Ballot 在服务端生成，客户端不能提交想要对决的 Player ID。
 
 ## `POST /api/v1/ballots/{id}/resolve`
@@ -152,11 +153,13 @@ Ballot TTL 30 分钟
 这里按“抽到的新 Ballot 次数”计额度，而不是只按成功投票次数：
 
 - Skip 消耗一次机会。
+- 手动刷新按 Skip 留下一条可审计 Vote，原机会不退，新 Ballot 再消耗下一个 Ordinal。
 - 抽到后关页面也消耗一次机会。
 - 过期不退机会。
 - 第 51 张开始仍能继续玩和看结果，但 Vote 状态为 THROTTLED，不影响 Score。
 
-这保证用户不能无限刷新 Pair，直到刷出自己想投的明星选手。
+这保证用户不能免费无限刷新 Pair，直到刷出自己想投的明星选手；同时满足用户刷新后想
+看到新随机 Pair 的直觉。
 
 ---
 
@@ -419,7 +422,7 @@ Codex 每个 Milestone 都必须：
 - 让 Cloudflare 或 CAPTCHA 成为必需；
 - 删除 Vote；
 - 把额度从 Ballot 改回只按已投 Vote；
-- 自动 Next；
+- 常规投票后自动 Next（手动刷新按 Skip 后直接换 Pair 是唯一例外）；
 - 把 Event MVP 塞入 V0.1。
 
 ---

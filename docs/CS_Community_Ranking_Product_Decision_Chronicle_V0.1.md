@@ -26,6 +26,8 @@
 
 **施工规范复核** 2026-08-10（V0.1.1；未改变冻结的产品决定）
 
+**Owner 流程修订** 2026-08-12（V0.1.2；手动刷新按 Skip 处理并直接进入新 Pair）
+
 **定位** 产品背景、决策记录与后续 Review Context
 
 *本文件不是逐字聊天记录，也不替代工程规范。它重建每个关键决策的来龙去脉，解释为什么 V0.1 是现在这个样子。*
@@ -39,6 +41,11 @@
 2026-08-10 的施工前复核补齐了 Pending Import、Admin Audit、数据库约束、
 Edition/Ballot 生命周期、跨午夜额度、Skip 撤销、隐私留存和 Mutation Security
 的细节。它们属于正确性澄清，不改变本纪实记录的产品性格和冻结规则。
+
+2026-08-12 Owner 修订了刷新语义：投票页的真实浏览器手动刷新代表用户放弃当前判断，
+因此当前 OPEN Ballot 必须以 `SKIP` 解决，再自动取得新 Pair。普通 `/next` 网络重试仍返回
+同一 Ballot，服务器不能把重复请求猜测成刷新；刷新识别与编排由 M5 UI 完成，幂等 Skip
+由 M4 Resolve API 保证。这样既符合用户对“随机刷新”的预期，也不允许免费 fishing。
 
 <table>
 <colgroup>
@@ -87,7 +94,7 @@ Edition/Ballot 生命周期、跨午夜额度、Skip 撤销、隐私留存和 Mu
 
 - 候选池以队伍为主要准入单位：Core、Review Auto、Review Manual，加极少数个人 Special Inclusion。
 
-- 游客无需登录即可参与，但每个匿名 Visitor 同时只能持有一张未解决 Ballot，以防无限刷新寻找指定明星。
+- 游客无需登录即可参与，但每个匿名 Visitor 同时只能持有一张未解决 Ballot；手动刷新会把当前 Ballot 记为 Skip 并消耗机会，不能免费寻找指定明星。
 
 - PostgreSQL 事务、唯一约束和行锁保证同一 Ballot 不论提交多少次，最多只影响榜单一次。
 
@@ -390,7 +397,7 @@ XSE Guangzhou 在讨论中被作为负面边界案例：奖金和规模不小，
 
 ### **9.2 投票后**
 
-投票后原位显示用户选择、该票是否计入正式榜、有效 H2H 百分比、有效对决数、Skip 数，以及双方当前 Rank/Score。页面不会自动进入下一组；用户主动点击 Next，既避免细看结果时被打断，也让每一次新 Ballot 的发放有清晰边界。
+投票后原位显示用户选择、该票是否计入正式榜、有效 H2H 百分比、有效对决数、Skip 数，以及双方当前 Rank/Score。常规投票不会自动进入下一组；用户主动点击 Next，既避免细看结果时被打断，也让每一次新 Ballot 的发放有清晰边界。2026-08-12 新增的唯一例外是投票页手动刷新：它代表放弃当前 Pair，按 Skip 记录后直接进入新 Pair，不展示结果停留。
 
 <table>
 <colgroup>
@@ -401,7 +408,7 @@ XSE Guangzhou 在讨论中被作为负面边界案例：奖金和规模不小，
 <tr class="header">
 <th></th>
 <th><p><strong>冻结决定</strong></p>
-<p>不做自动 Next。投票循环的节奏由用户掌握；“结果”本身是产品奖励，不应被快速略过。</p></th>
+<p>常规投票后不做自动 Next。投票循环的节奏由用户掌握；“结果”本身是产品奖励，不应被快速略过。手动 reload-as-Skip 是唯一明确例外。</p></th>
 </tr>
 </thead>
 <tbody>
@@ -548,12 +555,16 @@ PlayerStatSnapshot = 某来源、某指标、某时间窗口的快照</th>
 
 如果 API 只是 GET /pair，用户可以不断刷新，直到随机出自己想刷的明星，再只在出现该选手时投票。候选池带来的随机稀释会因此失效。这个问题促成了整个系统最重要的新对象：Ballot。
 
-| **服务器发一张只能解决一次的选票；用户必须投左、投右或跳过，才能获得下一张。** |
-|--------------------------------------------------------------------------------|
+| **服务器发一张只能解决一次的选票；选择、Skip 或手动刷新记为 Skip 后，才能获得下一张。** |
+|------------------------------------------------------------------------------------------|
 
 ### **14.1 一人同时只有一张 OPEN Ballot**
 
-同一 Visitor、同一 Edition 同时最多存在一张 OPEN Ballot。刷新页面、重复调用 Next、打开多个 Tab，都返回同一张。只有 Resolve 为 LEFT、RIGHT、SKIP，或者 Ballot 到期后，系统才会生成下一张。数据库还使用 Partial Unique Index 从约束层保证这件事，而不只依赖应用代码。
+同一 Visitor、同一 Edition 同时最多存在一张 OPEN Ballot。普通重复调用 Next、网络重试和并发请求都返回同一张，这是传输幂等与数据库正确性，不再等同于产品层的刷新语义。
+
+在投票页发生真实浏览器手动刷新时，用户预期看到新的随机 Pair。M5 UI 应识别 reload navigation，先取得当前 OPEN Ballot；若响应表明它是复用 Ballot，则通过 M4 的幂等 Resolve API 将其解决为 `SKIP`，随后请求下一张。若原 Ballot 已过期或已解决，`/next` 直接返回新 Ballot，不应再 Skip 这张刚签发的新票。服务器不能仅凭第二次 `/next` 猜测“这是刷新”，否则网络重试也会意外消耗 Vote。
+
+刷新产生的 Skip 与点击 Skip 同样保留 Raw Vote、更新 Skip 计数且不改变 Score；原 Ballot 的 Opportunity 不退，新 Ballot 再消耗一个新 Ordinal。刷新路径直接显示新 Pair，不停留在结果页，是“不自动 Next”规则的明确且唯一的 reload 例外。数据库仍使用 Partial Unique Index 保证任意时刻最多一张 OPEN Ballot。
 
 ### **14.2 日额度按 Ballot Opportunity 计算**
 
@@ -597,6 +608,8 @@ Body 只能是 LEFT、RIGHT 或 SKIP。</th>
 </table>
 
 Ballot 在服务端保存 player_a、player_b 和左右展示顺序。客户端只能解决已经发出的那一张，不能提交任意 Player ID。Ballot ID 同时是天然幂等键。
+
+`/next` 保持传输层幂等：重复请求本身不代表刷新。投票页 reload 由客户端明确编排为“读取复用 Ballot -> Resolve SKIP -> 再请求 Next”，复用现有两个 Endpoint，不增加一个能绕过 Resolve 原子性的特殊换题接口。
 
 ### **15.2 Resolve Transaction**
 
@@ -738,6 +751,7 @@ Turnstile 最终没有纳入 V0.1。原因不是验证码无效，而是 Cloudfl
 | **Pair**           | 在启用 Pool 中等概率真随机；左右独立随机。       | 不偷偷推荐、不追求统计效率。             | 冻结     |
 | **游客**           | 无需登录即可投票。                               | 初期流量与首次转化优先。                 | 冻结     |
 | **结果节奏**       | 投票后停留结果，用户手动 Next。                  | 结果是奖励，也明确下一张 Ballot 的边界。 | 冻结     |
+| **手动刷新**       | 当前 OPEN Ballot 按 Skip 解决并直接显示新 Pair。 | 符合随机体验预期，同时让刷新消耗机会。   | 冻结     |
 | **候选池**         | 按年度 Edition，Team 为常规准入单位。            | 兼容新人、转会与历史保留。               | 冻结     |
 | **Core**           | HLTV 或 VRS 任一 Top 12。                        | 清晰的自动安全区。                       | 冻结     |
 | **Review Auto**    | 任一 Top 20 + T1 四强/Major 八强。               | 补足有战绩的边缘队。                     | 冻结     |
@@ -774,8 +788,8 @@ Turnstile 最终没有纳入 V0.1。原因不是验证码无效，而是 Cloudfl
 | **初始 Score = 1000**                | 纯平移，没有排序意义，还让分数像评级系统。                       |
 | **每 IP 前 50 票**                   | 共享网络误伤严重，IP 不等于用户。                                |
 | **第 51 票按 0.01 计入**             | 破坏 +1/-1 的透明规则。                                          |
-| **无限刷新 Random Pair**             | 允许脚本 fishing 指定明星。                                      |
-| **自动 Next**                        | 会打断结果阅读，也模糊新 Ballot 发放边界。                       |
+| **免费刷新 Random Pair**             | 允许脚本 fishing 指定明星；刷新必须记录 Skip 并消耗 Opportunity。 |
+| **常规投票后自动 Next**              | 会打断结果阅读；仅手动 reload-as-Skip 是明确例外。                 |
 | **退役传奇大量混入主榜**             | 跨时代比较有趣，但会削弱活跃职业池；只保留极少数仍活跃 Special。 |
 | **只保存 Score/胜率，不存 Raw Vote** | 失去审计、撤销、重算和历史研究能力。                             |
 | **用户请求时实时抓 HLTV**            | 外部站点延迟或封锁会直接拖垮投票体验。                           |
@@ -887,6 +901,7 @@ Turnstile 最终没有纳入 V0.1。原因不是验证码无效，而是 Cloudfl
 | **阶段 9**  | 原子 API 与数据策略        | 一张 OPEN Ballot、Exactly-once effect、Raw Vote、Adapter 与快照。   |
 | **阶段 10** | 架构与部署冻结             | TypeScript 单体、PostgreSQL、Railway Singapore、Cloudflare 可拔掉。 |
 | **阶段 11** | Implementation Plan V0.1   | 将产品决定转化为 Schema、API、测试、Milestone 与 Owner Gates。      |
+| **阶段 12** | Owner 修订刷新语义         | 手动 reload 记为 Skip 并直接取得新 Pair；普通 API 重试继续幂等。     |
 
 ## **30. 术语表**
 

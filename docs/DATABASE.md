@@ -68,6 +68,7 @@ service responsibilities and require integration coverage when those services ar
 - a team-derived Pool player uses the same admission type and Edition as its source team entry;
 - Vote Edition, visitor, winner, and loser agree with the referenced Ballot orientation;
 - Edition status transitions expire open Ballots atomically;
+- a Ballot is issued only for the currently active Edition and two currently active Pool entries;
 - the sum of all player scores in an Edition remains zero;
 - admin/session activity and expiration are evaluated at authentication time;
 - pending import approval revalidates source freshness and current state before applying changes.
@@ -119,7 +120,7 @@ The lifecycle never drops the database named in `DATABASE_URL`.
 
 `pnpm db:seed` inserts an explicitly fictional dataset:
 
-- one DRAFT development Edition;
+- one development Edition, activated only when no other Edition is active;
 - two sample teams and four sample players;
 - current rosters, Pool entries, zeroed ranking rows, and one sample event;
 - one disabled seed admin used only to satisfy approval foreign keys.
@@ -127,10 +128,10 @@ The lifecycle never drops the database named in `DATABASE_URL`.
 The seed account has no usable password hash. The seed is transactional, repeatable, and must not
 run when `NODE_ENV=production`. It is illustrative test data, not the launch Candidate Pool.
 
-## Known Milestone 1 boundaries
+## Current implementation boundaries
 
-- Schema and constraints exist, but voting transactions and domain services begin in later
-  milestones.
+- M3 implements visitor creation, one-open-Ballot issuance, expiry, and opportunity ordinals. Vote
+  resolution and score mutation begin in M4.
 - No migration rollback is generated automatically; before production data exists, a failed local
   migration is tested by rebuilding an empty database.
 - PostgreSQL extensions are not required by the initial schema.

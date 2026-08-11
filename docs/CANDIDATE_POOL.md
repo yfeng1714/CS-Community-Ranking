@@ -53,8 +53,10 @@ Disabling pairing updates the existing Pool Player row with a timestamp and reas
 ranking row, votes, and all historical records remain intact. Re-enabling is allowed only while the
 Player's professional status is `ACTIVE`.
 
-Active-pool lookup selects only `edition_id`, `player_id`, and `pairing_enabled`; it does not read
-admission type or ranking score. The in-process cache:
+Active-pool lookup selects only professionally `ACTIVE`, pairing-enabled players for an Edition. It
+does not read admission type or ranking score. Ballot issuance revalidates the two randomly selected
+rows under database locks, so the cache cannot issue a disabled or newly inactive player. The
+in-process cache:
 
 - is keyed by Edition ID;
 - uses `ACTIVE_POOL_CACHE_TTL_SECONDS` (default 60 seconds);
