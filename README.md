@@ -5,8 +5,8 @@ simple pairwise votes.
 
 ## Status
 
-Milestone 0 is complete: the application foundation, PostgreSQL service, health
-checks, automated tests, production build, and CI baseline are in place.
+Milestones 0–2 are complete: the runtime foundation, full V0.1 database schema, and data-driven
+Candidate Pool domain are in place. Anonymous Ballot issuance begins in Milestone 3.
 
 ## Technology
 
@@ -57,6 +57,8 @@ If port `5432` is already occupied, set `POSTGRES_PORT` to another host port in
 | `pnpm db:migrate` | Apply committed PostgreSQL migrations |
 | `pnpm db:seed` | Load repeatable fictional development data |
 | `pnpm db:check` | Check the Drizzle migration journal |
+| `pnpm pool:add-player -- ...` | Create and admit an individual Special player |
+| `pnpm pool:disable-player -- ...` | Disable future pairing without deleting history |
 
 ## Documentation
 
@@ -66,6 +68,7 @@ If port `5432` is already occupied, set `POSTGRES_PORT` to another host port in
 - [`docs/RUNBOOK.md`](docs/RUNBOOK.md) — development and operational procedures
 - [`docs/API.md`](docs/API.md) — API conventions
 - [`docs/DATABASE.md`](docs/DATABASE.md) — database conventions
+- [`docs/CANDIDATE_POOL.md`](docs/CANDIDATE_POOL.md) — Candidate Pool rules, services, cache, and CLI
 - [`docs/SECURITY.md`](docs/SECURITY.md) — security baseline
 
 When documents disagree about product intent, use the Product Decision Chronicle

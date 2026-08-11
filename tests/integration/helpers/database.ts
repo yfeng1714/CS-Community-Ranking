@@ -6,9 +6,10 @@ import { Pool } from "pg";
 
 import * as schema from "@/db/schema";
 
-const TEST_DATABASE_NAME = "csr_m1_test";
+const TEST_DATABASE_NAME = "csr_integration_test";
 
 export interface TestDatabase {
+  connectionString: string;
   pool: Pool;
 }
 
@@ -65,7 +66,7 @@ export async function createTestDatabase(): Promise<TestDatabase> {
     throw error;
   }
 
-  return { pool };
+  return { connectionString: testUrl, pool };
 }
 
 export async function dropTestDatabase(database?: TestDatabase): Promise<void> {

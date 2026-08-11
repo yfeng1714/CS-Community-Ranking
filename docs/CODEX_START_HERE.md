@@ -1,68 +1,57 @@
-# Codex Start Prompt — CS Community Ranking
+# Codex Start Here — CS Community Ranking
 
 You are implementing **CS Community Ranking / CS 野榜 V0.1**.
 
-Read `docs/IMPLEMENTATION_PLAN_V0.1.md` in full before modifying the repository. That document is the source of truth.
+## Required reading order
 
-## Your immediate assignment
+1. Read `docs/PROGRESS.md` for the completed milestone, exact validation state, known limitations,
+   and the next authorized boundary.
+2. Read `docs/CS_Community_Ranking_Product_Decision_Chronicle_V0.1.md` for product intent and “what
+   we actually want.”
+3. Read `docs/IMPLEMENTATION_PLAN_V0.1.md` in full before modifying the repository. It is the
+   implementation source of truth unless the owner explicitly approves and records a change.
+4. Read the focused domain, database, API, security, data-source, runbook, and ADR documents relevant
+   to the requested milestone.
 
-Implement **Milestone 0 — Repository and runtime foundation only**.
+## Current handoff
 
-Do not begin Milestone 1 until the owner reviews Milestone 0.
+Milestones 0–2 are complete. The repository is stopped before Milestone 3: anonymous visitor identity
+and Ballot issuance. Do not begin M3 or any later work until the owner explicitly requests it.
 
-## Non-negotiable instructions
+Always trust the latest `docs/PROGRESS.md` over this summary if they ever differ.
+
+## Non-negotiable product boundaries
 
 - Do not change the ranking rule: valid winner `+1`, loser `-1`, Skip `0`.
-- Do not add Elo, Bradley–Terry, weighted votes, or recommended pairing.
-- Do not change true uniform random pairing.
+- Do not add Elo, Bradley–Terry, fractional weighting, recommended pairing, or exposure balancing.
+- Pairing remains true uniform random among enabled Candidate Pool players.
 - Do not require public login.
-- Do not add Redis, GraphQL, microservices, a separate backend, Turnstile, or Event MVP.
-- Use Node.js 24 LTS, TypeScript, Next.js App Router on Node runtime, PostgreSQL, Drizzle + node-postgres, Zod, Tailwind, Vitest, and Playwright.
-- Keep UI/API same-origin.
-- Do not run live HLTV requests in tests or CI.
-- Do not invent production Candidate Pool data yet.
+- Admission category explains entry and never affects pairing probability or score.
+- Do not automatically remove candidates, approve imported changes, or delete historical Votes.
+- Do not add Redis, GraphQL, microservices, a separate backend, mandatory Cloudflare, Turnstile, or
+  Event MVP to V0.1.
+- Keep UI/API same-origin and business logic outside Next.js Route Handlers.
+- Never run live HLTV requests in tests or CI.
+- Do not invent production Candidate Pool data.
 
-## Milestone 0 deliverables
+## Execution discipline
 
-1. Initialize the repository and exact pinned toolchain.
-2. Configure strict TypeScript, linting, formatting, and pnpm scripts.
-3. Add Next.js App Router and Tailwind.
-4. Add Drizzle and node-postgres dependencies, but do not implement the full schema yet.
-5. Add a local PostgreSQL `docker-compose.yml`.
-6. Add a multi-stage production Dockerfile using Node 24 LTS and a non-root runtime user.
-7. Add Zod environment validation and an `.env.example` containing no secrets.
-8. Add structured logging and request IDs.
-9. Add reusable JSON content-type, Origin, and Fetch-Metadata guards for future mutation routes.
-10. Add `/api/health/live` and `/api/health/ready`; readiness checks validated startup configuration and PostgreSQL connectivity, not Edition state.
-11. Add GitHub Actions for install, lint, format check, typecheck, unit test, and production build.
-12. Create the `docs/` structure, ADR template, `docs/PROGRESS.md`, and `docs/OPEN_QUESTIONS.md`.
-13. Add unit tests for configuration validation, mutation guards, and each health endpoint behavior that can be tested without the later schema.
+- Work only on the milestone requested by the owner and stop before the next milestone.
+- Preserve the Product Decision Chronicle as the intent reference when documents contain a conflict.
+- Record material corrections, deviations, and decisions in the relevant docs and ADRs.
+- Add migrations only through reviewed ordered forward changes; never use production `db push`.
+- Run the milestone-appropriate unit, PostgreSQL integration, lint, format, type, and build checks.
+- Keep Docker Desktop off when containers are not needed. Start it only for PostgreSQL or production
+  image validation, then stop the project containers and quit Docker Desktop afterward.
+- Update `docs/PROGRESS.md` with exact results, limitations, and the next boundary before reporting.
+- Do not commit or push unless the owner asks.
 
-## Required validation before reporting back
-
-Run and report the exact result of:
-
-```text
-pnpm install --frozen-lockfile
-pnpm lint
-pnpm format:check
-pnpm typecheck
-pnpm test:unit
-pnpm build
-docker build .
-```
-
-Also start local PostgreSQL and verify readiness changes from unhealthy to healthy when the database becomes available.
-
-## Final response format
+## Reporting format
 
 Return:
 
-1. Summary of files created/changed.
-2. Dependency list with the reason for each non-trivial dependency.
-3. Commands run and whether each passed.
-4. Any deviation from the plan. There should normally be none.
-5. Open questions that genuinely require owner input.
-6. A statement that you stopped at Owner Review Gate A.
-
-Update `docs/PROGRESS.md` before finishing.
+1. What was implemented and where.
+2. Exact checks run and their results.
+3. Any deviation or correction to the plan.
+4. Known limitations and deferred work.
+5. The boundary where implementation stopped.

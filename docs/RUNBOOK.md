@@ -14,8 +14,36 @@ If the default host port `5432` is occupied, set `POSTGRES_PORT` to an available
 port in `.env` and use the same port in `DATABASE_URL`. PostgreSQL continues to
 listen on port `5432` inside the container.
 
-Run `pnpm test:integration` to create, migrate, test, and remove the isolated `csr_m1_test`
-database. The configured development database is never dropped by this lifecycle.
+Run `pnpm test:integration` to create, migrate, test, and remove the isolated
+`csr_integration_test` database. The configured development database is never dropped by this
+lifecycle.
+
+## Candidate Pool CLI
+
+Milestone 2 provides trusted operational commands before the Admin UI exists:
+
+```bash
+pnpm pool:add-player -- --actor <admin-username> --edition <code> \
+  --slug <player-slug> --nickname <nickname> --reason <public-reason>
+pnpm pool:disable-player -- --actor <admin-username> --edition <code> \
+  --player <player-slug> --reason <public-reason>
+```
+
+Run them only from a trusted host with database access. They write Pool Change Log and Admin Audit
+Log rows. See `docs/CANDIDATE_POOL.md` for semantics and examples.
+
+## Resource-conscious Docker use
+
+Docker Desktop is required locally only when PostgreSQL or a production-container check is needed.
+Unit tests, linting, type checking, and ordinary code editing do not require it.
+
+```bash
+docker compose up -d postgres   # start only for DB work
+docker compose stop postgres    # stop the project database afterward
+```
+
+On macOS, quitting Docker Desktop after the container stops also shuts down its Linux VM and returns
+its reserved CPU and memory. Start it again only for the next database or image validation session.
 
 ## Health meaning
 

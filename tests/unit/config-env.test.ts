@@ -20,6 +20,7 @@ describe("parseEnv", () => {
     expect(env.APP_TIME_ZONE).toBe("Asia/Shanghai");
     expect(env.DEFAULT_FULL_WEIGHT_BALLOTS_PER_DAY).toBe(50);
     expect(env.DEFAULT_BALLOT_TTL_MINUTES).toBe(30);
+    expect(env.ACTIVE_POOL_CACHE_TTL_SECONDS).toBe(60);
     expect(env.TRUST_PROXY_HEADERS).toBe(false);
     expect(env.HLTV_SYNC_ENABLED).toBe(false);
   });

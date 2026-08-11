@@ -104,14 +104,14 @@ operational learning, and data-source changes are expected to produce later sche
 
 ## Integration-test database lifecycle
 
-`tests/integration/helpers/database.ts` manages one fixed database named `csr_m1_test` on the server
-selected by `DATABASE_URL`:
+`tests/integration/helpers/database.ts` manages one fixed database named `csr_integration_test` on
+the server selected by `DATABASE_URL`:
 
-1. Drop only `csr_m1_test` if it exists.
+1. Drop only `csr_integration_test` if it exists.
 2. Create it from `template0`.
 3. Apply every committed migration from `drizzle/`.
 4. Run constraint tests without mocking PostgreSQL.
-5. Close all test connections and drop only `csr_m1_test`.
+5. Close all test connections and drop only `csr_integration_test`.
 
 The lifecycle never drops the database named in `DATABASE_URL`.
 

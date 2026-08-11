@@ -29,7 +29,9 @@ safely enforce those without triggers that would duplicate future service logic.
   public representations deliberately rather than accepting precision loss.
 - Keep cross-table Pool admission matching, Vote-to-Ballot orientation matching, Edition transition
   effects, and Edition score-sum verification in transactional services and integrity jobs.
-- Use a fixed, guarded `csr_m1_test` database lifecycle for real PostgreSQL integration tests.
+- Use a fixed, guarded integration database lifecycle for real PostgreSQL tests. Milestone 2
+  generalized its name from `csr_m1_test` to `csr_integration_test`; the explicit-target safety
+  boundary is unchanged.
 - Keep the development seed fictional, transactional, idempotent, and production-disabled.
 
 ## Alternatives considered

@@ -2,77 +2,85 @@
 
 ## Current position
 
-- **Milestone:** 1 — Database schema and invariants
-- **Status:** Complete; Owner Review Gate B approved
-- **Review boundary:** Gate B passed on 2026-08-11
+- **Milestone:** 2 — Candidate Pool domain and dynamic management core
+- **Status:** Complete; owner review approved
+- **Review boundary:** Milestone 2 approved on 2026-08-11; M3 not yet started
 - **Last updated:** 2026-08-11
 
 ## Completed
 
-- Added the complete V0.1 PostgreSQL model: 27 tables and 21 enums spanning catalog, editions,
-  pools, ballots, votes, aggregates, snapshots, administration, sync, and staged imports.
-- Added the reviewed initial Drizzle migration and metadata snapshot.
-- Enforced database-owned invariants with foreign keys, check constraints, unique constraints, and
-  partial unique indexes, including one active edition, one current roster membership, one open
-  ballot per visitor and edition, and one vote per ballot.
-- Added canonical pair orientation, lifecycle-shape, counter, score, and import-state constraints.
-- Typed the shared Drizzle client with the full schema and retained bounded PostgreSQL pooling.
-- Added explicit migration and seed entry points plus schema drift checking.
-- Added an idempotent, development-only fictional seed with a disabled administrator account.
-- Added an isolated integration-test lifecycle using the fixed `csr_m1_test` database; setup starts
-  from an empty database and teardown force-drops only that database.
-- Added 11 real-PostgreSQL integration tests covering schema inventory, critical constraints,
-  duplicate rejection, lifecycle rules, and seed idempotency.
-- Documented the database model, operational commands, invariant ownership boundary, and rationale
-  in `docs/DATABASE.md`, `docs/RUNBOOK.md`, and ADR 0002.
+- Implemented audited domain services for Edition, Team, Player, Roster, Event, and Candidate Pool
+  management without Next.js dependencies.
+- Implemented deterministic Core and Review Auto evaluation for either-source Top 12, either-source
+  Top 20 plus same-year whitelisted T1 Top 4, and Major Top 8.
+- Implemented explicit Review Manual team and Special individual admission paths with required
+  public reasons.
+- Made Team admission transactional across the Pool Team entry, exactly five current formal
+  starters, missing Pool Player entries, zero-ranking initialization, Pool Change Logs, and Admin
+  Audit Log.
+- Preserved an already admitted player's original admission category and ranking history when their
+  current Team is admitted later.
+- Implemented history-preserving pairing disable/enable behavior; no Pool, ranking, Ballot, Vote, or
+  audit row is deleted or reset.
+- Implemented a configurable in-process active-pool cache with TTL, miss coalescing, explicit
+  invalidation, and stale in-flight-load protection.
+- Added trusted `pool:add-player` and `pool:disable-player` CLI commands for pre-Admin operation.
+- Enforced forward Edition transitions, immutable FROZEN/ARCHIVED Pools, explicit roster-conflict
+  handling, and immutable confirmed T1 whitelist decisions.
+- Generalized the guarded integration database name from milestone-specific `csr_m1_test` to
+  `csr_integration_test` without changing its explicit-target safety boundary.
+- Added `docs/CANDIDATE_POOL.md`; converted the stale M0-only Codex prompt into a durable current
+  handoff; and updated README, API, database, runbook, environment, and ADR documentation.
 
 ## Validation
 
-| Command/check                    | Result | Notes                                                                              |
-| -------------------------------- | ------ | ---------------------------------------------------------------------------------- |
-| `pnpm install --frozen-lockfile` | PASS   | Lockfile remained reproducible with pnpm `11.16.0`.                                |
-| `pnpm db:check`                  | PASS   | Drizzle migration metadata and schema are valid.                                   |
-| `pnpm db:migrate`                | PASS   | Initial migration applies from empty and is idempotent when rerun.                 |
-| `pnpm db:seed`                   | PASS   | Fictional development seed is idempotent when rerun.                               |
-| Schema drift generation          | PASS   | Drizzle reports no changes after the reviewed migration.                           |
-| `pnpm lint`                      | PASS   | Zero warnings.                                                                     |
-| `pnpm format:check`              | PASS   | All included files match Prettier.                                                 |
-| `pnpm typecheck`                 | PASS   | Strict TypeScript `6.0.3`.                                                         |
-| `pnpm test:unit`                 | PASS   | 5 files, 18 tests.                                                                 |
-| `pnpm test:integration`          | PASS   | 1 file, 11 tests against local PostgreSQL 18.                                      |
-| `pnpm test:e2e`                  | PASS   | Playwright is configured; no browser scenarios are expected before public UI work. |
-| `pnpm build`                     | PASS   | Next.js `16.3.0` Webpack production build.                                         |
-| Development database inspection  | PASS   | 27 tables, one migration record, 2 fictional teams, and 4 fictional players.       |
-| `docker build .`                 | PASS   | Built `cs-community-ranking:milestone-1`.                                          |
-| Production image smoke           | PASS   | Non-root (`node`) image returned `200` for `/`, liveness, and database readiness.  |
+| Command/check                    | Result | Notes                                                                                          |
+| -------------------------------- | ------ | ---------------------------------------------------------------------------------------------- |
+| `pnpm install --frozen-lockfile` | PASS   | No dependency changes; lockfile remained reproducible with pnpm `11.16.0`.                     |
+| `pnpm db:check`                  | PASS   | Existing reviewed migration metadata remains valid; M2 required no schema migration.           |
+| `pnpm db:migrate`                | PASS   | Committed migration remains idempotent against the development database.                       |
+| `pnpm db:seed`                   | PASS   | Fictional development seed remains repeatable.                                                 |
+| `pnpm lint`                      | PASS   | Zero warnings.                                                                                 |
+| `pnpm format:check`              | PASS   | All included files match Prettier.                                                             |
+| `pnpm typecheck`                 | PASS   | Strict TypeScript `6.0.3`.                                                                     |
+| `pnpm test:unit`                 | PASS   | 7 files, 30 tests, including all admission paths and active-cache races.                       |
+| `pnpm test:integration`          | PASS   | 2 files, 14 tests against PostgreSQL 18, including real CLI subprocesses.                      |
+| `pnpm test:e2e`                  | PASS   | Playwright remains configured; browser journeys begin with the later public voting slice.      |
+| `pnpm build`                     | PASS   | Next.js `16.3.0` Webpack production build.                                                     |
+| `git diff --check`               | PASS   | No whitespace errors.                                                                          |
+| Docker image rebuild             | N/A    | M2 changes no runtime dependency, Dockerfile, or container configuration; source build passed. |
 
-## Decisions and corrections made during validation
+## Decisions and corrections made during implementation
 
-- Database constraints own row-local and indexable invariants; cross-row and workflow invariants
-  that require locking or multi-step reads remain service-layer responsibilities. ADR 0002 records
-  the boundary.
-- PostgreSQL `bigint` values map to JavaScript `bigint` so counters are not silently narrowed.
-- Bigint zero defaults use SQL literals because Drizzle Kit cannot serialize JavaScript `0n` in
-  migration snapshots; the generated database type and default remain `bigint` and `0`.
-- Seed data is deliberately fictional and the seeded administrator is disabled with an unusable
-  placeholder hash, preventing development convenience from creating a working credential.
-- The integration harness creates and drops only the explicit `csr_m1_test` database. It never
-  derives a destructive target from the normal application database URL.
-- The V0.1 model is an evolvable baseline rather than a frozen final schema. Future features and
-  operational learning will be handled through reviewed, ordered forward migrations with upgrade
-  coverage.
+- Corrected the previous M1 handoff label: the master plan and Product Decision Chronicle define
+  M2 as Candidate Pool domain work. Ballot issuance is M3 and vote transactions are M4.
+- Admission category is deliberately absent from active-player lookup and ranking initialization;
+  it remains an auditable explanation, never a weight or probability input.
+- Confirmed event-whitelist decisions are immutable historical facts. Event results may be corrected
+  through audited updates, but a confirmed T1 decision is not silently rewritten.
+- CLI commands run as trusted operational processes. Their `--actor` value provides persistent audit
+  attribution; database/host access remains the authorization boundary until Admin authentication
+  arrives in M6.
+- Service-owned changes invalidate the active cache immediately. A separate CLI process cannot reach
+  another process's memory, so a running web process observes CLI changes through the short TTL;
+  same-process future Admin mutations invalidate immediately.
+- Docker stayed off during coding and unit validation. It was started only for the final PostgreSQL
+  validation window and shut down afterward to return laptop CPU and memory.
 
 ## Known limitations
 
-- Domain services and the vote transaction are intentionally not implemented; they begin after
-  Gate B in Milestone 2.
-- Cross-table rules such as edition/pool consistency and transaction-wide aggregate maintenance
-  require the later service layer and locking strategy.
-- V0.1 recovery remains forward migration plus empty-database rebuild; production rollback and
-  backup procedures are deployment-stage work.
-- Playwright has no browser scenarios yet because the public product UI is a later milestone.
+- M2 introduces no public or Admin HTTP routes; Admin authentication and screens remain M6 work.
+- Automatic rule evidence is an explicit domain input. Approved/fresh provider snapshots and pending
+  Pool-draft generation remain M7 responsibilities; no external source can change the live Pool now.
+- The active-pool cache is intentionally process-local because V0.1 uses one web instance and no
+  Redis. Its TTL is the cross-process fallback for trusted CLI changes.
+- CLI individual admission is the approved `SPECIAL` path. Team admissions use the service layer and
+  will receive Admin UI and importer orchestration later.
+- Anonymous visitor identity, uniform random pair selection, open-Ballot locking, quota ordinals, and
+  expiration begin in M3.
 
 ## Next task
 
-Begin Milestone 2: implement the transactional ballot-selection and voting service, including
-locking, idempotency, quotas, expiration, and aggregate maintenance.
+When the owner requests it, begin Milestone 3: secure anonymous visitor identity, one-open-Ballot
+issuance, Asia/Shanghai daily ordinals, uniform random pair selection and left/right randomization,
+expiration, infrastructure rate-limiter shell, and the guarded `POST /api/v1/ballots/next` endpoint.

@@ -66,6 +66,7 @@ export const envSchema = z
       .default("2026"),
     DEFAULT_FULL_WEIGHT_BALLOTS_PER_DAY: positiveIntegerFromEnvironment.default(50),
     DEFAULT_BALLOT_TTL_MINUTES: positiveIntegerFromEnvironment.default(30),
+    ACTIVE_POOL_CACHE_TTL_SECONDS: positiveIntegerFromEnvironment.default(60),
     RISK_ENFORCEMENT_MODE: z.enum(["observe", "enforce"]).default("observe"),
     IP_RISK_KEY_RETENTION_DAYS: positiveIntegerFromEnvironment.default(90),
     PRODUCT_EVENT_RETENTION_DAYS: positiveIntegerFromEnvironment.default(90),
