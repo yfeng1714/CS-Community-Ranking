@@ -20,11 +20,12 @@
     "typecheck": "tsc --noEmit",
     "test:unit": "vitest run --config vitest.config.ts",
     "test:unit:watch": "vitest --config vitest.config.ts",
-    "test:integration": "vitest run --dir tests/integration --passWithNoTests",
+    "test:integration": "node --env-file=.env node_modules/vitest/vitest.mjs run --config vitest.integration.config.mjs --configLoader runner",
     "test:e2e": "playwright test --pass-with-no-tests",
-    "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate",
-    "db:check": "drizzle-kit check"
+    "db:generate": "node --env-file=.env node_modules/drizzle-kit/bin.cjs generate",
+    "db:migrate": "node --env-file=.env scripts/migrate.ts",
+    "db:seed": "node --env-file=.env scripts/seed.ts",
+    "db:check": "node --env-file=.env node_modules/drizzle-kit/bin.cjs check"
   },
   "dependencies": {
     "drizzle-orm": "0.45.2",

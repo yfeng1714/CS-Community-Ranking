@@ -2,65 +2,77 @@
 
 ## Current position
 
-- **Milestone:** 0 — Repository and runtime foundation
-- **Status:** Complete; Owner Review Gate A approved
-- **Review boundary:** Gate A passed on 2026-08-11
+- **Milestone:** 1 — Database schema and invariants
+- **Status:** Complete; Owner Review Gate B approved
+- **Review boundary:** Gate B passed on 2026-08-11
 - **Last updated:** 2026-08-11
 
 ## Completed
 
-- Created the pinned Node.js/pnpm/Next.js/TypeScript foundation.
-- Added Tailwind, Zod, Drizzle/node-postgres, Pino, Vitest, and Playwright.
-- Added strict TypeScript, ESLint, Prettier, and baseline scripts.
-- Added local PostgreSQL Compose and a multi-stage non-root production Dockerfile.
-- Added lazy database access, environment validation, startup instrumentation, request IDs, and
-  structured logging.
-- Added liveness/readiness handlers and reusable mutation request guards.
-- Added GitHub Actions baseline and documentation/ADR skeleton.
-- Added unit tests for configuration, health behavior, mutation guards, and request IDs.
-- Made the foundation page explicitly light by default; a user-facing theme switch is deferred to
-  the Milestone 5 public UI work.
-- Made the local PostgreSQL host port configurable so it can coexist with an existing PostgreSQL
-  installation.
+- Added the complete V0.1 PostgreSQL model: 27 tables and 21 enums spanning catalog, editions,
+  pools, ballots, votes, aggregates, snapshots, administration, sync, and staged imports.
+- Added the reviewed initial Drizzle migration and metadata snapshot.
+- Enforced database-owned invariants with foreign keys, check constraints, unique constraints, and
+  partial unique indexes, including one active edition, one current roster membership, one open
+  ballot per visitor and edition, and one vote per ballot.
+- Added canonical pair orientation, lifecycle-shape, counter, score, and import-state constraints.
+- Typed the shared Drizzle client with the full schema and retained bounded PostgreSQL pooling.
+- Added explicit migration and seed entry points plus schema drift checking.
+- Added an idempotent, development-only fictional seed with a disabled administrator account.
+- Added an isolated integration-test lifecycle using the fixed `csr_m1_test` database; setup starts
+  from an empty database and teardown force-drops only that database.
+- Added 11 real-PostgreSQL integration tests covering schema inventory, critical constraints,
+  duplicate rejection, lifecycle rules, and seed idempotency.
+- Documented the database model, operational commands, invariant ownership boundary, and rationale
+  in `docs/DATABASE.md`, `docs/RUNBOOK.md`, and ADR 0002.
 
 ## Validation
 
-| Command/check                    | Result | Notes                                                                                                                                        |
-| -------------------------------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| `pnpm install --frozen-lockfile` | PASS   | Clean relink from the committed lockfile with pnpm `11.16.0`.                                                                                |
-| `pnpm lint`                      | PASS   | Zero warnings.                                                                                                                               |
-| `pnpm format:check`              | PASS   | All included files match Prettier. Pre-existing owner documents are intentionally ignored.                                                   |
-| `pnpm typecheck`                 | PASS   | Strict TypeScript `6.0.3`.                                                                                                                   |
-| `pnpm test:unit`                 | PASS   | 5 files, 18 tests.                                                                                                                           |
-| `pnpm build`                     | PASS   | Next.js `16.3.0` Webpack production build; standalone artifact produced.                                                                     |
-| Standalone smoke                 | PASS   | Standalone server rendered `/` and returned `200` from liveness.                                                                             |
-| Readiness without PostgreSQL     | PASS   | Returned detail-free `503`; log contains only a safe error code.                                                                             |
-| Readiness with PostgreSQL 18.4   | PASS   | Returned `200` against a temporary local PostgreSQL 18.4 server.                                                                             |
-| `docker build .`                 | PASS   | Built the pinned multi-stage image successfully as `cs-community-ranking:milestone-0`.                                                       |
-| Compose PostgreSQL               | PASS   | PostgreSQL `18.4` became healthy on configurable host port `5433`; the owner's existing PostgreSQL remained untouched on `5432`.             |
-| Production image smoke           | PASS   | Non-root (`node`) image returned `200` for `/`, liveness, and database readiness; production placeholder-secret rejection was also verified. |
+| Command/check                    | Result | Notes                                                                              |
+| -------------------------------- | ------ | ---------------------------------------------------------------------------------- |
+| `pnpm install --frozen-lockfile` | PASS   | Lockfile remained reproducible with pnpm `11.16.0`.                                |
+| `pnpm db:check`                  | PASS   | Drizzle migration metadata and schema are valid.                                   |
+| `pnpm db:migrate`                | PASS   | Initial migration applies from empty and is idempotent when rerun.                 |
+| `pnpm db:seed`                   | PASS   | Fictional development seed is idempotent when rerun.                               |
+| Schema drift generation          | PASS   | Drizzle reports no changes after the reviewed migration.                           |
+| `pnpm lint`                      | PASS   | Zero warnings.                                                                     |
+| `pnpm format:check`              | PASS   | All included files match Prettier.                                                 |
+| `pnpm typecheck`                 | PASS   | Strict TypeScript `6.0.3`.                                                         |
+| `pnpm test:unit`                 | PASS   | 5 files, 18 tests.                                                                 |
+| `pnpm test:integration`          | PASS   | 1 file, 11 tests against local PostgreSQL 18.                                      |
+| `pnpm test:e2e`                  | PASS   | Playwright is configured; no browser scenarios are expected before public UI work. |
+| `pnpm build`                     | PASS   | Next.js `16.3.0` Webpack production build.                                         |
+| Development database inspection  | PASS   | 27 tables, one migration record, 2 fictional teams, and 4 fictional players.       |
+| `docker build .`                 | PASS   | Built `cs-community-ranking:milestone-1`.                                          |
+| Production image smoke           | PASS   | Non-root (`node`) image returned `200` for `/`, liveness, and database readiness.  |
 
 ## Decisions and corrections made during validation
 
-- Pinned TypeScript `6.0.3` rather than `7.0.2`; the TypeScript-ESLint release bundled with the
-  current Next.js config explicitly rejects TS 7.
-- Pinned ESLint `9.39.5` rather than `10.8.1`; current Next.js React/import/accessibility plugins
-  declare ESLint 9 support.
-- Production builds use the official Webpack mode because the desktop execution environment blocks
-  the internal port used by Turbopack's CSS worker. Development remains on default Turbopack.
-- Added pnpm 11's explicit native-build allowlist for `esbuild` and `unrs-resolver`.
-- Readiness logs intentionally omit database error messages because they may contain a host/IP.
-- These compatibility choices are recorded in `docs/adr/0001-foundation-version-baseline.md`.
+- Database constraints own row-local and indexable invariants; cross-row and workflow invariants
+  that require locking or multi-step reads remain service-layer responsibilities. ADR 0002 records
+  the boundary.
+- PostgreSQL `bigint` values map to JavaScript `bigint` so counters are not silently narrowed.
+- Bigint zero defaults use SQL literals because Drizzle Kit cannot serialize JavaScript `0n` in
+  migration snapshots; the generated database type and default remain `bigint` and `0`.
+- Seed data is deliberately fictional and the seeded administrator is disabled with an unusable
+  placeholder hash, preventing development convenience from creating a working credential.
+- The integration harness creates and drops only the explicit `csr_m1_test` database. It never
+  derives a destructive target from the normal application database URL.
+- The V0.1 model is an evolvable baseline rather than a frozen final schema. Future features and
+  operational learning will be handled through reviewed, ordered forward migrations with upgrade
+  coverage.
 
 ## Known limitations
 
-- No domain database schema exists; that is intentionally Milestone 1 work.
-- No public voting or Admin route exists.
-- External data sync is disabled and unimplemented.
-- The foundation page has no theme control; light is the explicit default and the final visual
-  system remains Milestone 5 work.
+- Domain services and the vote transaction are intentionally not implemented; they begin after
+  Gate B in Milestone 2.
+- Cross-table rules such as edition/pool consistency and transaction-wide aggregate maintenance
+  require the later service layer and locking strategy.
+- V0.1 recovery remains forward migration plus empty-database rebuild; production rollback and
+  backup procedures are deployment-stage work.
+- Playwright has no browser scenarios yet because the public product UI is a later milestone.
 
 ## Next task
 
-Commit and push the approved Milestone 0 foundation. Begin Milestone 1 only when the owner requests
-the next implementation phase.
+Begin Milestone 2: implement the transactional ballot-selection and voting service, including
+locking, idempotency, quotas, expiration, and aggregate maintenance.

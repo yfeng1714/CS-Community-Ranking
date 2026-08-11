@@ -1,5 +1,6 @@
 .next
 coverage
+drizzle/meta
 node_modules
 playwright-report
 pnpm-lock.yaml

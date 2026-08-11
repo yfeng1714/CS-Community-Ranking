@@ -54,6 +54,9 @@ If port `5432` is already occupied, set `POSTGRES_PORT` to another host port in
 | `pnpm test:unit` | Run unit tests |
 | `pnpm test:integration` | Run integration tests |
 | `pnpm test:e2e` | Run end-to-end tests |
+| `pnpm db:migrate` | Apply committed PostgreSQL migrations |
+| `pnpm db:seed` | Load repeatable fictional development data |
+| `pnpm db:check` | Check the Drizzle migration journal |
 
 ## Documentation
 
