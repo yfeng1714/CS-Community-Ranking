@@ -1,7 +1,12 @@
 # CS Community Ranking / CS 野榜
 ## Implementation Plan V0.1 中文审阅摘要
 
-这份摘要用于项目 Owner 快速审阅。真正交给 Codex 执行的完整规范是 `IMPLEMENTATION_PLAN_V0.1.md`。
+这份摘要用于项目 Owner 快速审阅。真正交给 Codex 执行的完整规范是 `docs/IMPLEMENTATION_PLAN_V0.1.md`。
+
+**2026-08-10 V0.1.1 审阅结论：** 产品方向与冻结规则不变；施工规范已补齐
+Pending Import、Admin Session/Audit、关键数据库约束、Edition 冻结行为、跨午夜
+Ballot 计数、Skip 撤销、IP 风险键留存和 Mutation Security 的实施时点。现在可以从
+Milestone 0 开始，但仍必须在每个 Owner Review Gate 停止。
 
 ---
 
@@ -168,6 +173,7 @@ Ballot TTL 30 分钟
 - 异常历史票通过 REVOKE 事务反向修正，不物理删除。
 - 每个 Edition 的 `SUM(score)` 必须始终为 0。
 - Turnstile 不纳入 V0.1，因为大陆支持不可靠。
+- 日 IP HMAC 风险键默认 90 天后从 Ballot/Vote 清空，不随 Raw Vote 永久保留。
 
 ---
 
@@ -199,6 +205,8 @@ PlayerExternalIdentity
 PlayerStatSnapshot
 RankingSourceSnapshot
 SyncRun
+PendingImportChange
+AdminAuditLog
 ```
 
 数据库层强制：
@@ -208,6 +216,9 @@ SyncRun
 - Pair 以较小 Player ID 在前的 canonical 顺序保存。
 - 投票时两名 PlayerRanking 按 Player ID 升序加锁，降低死锁风险。
 - 排名相同 Score 使用相同名次，SQL 使用 `RANK()`。
+- 同时最多一个 ACTIVE Edition；每名选手同时最多一条当前 RosterMembership。
+- Ballot 持久化上海日期，跨午夜 Resolve 仍更新签发日的计数器。
+- Edition 离开 ACTIVE 时，未解决 Ballot 失效；已解决 Ballot 仍可幂等读取原结果。
 
 ---
 
@@ -269,6 +280,9 @@ Liquipedia、PandaScore、GRID 等只保留 Provider 扩展接口，不作为 V0
 - 有效对决数和 Skip 数；
 - 当前 Rank / Score；
 - Next。
+
+若该 Pair 尚无计数的非 Skip 对决，百分比返回 `null`，页面显示“暂无有效对决”；
+小样本必须同时显示有效对决数和“样本较少”，不加隐藏平滑票，也不展示虚假的小数精度。
 
 ## Ranking
 

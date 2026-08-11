@@ -1,0 +1,82 @@
+import { describe, expect, it } from "vitest";
+
+import { EnvironmentValidationError, parseEnv } from "@/config/env";
+
+const validEnvironment = {
+  NODE_ENV: "development",
+  APP_ORIGIN: "http://localhost:3000",
+  DATABASE_URL: "postgresql://csr:csr_local_dev_password@localhost:5432/csr",
+  APP_TIME_ZONE: "Asia/Shanghai",
+  VISITOR_TOKEN_HASH_PEPPER: "replace-with-at-least-32-random-characters",
+  IP_HMAC_SECRET: "replace-with-a-different-32-character-secret",
+  ADMIN_SESSION_SECRET: "replace-with-another-32-character-secret",
+};
+
+describe("parseEnv", () => {
+  it("parses a valid environment and applies safe defaults", () => {
+    const env = parseEnv(validEnvironment);
+
+    expect(env.NODE_ENV).toBe("development");
+    expect(env.APP_TIME_ZONE).toBe("Asia/Shanghai");
+    expect(env.DEFAULT_FULL_WEIGHT_BALLOTS_PER_DAY).toBe(50);
+    expect(env.DEFAULT_BALLOT_TTL_MINUTES).toBe(30);
+    expect(env.TRUST_PROXY_HEADERS).toBe(false);
+    expect(env.HLTV_SYNC_ENABLED).toBe(false);
+  });
+
+  it("parses the string false as false instead of JavaScript truthiness", () => {
+    const env = parseEnv({
+      ...validEnvironment,
+      TRUST_PROXY_HEADERS: "false",
+      HLTV_SYNC_ENABLED: "false",
+    });
+
+    expect(env.TRUST_PROXY_HEADERS).toBe(false);
+    expect(env.HLTV_SYNC_ENABLED).toBe(false);
+  });
+
+  it("fails when a required value is missing", () => {
+    const missingDatabaseUrl: Record<string, unknown> = { ...validEnvironment };
+    delete missingDatabaseUrl.DATABASE_URL;
+
+    expect(() => parseEnv(missingDatabaseUrl)).toThrow(EnvironmentValidationError);
+    expect(() => parseEnv(missingDatabaseUrl)).toThrow(/DATABASE_URL/);
+  });
+
+  it("rejects a non-PostgreSQL database URL", () => {
+    expect(() =>
+      parseEnv({
+        ...validEnvironment,
+        DATABASE_URL: "https://example.com/database",
+      }),
+    ).toThrow(/postgres or postgresql/);
+  });
+
+  it("rejects a different quota time zone", () => {
+    expect(() =>
+      parseEnv({
+        ...validEnvironment,
+        APP_TIME_ZONE: "UTC",
+      }),
+    ).toThrow(/APP_TIME_ZONE/);
+  });
+
+  it("rejects documented placeholder secrets in production", () => {
+    expect(() =>
+      parseEnv({
+        ...validEnvironment,
+        NODE_ENV: "production",
+        APP_ORIGIN: "https://example.com",
+      }),
+    ).toThrow(/development placeholder/);
+  });
+
+  it("requires an HLTV user agent when sync is enabled", () => {
+    expect(() =>
+      parseEnv({
+        ...validEnvironment,
+        HLTV_SYNC_ENABLED: "true",
+      }),
+    ).toThrow(/HLTV_USER_AGENT/);
+  });
+});

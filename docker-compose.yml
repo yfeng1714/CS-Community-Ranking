@@ -1,0 +1,23 @@
+name: cs-community-ranking
+
+services:
+  postgres:
+    image: postgres:18.4-alpine3.24
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: csr
+      POSTGRES_USER: csr
+      POSTGRES_PASSWORD: csr_local_dev_password
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - csr_postgres_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U csr -d csr"]
+      interval: 2s
+      timeout: 3s
+      retries: 15
+      start_period: 5s
+
+volumes:
+  csr_postgres_data:

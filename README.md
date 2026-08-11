@@ -1,66 +1,81 @@
 # CS Community Ranking / CS 野榜
 
-Community ranking for Counter-Strike pros: pairwise votes, simple score updates, no login required.
+Community-generated rankings for professional Counter-Strike players, built from
+simple pairwise votes.
 
 ## Status
 
-Early foundation. See `docs/` for product decisions and the implementation plan.
+Milestone 0 is complete: the application foundation, PostgreSQL service, health
+checks, automated tests, production build, and CI baseline are in place.
 
-## Stack (planned)
+## Technology
 
-- Node.js 24 LTS
-- TypeScript
-- Next.js (App Router)
-- PostgreSQL
-- Drizzle ORM
+- Node.js 24 LTS and TypeScript
+- Next.js App Router and React
+- PostgreSQL and Drizzle ORM
 - Tailwind CSS
-- Vitest + Playwright
+- Vitest and Playwright
+
+Exact runtime and dependency versions are pinned in the repository.
 
 ## Getting started
 
+Prerequisites: Node.js `24.14.0`, pnpm `11.16.0`, and Docker.
+
 ```bash
-# Install dependencies
-pnpm install
-
-# Copy environment template
+pnpm install --frozen-lockfile
 cp .env.example .env
-
-# Start local PostgreSQL
-docker compose up -d
-
-# Run development server
+docker compose up -d postgres
 pnpm dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000).
 
-## Scripts
+Health endpoints:
 
-| Command | Description |
+- [http://localhost:3000/api/health/live](http://localhost:3000/api/health/live)
+- [http://localhost:3000/api/health/ready](http://localhost:3000/api/health/ready)
+
+Stop the local database with `docker compose down`.
+
+If port `5432` is already occupied, set `POSTGRES_PORT` to another host port in
+`.env` and use the same port in `DATABASE_URL`.
+
+## Commands
+
+| Command | Purpose |
 | --- | --- |
-| `pnpm dev` | Start Next.js in development |
-| `pnpm build` | Production build |
-| `pnpm lint` | Lint |
+| `pnpm dev` | Start the development server |
+| `pnpm build` | Create a production build |
+| `pnpm start` | Start the production server |
+| `pnpm lint` | Run ESLint |
 | `pnpm format:check` | Check formatting |
-| `pnpm typecheck` | TypeScript check |
-| `pnpm test:unit` | Unit tests |
-| `pnpm test:e2e` | End-to-end tests |
+| `pnpm typecheck` | Check TypeScript |
+| `pnpm test:unit` | Run unit tests |
+| `pnpm test:integration` | Run integration tests |
+| `pnpm test:e2e` | Run end-to-end tests |
 
-## Docs
+## Documentation
 
-- [`docs/CODEX_START_HERE.md`](docs/CODEX_START_HERE.md) — implementation kickoff
-- [`docs/IMPLEMENTATION_PLAN_V0.1.md`](docs/IMPLEMENTATION_PLAN_V0.1.md) — source of truth for V0.1
-- [`docs/REVIEW_SUMMARY_ZH.md`](docs/REVIEW_SUMMARY_ZH.md) — Chinese owner review summary
-- [`docs/CS_Community_Ranking_Product_Decision_Chronicle_V0.1.md`](docs/CS_Community_Ranking_Product_Decision_Chronicle_V0.1.md) — product decision chronicle
+- [`docs/CS_Community_Ranking_Product_Decision_Chronicle_V0.1.md`](docs/CS_Community_Ranking_Product_Decision_Chronicle_V0.1.md) — product intent and decision history
+- [`docs/IMPLEMENTATION_PLAN_V0.1.md`](docs/IMPLEMENTATION_PLAN_V0.1.md) — milestone implementation plan
+- [`docs/PROGRESS.md`](docs/PROGRESS.md) — current implementation status
+- [`docs/RUNBOOK.md`](docs/RUNBOOK.md) — development and operational procedures
+- [`docs/API.md`](docs/API.md) — API conventions
+- [`docs/DATABASE.md`](docs/DATABASE.md) — database conventions
+- [`docs/SECURITY.md`](docs/SECURITY.md) — security baseline
 
-## Ranking rules (frozen)
+When documents disagree about product intent, use the Product Decision Chronicle
+as the primary reference and record important changes.
 
-- Valid vote: winner `+1`, loser `-1`
-- Skip: both `0`
-- True uniform random pairing from the active candidate pool
-- No Elo, Bradley–Terry, or weighted votes
-- No public login required
+## Core ranking rules
+
+- A valid vote gives the winner `+1` and the loser `-1`.
+- A skip changes neither score.
+- Pairing is uniformly random across the active candidate pool.
+- The first version has no Elo, Bradley–Terry model, weighted votes, or required
+  public login.
 
 ## License
 
-TBD
+To be determined.

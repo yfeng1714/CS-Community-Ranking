@@ -2,7 +2,7 @@
 
 You are implementing **CS Community Ranking / CS 野榜 V0.1**.
 
-Read `IMPLEMENTATION_PLAN_V0.1.md` in full before modifying the repository. That document is the source of truth.
+Read `docs/IMPLEMENTATION_PLAN_V0.1.md` in full before modifying the repository. That document is the source of truth.
 
 ## Your immediate assignment
 
@@ -32,10 +32,11 @@ Do not begin Milestone 1 until the owner reviews Milestone 0.
 6. Add a multi-stage production Dockerfile using Node 24 LTS and a non-root runtime user.
 7. Add Zod environment validation and an `.env.example` containing no secrets.
 8. Add structured logging and request IDs.
-9. Add `/api/health/live` and `/api/health/ready`.
-10. Add GitHub Actions for install, lint, format check, typecheck, unit test, and production build.
-11. Create the `docs/` structure, ADR template, `docs/PROGRESS.md`, and `docs/OPEN_QUESTIONS.md`.
-12. Add at least one unit test for configuration validation and one for each health endpoint behavior that can be tested without the later schema.
+9. Add reusable JSON content-type, Origin, and Fetch-Metadata guards for future mutation routes.
+10. Add `/api/health/live` and `/api/health/ready`; readiness checks validated startup configuration and PostgreSQL connectivity, not Edition state.
+11. Add GitHub Actions for install, lint, format check, typecheck, unit test, and production build.
+12. Create the `docs/` structure, ADR template, `docs/PROGRESS.md`, and `docs/OPEN_QUESTIONS.md`.
+13. Add unit tests for configuration validation, mutation guards, and each health endpoint behavior that can be tested without the later schema.
 
 ## Required validation before reporting back
 

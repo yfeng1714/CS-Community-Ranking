@@ -1,0 +1,14 @@
+.DS_Store
+.env
+.env.*
+!.env.example
+.git
+.github
+.next
+coverage
+docker-data
+node_modules
+playwright-report
+test-results
+work
+*.log

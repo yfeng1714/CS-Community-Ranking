@@ -1,0 +1,12 @@
+.next
+coverage
+node_modules
+playwright-report
+pnpm-lock.yaml
+test-results
+README.md
+docs/CODEX_START_HERE.md
+docs/CS_Community_Ranking_Product_Decision_Chronicle_V0.1.md
+docs/IMPLEMENTATION_PLAN_V0.1.md
+docs/IMPLEMENTATION_READINESS_REVIEW_2026-08-10.md
+docs/REVIEW_SUMMARY_ZH.md

@@ -1,8 +1,9 @@
 # CS Community Ranking / CS 野榜
 ## Implementation Plan V0.1
 
-**Status:** Approved for implementation planning  
-**Date:** 2026-08-09  
+**Status:** Implementation-ready after V0.1.1 review
+
+**Date:** 2026-08-10
 **Primary audience:** Codex / Claude Code / Cursor and the human project owner  
 **Working repository name:** `cs-community-ranking`  
 **Working product name:** `CS Community Ranking` / `CS 野榜`  
@@ -13,6 +14,10 @@
 # 0. How this document must be used
 
 This file is the implementation source of truth for V0.1.
+
+V0.1.1 is a review clarification, not a product-scope change. It closes schema,
+security, privacy, and lifecycle ambiguities found before Milestone 0. The frozen
+ranking, pairing, guest-first, and Candidate Pool decisions are unchanged.
 
 An implementation agent must:
 
@@ -419,6 +424,8 @@ cs-community-ranking/
 │  ├─ players/
 │  ├─ teams/
 │  └─ placeholders/
+├─ assets/
+│  └─ attribution.json
 ├─ scripts/
 │  ├─ seed.ts
 │  ├─ create-admin.ts
@@ -435,6 +442,11 @@ cs-community-ranking/
 │  └─ fixtures/
 ├─ docs/
 │  ├─ adr/
+│  ├─ CODEX_START_HERE.md
+│  ├─ IMPLEMENTATION_PLAN_V0.1.md
+│  ├─ REVIEW_SUMMARY_ZH.md
+│  ├─ CS_Community_Ranking_Product_Decision_Chronicle_V0.1.md
+│  ├─ IMPLEMENTATION_READINESS_REVIEW_2026-08-10.md
 │  ├─ API.md
 │  ├─ DATABASE.md
 │  ├─ SECURITY.md
@@ -447,8 +459,7 @@ cs-community-ranking/
 ├─ drizzle.config.ts
 ├─ next.config.ts
 ├─ package.json
-├─ pnpm-lock.yaml
-└─ IMPLEMENTATION_PLAN_V0.1.md
+└─ pnpm-lock.yaml
 ```
 
 ---
@@ -472,9 +483,11 @@ IP_HMAC_SECRET
 ADMIN_SESSION_SECRET
 
 ACTIVE_EDITION_CODE=2026
-FULL_WEIGHT_BALLOTS_PER_DAY=50
-BALLOT_TTL_MINUTES=30
+DEFAULT_FULL_WEIGHT_BALLOTS_PER_DAY=50
+DEFAULT_BALLOT_TTL_MINUTES=30
 RISK_ENFORCEMENT_MODE=observe
+IP_RISK_KEY_RETENTION_DAYS=90
+PRODUCT_EVENT_RETENTION_DAYS=90
 
 CLIENT_IP_MODE=railway|cloudflare
 TRUST_PROXY_HEADERS=true|false
@@ -494,9 +507,16 @@ ADMIN_BOOTSTRAP_PASSWORD_HASH
 Rules:
 
 - Thresholds must not be scattered as numeric literals in business code.
+- The active `edition` row is the runtime source of truth for quota and Ballot
+  TTL. The `DEFAULT_*` variables are bootstrap defaults used when an Edition is
+  created; changing them must not silently change an existing Edition.
+- `APP_TIME_ZONE` is fixed to `Asia/Shanghai` for V0.1. A different value must
+  fail validation because quota dates are persisted business data.
 - Production secrets must never use development defaults.
 - No raw IP address may be written to logs or the database.
 - `APP_ORIGIN` is the sole allowed browser mutation origin in production.
+- `TRUST_PROXY_HEADERS` may be true only with an explicitly selected and tested
+  `CLIENT_IP_MODE`; arbitrary forwarding headers must never be trusted.
 
 ---
 
@@ -506,6 +526,11 @@ Use UTC timestamps in PostgreSQL. Compute quota dates using `Asia/Shanghai` at i
 
 Use `bigint generated always as identity` for high-volume internal primary keys. Use a random UUID `public_id` for externally addressable Ballots. Slugs are public identifiers for players and teams.
 
+Unless a field is explicitly marked nullable, it is `NOT NULL`. Foreign keys
+from historical or audit data use `ON DELETE RESTRICT`; V0.1 domain records are
+disabled or archived, not deleted. Every counter has a non-negative database
+check. Migration SQL—not only Drizzle declarations—is reviewed at Gate B.
+
 ## 8.1 Core identity and competition tables
 
 ### `team`
@@ -513,9 +538,9 @@ Use `bigint generated always as identity` for high-volume internal primary keys.
 - `id bigint primary key`
 - `slug text unique not null`
 - `name text not null`
-- `short_name text`
-- `country_code text`
-- `logo_path text`
+- `short_name text nullable`
+- `country_code text nullable`
+- `logo_path text nullable`
 - `active boolean not null default true`
 - `created_at timestamptz`
 - `updated_at timestamptz`
@@ -545,6 +570,17 @@ Use `bigint generated always as identity` for high-volume internal primary keys.
 
 A player identity never changes when the player changes team.
 
+Required checks and indexes:
+
+```text
+ends_at IS NULL OR ends_at >= starts_at
+at most one current roster_membership per player (ends_at IS NULL)
+```
+
+Roster import conflicts that would violate the current-membership constraint
+remain pending for human resolution; an importer must not silently close the
+old row.
+
 ### `edition`
 
 - `id bigint primary key`
@@ -559,6 +595,11 @@ A player identity never changes when the player changes team.
 - `updated_at timestamptz`
 
 At most one Edition may be `ACTIVE` in V0.1.
+
+Enforce that rule with a partial unique index over a constant expression where
+`status = 'ACTIVE'`, and require `ends_at > starts_at`. Status transitions are
+validated by the Edition service. Moving an Edition out of `ACTIVE` disables
+new Ballots and atomically marks its existing `OPEN` Ballots `EXPIRED`.
 
 ## 8.2 Event and pool tables
 
@@ -576,6 +617,9 @@ At most one Edition may be `ACTIVE` in V0.1.
 - `approved_at timestamptz nullable`
 - `approved_by admin_user_id nullable`
 
+`is_t1_whitelisted = true` requires a non-`NONE` reason plus approval metadata.
+`is_major = true` uses `MAJOR` as the whitelist reason once confirmed.
+
 ### `event_team_result`
 
 - `event_id`
@@ -583,6 +627,8 @@ At most one Edition may be `ACTIVE` in V0.1.
 - `placement_from int`
 - `placement_to int`
 - Primary key `(event_id, team_id)`.
+
+Require positive placement values and `placement_to >= placement_from`.
 
 ### `pool_team_entry`
 
@@ -609,6 +655,11 @@ At most one Edition may be `ACTIVE` in V0.1.
 - `pairing_disabled_reason text nullable`
 - `approved_by admin_user_id`
 - Unique `(edition_id, player_id)`.
+
+`SPECIAL` entries have no `source_team_entry_id`; team-derived entries require
+one and must use the same admission type as that Team entry. These semantics are
+enforced by the service and tested even where a cross-table database check is
+not practical.
 
 ### `player_ranking`
 
@@ -663,6 +714,11 @@ The plaintext visitor token exists only in the browser cookie. Store only a cryp
 
 The quota is based on issued Ballots, not only submitted votes.
 
+`valid_resolved` counts valid non-skip decisions; `valid_skips` counts valid
+skips. Resolution counters are updated on the Ballot's persisted `usage_date`,
+not whichever local date happens to be current when a near-midnight Ballot is
+resolved.
+
 ## 8.4 Ballot and vote tables
 
 ### `ballot`
@@ -677,6 +733,7 @@ The quota is based on issued Ballots, not only submitted votes.
 - `right_player_id`
 - `issued_at timestamptz`
 - `expires_at timestamptz`
+- `usage_date date` in `Asia/Shanghai`
 - `status enum(OPEN, RESOLVED, EXPIRED)`
 - `resolution enum(LEFT, RIGHT, SKIP) nullable`
 - `ranking_eligibility enum(ELIGIBLE, THROTTLED, SUSPICIOUS)`
@@ -690,6 +747,10 @@ Required checks:
 player_1_id < player_2_id
 left_player_id != right_player_id
 {left_player_id, right_player_id} = {player_1_id, player_2_id}
+expires_at > issued_at
+OPEN     -> resolution IS NULL AND resolved_at IS NULL
+RESOLVED -> resolution IS NOT NULL AND resolved_at IS NOT NULL
+EXPIRED  -> resolution IS NULL AND resolved_at IS NULL
 ```
 
 Required partial unique index:
@@ -719,6 +780,11 @@ WHERE status = 'OPEN';
 
 A Ballot may create at most one Vote. A retry must never create another score mutation.
 
+Require `winner_player_id` and `loser_player_id` to be null for `SKIP`, and
+both non-null and distinct for `LEFT`/`RIGHT`. The service additionally verifies
+that they match the Ballot's stored orientation; this cross-table rule is covered
+by integration tests.
+
 ### `pair_aggregate`
 
 Canonical player ordering only:
@@ -735,14 +801,21 @@ Canonical player ordering only:
 - `updated_at timestamptz`
 - Primary key `(edition_id, player_1_id, player_2_id)`.
 
+Require `player_1_id < player_2_id` and every counted/observed counter to be
+non-negative. Each counted choice/skip counter must be less than or equal to its
+corresponding observed counter.
+
 Public percentages use counted wins only:
 
 ```text
-player_1_pct = counted_player_1_wins /
-               (counted_player_1_wins + counted_player_2_wins)
+counted_decisions = counted_player_1_wins + counted_player_2_wins
+player_1_pct = NULL when counted_decisions = 0;
+               otherwise counted_player_1_wins / counted_decisions
 ```
 
-Skip count is displayed separately and excluded from the two-player percentage denominator.
+Skip count is displayed separately and excluded from the two-player percentage
+denominator. Do not invent `50/50`, Laplace smoothing, or hidden pseudo-votes for
+an empty or small sample.
 
 ## 8.5 History, analytics, and audit tables
 
@@ -773,52 +846,159 @@ Do not put secrets, raw IPs, or player-vote choices in arbitrary analytics metad
 
 ### `pool_change_log`
 
-- actor, Edition, action, target type/id, reason, before JSON, after JSON, timestamp.
+- `id bigint primary key`
+- `actor_admin_user_id fk admin_user`
+- `edition_id fk edition`
+- `action text`
+- `target_type enum(POOL_TEAM, POOL_PLAYER, PAIRING_STATE)`
+- `target_id text`
+- `reason text`
+- `before jsonb nullable`
+- `after jsonb nullable`
+- `created_at timestamptz`
 
 ### `moderation_audit_log`
 
-- actor, action, vote id, reason, before JSON, after JSON, timestamp.
+- `id bigint primary key`
+- `actor_admin_user_id fk admin_user`
+- `action enum(REVOKE_VOTE)`
+- `vote_id fk vote`
+- `reason text`
+- `before jsonb`
+- `after jsonb`
+- `created_at timestamptz`
 
 ### `admin_user` and `admin_session`
 
-No public registration. Passwords use a maintained Argon2id implementation. Sessions use opaque high-entropy tokens, stored as hashes.
+`admin_user`:
+
+- `id bigint primary key`
+- `username text unique not null`
+- `password_hash text not null`
+- `active boolean not null default true`
+- `created_at timestamptz`
+- `updated_at timestamptz`
+
+`admin_session`:
+
+- `id bigint primary key`
+- `admin_user_id fk admin_user`
+- `token_hash bytea unique not null`
+- `created_at timestamptz`
+- `expires_at timestamptz`
+- `last_seen_at timestamptz`
+- `revoked_at timestamptz nullable`
+
+No public registration. Passwords use a maintained Argon2id implementation.
+Sessions use 32-byte opaque random tokens; only HMAC-SHA-256 token hashes are
+stored. Expired, revoked, or inactive-user sessions are rejected.
+
+### `admin_audit_log`
+
+- `id bigint primary key`
+- `actor_admin_user_id fk admin_user`
+- `action text`
+- `target_type text`
+- `target_id text`
+- `reason text`
+- `before jsonb nullable`
+- `after jsonb nullable`
+- `created_at timestamptz`
+
+Every successful admin mutation writes this general audit row in the same
+transaction. `pool_change_log` and `moderation_audit_log` remain the specialized,
+query-friendly records for those two domains.
+
+### `pending_import_change`
+
+- `id bigint primary key`
+- `sync_run_id fk sync_run`
+- `edition_id fk edition nullable`
+- `change_type enum(TEAM, PLAYER, ROSTER, EVENT, POOL_TEAM, POOL_PLAYER)`
+- `target_external_key text`
+- `proposed_data jsonb`
+- `conflict_codes jsonb not null default '[]'`
+- `status enum(PENDING, APPROVED, REJECTED, SUPERSEDED)`
+- `created_at timestamptz`
+- `reviewed_at timestamptz nullable`
+- `reviewed_by admin_user_id nullable`
+- `review_reason text nullable`
+- `applied_at timestamptz nullable`
+
+Approval and application happen in one audited transaction. The application
+revalidates source freshness, current state, and conflicts; it must not blindly
+replay stale proposed JSON. A new sync may supersede but never delete an older
+pending record.
 
 ## 8.6 External data tables
 
 ### `player_external_identity`
 
-- `player_id`
+- `player_id fk player`
 - `provider enum(HLTV, LIQUIPEDIA, PANDASCORE, BO3, OTHER)`
-- `external_id`
-- `external_slug`
-- `source_url`
-- `last_verified_at`
+- `external_id text`
+- `external_slug text nullable`
+- `source_url text`
+- `last_verified_at timestamptz`
 - Unique `(provider, external_id)`.
 
 ### `team_external_identity`
 
-Equivalent structure for teams.
+- `team_id fk team`
+- `provider enum(HLTV, LIQUIPEDIA, PANDASCORE, BO3, OTHER)`
+- `external_id text`
+- `external_slug text nullable`
+- `source_url text`
+- `last_verified_at timestamptz`
+- Unique `(provider, external_id)`.
 
 ### `player_stat_snapshot`
 
-- `player_id`
-- `provider`
-- `metric`, e.g. `rating_3_0`, `career_rating`, `adr`, `kast`
-- `period_type`, e.g. `LAST_3_MONTHS`, `CAREER`, `CUSTOM`
-- `period_start nullable`
-- `period_end nullable`
+- `id bigint primary key`
+- `player_id fk player`
+- `provider enum(HLTV, LIQUIPEDIA, PANDASCORE, BO3, OTHER)`
+- `metric text`, e.g. `rating_3_0`, `career_rating`, `adr`, `kast`
+- `period_type enum(LAST_3_MONTHS, CAREER, CUSTOM)`
+- `period_start date nullable`
+- `period_end date nullable`
 - `value numeric`
-- `maps nullable`
-- `captured_at`
-- `source_url`
+- `maps int nullable`
+- `captured_at timestamptz`
+- `source_url text`
+
+Require non-negative `maps`, `period_end >= period_start` when both exist, and
+an index supporting the latest snapshot by `(player_id, provider, metric,
+period_type, captured_at DESC)`.
 
 ### `ranking_source_snapshot`
 
-Store the normalized ranking plus raw payload/HTML checksum and capture time for HLTV and VRS imports.
+- `id bigint primary key`
+- `provider enum(HLTV, VALVE_VRS)`
+- `captured_at timestamptz`
+- `published_at timestamptz nullable`
+- `parser_version text`
+- `normalized_data jsonb`
+- `raw_checksum text`
+- `approved_at timestamptz nullable`
+- `approved_by admin_user_id nullable`
+
+Raw source bodies are kept as restricted import artifacts only when needed for
+debugging and licensing/terms permit it; they are not written to application
+logs or served publicly.
 
 ### `sync_run`
 
-Track job name, source, started/finished timestamps, status, counts, error summary, and data freshness.
+- `id bigint primary key`
+- `job_name text`
+- `provider text`
+- `started_at timestamptz`
+- `finished_at timestamptz nullable`
+- `status enum(RUNNING, SUCCEEDED, FAILED, PARTIAL)`
+- `records_seen int not null default 0`
+- `records_changed int not null default 0`
+- `error_summary text nullable`
+- `source_freshness_at timestamptz nullable`
+- `metadata jsonb not null default '{}'`
 
 ---
 
@@ -883,11 +1063,15 @@ Required:
 
 On first public mutation or Ballot request, create a 32-byte cryptographically random visitor token.
 
+Store `HMAC-SHA-256(VISITOR_TOKEN_HASH_PEPPER, token)`, not a reversible token
+or a fast hash without the configured pepper. Token comparison uses the stored
+binary digest.
+
 Cookie:
 
 ```text
 Name:     __Host-csr_visitor
-Secure:   true in production
+Secure:   true
 HttpOnly: true
 SameSite: Lax
 Path:     /
@@ -897,6 +1081,10 @@ Max-Age:  configurable, initial 365 days
 
 - Client JavaScript never reads the visitor token.
 - The database stores only a hash of the random token.
+- A `__Host-` cookie is always `Secure`, has `Path=/`, and omits `Domain`.
+  Localhost is permitted to use Secure cookies by modern browsers. If a specific
+  non-HTTPS development environment cannot do so, it must use an explicit
+  unprefixed development-only cookie name; production startup rejects that name.
 - Clearing cookies creates a new visitor identity; IP risk aggregation is a secondary defense.
 - Visitor identity is not an account and carries no public profile.
 
@@ -931,7 +1119,7 @@ Within one database transaction:
 8. Uniformly choose two distinct active Pool players on the server.
 9. Canonicalize `player_1_id < player_2_id`.
 10. Randomize which player appears left and right.
-11. Insert the Ballot.
+11. Insert the Ballot with that same local date persisted as `usage_date`.
 12. Commit and return it.
 
 The database partial unique index is the final protection against two simultaneous open Ballots.
@@ -979,6 +1167,12 @@ The database partial unique index is the final protection against two simultaneo
 
 Repeated calls before resolution return the same Ballot and do not increment the ordinal.
 
+Do not expose `SUSPICIOUS` or risk reason codes before resolution; doing so gives
+an attacker a feedback oracle. The response may distinguish normal eligible
+quota from ordinary post-quota throttling so the quota notice remains honest.
+If an internally suspicious Ballot is still issued, its pre-resolution public
+`rankingMode` is indistinguishable from `ELIGIBLE`.
+
 ### Errors
 
 - `503 NO_ACTIVE_EDITION`
@@ -1015,27 +1209,31 @@ The client never submits arbitrary player IDs.
    - do not mutate any score;
    - return the original resolution and current aggregate result;
    - set `alreadyResolved = true`.
-5. If expired:
+5. For an `OPEN` Ballot, confirm the Edition is still `ACTIVE`. If it is not,
+   mark the Ballot `EXPIRED` and return `409 EDITION_NOT_ACTIVE` without creating
+   a Vote.
+6. If expired by time:
    - mark `EXPIRED` if still open;
    - commit;
    - return `410 BALLOT_EXPIRED`.
-6. Validate `LEFT`, `RIGHT`, or `SKIP` against the stored Ballot.
-7. Map Ballot eligibility to Vote status:
+7. Validate `LEFT`, `RIGHT`, or `SKIP` against the stored Ballot.
+8. Map Ballot eligibility to Vote status:
    - `ELIGIBLE -> VALID`
    - `THROTTLED -> THROTTLED`
    - `SUSPICIOUS -> SUSPICIOUS`
-8. Insert exactly one Vote. `vote.ballot_id` is unique.
-9. Update observed PairAggregate counters for every resolved vote.
-10. If Vote is `VALID`:
+9. Insert exactly one Vote. `vote.ballot_id` is unique.
+10. Update observed PairAggregate counters for every resolved vote.
+11. If Vote is `VALID`:
     - for `SKIP`, increment counted PairAggregate skip and both player-ranking skip counters;
     - otherwise lock both `player_ranking` rows in ascending `player_id` order;
     - increment winner score and wins;
     - decrement loser score and increment losses;
     - update counted PairAggregate winner counter.
-11. Update `visitor_daily_usage` resolution counters.
-12. Mark Ballot `RESOLVED`, store resolution and timestamp.
-13. Commit.
-14. After commit, query current ranks/scores and return the response.
+12. Update `visitor_daily_usage` resolution counters using the Ballot's persisted
+    `usage_date`.
+13. Mark Ballot `RESOLVED`, store resolution and timestamp.
+14. Commit.
+15. After commit, query current ranks/scores and return the response.
 
 All score and aggregate changes must occur in the same transaction as Vote creation and Ballot resolution.
 
@@ -1080,6 +1278,11 @@ All score and aggregate changes must occur in the same transaction as Vote creat
 
 For a throttled vote, the response must clearly say `counted: false` while still showing the community result.
 
+`leftWinPercent` and `rightWinPercent` are nullable when `countedDecisions = 0`.
+The UI renders that state as “暂无有效对决” and still shows counted skips. For a
+small sample, show the decision count and a neutral “样本较少” label; display raw
+whole-number percentages without statistical smoothing or false decimal precision.
+
 ## 11.3 Read APIs
 
 ### `GET /api/v1/rankings`
@@ -1111,8 +1314,11 @@ These are mandatory.
 6. Retrying a resolved Ballot never changes score again.
 7. Ranking rows are always locked in ascending player ID order.
 8. Pool changes never rewrite historical Ballots or Votes.
-9. A disabled player cannot enter new Ballots after active-pool cache invalidation, but historical pages remain valid.
-10. Edition score sum is always zero.
+9. A disabled player cannot enter new Ballots after active-pool cache invalidation,
+   but an already issued Ballot remains resolvable until expiry while its Edition
+   remains active.
+10. A non-active Edition cannot issue or resolve a Ballot.
+11. Edition score sum is always zero.
 
 Use PostgreSQL row locks and unique/partial unique indexes, not only application-level `if` checks.
 
@@ -1154,7 +1360,7 @@ Do not send the active ID list to the client.
 Initial configuration:
 
 ```text
-FULL_WEIGHT_BALLOTS_PER_DAY = 50
+edition.full_weight_ballots_per_day = 50
 Time zone = Asia/Shanghai
 ```
 
@@ -1177,7 +1383,7 @@ The quota is assigned at Ballot issuance. Crossing midnight after issuance does 
 Initial TTL:
 
 ```text
-30 minutes
+edition.ballot_ttl_minutes = 30
 ```
 
 - A visitor returning before expiry receives the same open Ballot.
@@ -1232,6 +1438,9 @@ HMAC-SHA256(
 - Aggregate IPv6 at an appropriate prefix such as `/64` before HMAC to reduce privacy-address churn.
 - Rotate the date component daily so the stored key is not a permanent cross-day identifier.
 - Do not log the input IP.
+- Null `issued_ip_risk_key` and `ip_risk_key` after the configured retention
+  window (initially 90 days). Raw Votes and aggregate history remain; the
+  pseudonymous network signal does not remain forever merely because Votes do.
 
 ## 15.4 Proxy modes
 
@@ -1288,7 +1497,8 @@ A revoke transaction must:
 2. Confirm the Vote is currently `VALID`.
 3. For non-skip Votes, reverse winner/loser ranking counters and score.
 4. Reverse counted PairAggregate.
-5. For skip, reverse counted skips.
+5. For skip, reverse counted PairAggregate skips and both player-ranking skip
+   counters.
 6. Change status to `REVOKED` with actor, timestamp, and reason.
 7. Write a Moderation Audit Log.
 8. Commit atomically.
@@ -1321,6 +1531,11 @@ For every browser mutation endpoint:
 - Use `SameSite=Lax` for visitor cookie.
 - Use `SameSite=Strict` for admin session cookie.
 - Do not accept form-encoded mutation requests; require JSON with correct content type.
+
+This guard is shared infrastructure introduced in Milestone 0 and is mandatory
+when each public/admin mutation route is added. Milestone 8 hardens and audits
+the controls; it does not postpone basic CSRF protection until after voting and
+Admin already exist.
 
 ## 16.3 Security headers
 
@@ -1448,6 +1663,11 @@ Keep it short and direct:
 - Candidate Pool rules link;
 - data-source attribution link;
 - privacy link.
+
+The Privacy page must state the anonymous-cookie purpose, quota/risk processing,
+retention windows, analytics categories, external data attribution, and a contact
+path for privacy or image-rights/takedown requests. Final legal wording and the
+contact address are launch blockers, not Milestone 0 blockers.
 
 ## 17.6 Accessibility
 
@@ -1581,6 +1801,12 @@ Required stages:
 9. Save changes as `PENDING`; do not apply them.
 10. Admin approves individual or batch changes.
 
+The command reads the latest **approved** source snapshots. If a required source
+is missing, older than a configured freshness threshold, or disagrees on roster
+identity, the affected proposal is emitted as a conflict and cannot be batch
+approved. Existing approved Manual/Special entries are inputs from the database,
+not hidden configuration in source code.
+
 ## 19.5 Images and rights
 
 V0.1 player photos and team logos are local static assets.
@@ -1650,6 +1876,10 @@ The product must answer these without a third-party analytics dependency:
 
 Raw product events may be retained for an initial 90-day window, then aggregated or purged. Votes and ranking history have a separate retention policy and are preserved.
 
+The same cleanup framework nulls expired daily IP-risk keys while retaining the
+non-network Vote record. Retention jobs are idempotent, observable, and covered
+by tests.
+
 Do not use an external analytics script that materially slows or fails for Mainland China users in V0.1.
 
 ---
@@ -1685,8 +1915,13 @@ GET /api/health/ready
 ```
 
 - `live`: process is running.
-- `ready`: application can query PostgreSQL and has an active/valid configuration.
+- `ready`: startup configuration is valid and the application can execute a
+  lightweight PostgreSQL query such as `SELECT 1`.
 - Do not expose secrets or detailed database state.
+
+Edition/pool availability is reported separately in Admin/integrity status and
+by explicit `NO_ACTIVE_EDITION` / `POOL_NOT_READY` API errors. A planned DRAFT or
+FROZEN Edition must not make an otherwise healthy deployment fail readiness.
 
 ---
 
@@ -1705,6 +1940,7 @@ Required areas:
 - risk-status mapping.
 - ranking tie behavior.
 - score-reversal logic.
+- empty and small-sample H2H presentation semantics.
 - provider normalization/parsing using fixtures.
 - configuration validation.
 
@@ -1729,6 +1965,12 @@ Required concurrency tests:
 13. New Pool player gets a ranking row at zero without a deployment.
 14. Partial unique index rejects a second open Ballot even if application checks are bypassed.
 15. `vote.ballot_id` unique constraint rejects duplicate Vote insertion.
+16. A valid skip revoke decrements both player skip counters and counted PairAggregate skip.
+17. A Ballot issued before Shanghai midnight updates resolution counters on its issuance `usage_date`.
+18. Leaving `ACTIVE` expires open Ballots, rejects new effects, and preserves idempotent reads of resolved Ballots.
+19. Active-Edition and current-roster partial unique constraints reject conflicting rows.
+20. A stale/conflicting pending import cannot be blindly approved.
+21. Zero counted H2H decisions return null percentages without division by zero.
 
 ## 23.3 End-to-end tests: Playwright
 
@@ -1756,6 +1998,7 @@ Additional E2E:
 - Admin login and Pool toggle.
 - Keyboard-only voting.
 - Mobile viewport.
+- Production cookie attributes (`__Host-`, Secure, HttpOnly, Path, no Domain).
 
 ## 23.4 Provider tests
 
@@ -1872,6 +2115,11 @@ Initial launch process:
 
 The application must work with Cloudflare completely disabled.
 
+Because production mutation security allows one `APP_ORIGIN`, proxy-on and direct
+mutation tests run as two separately configured staging deployments or as
+sequential test windows with an explicit origin change. Do not weaken Origin
+validation by accepting both hostnames indefinitely in one production process.
+
 Do not use Turnstile in V0.1.
 
 ## 25.4 Backup and recovery
@@ -1951,6 +2199,7 @@ Tasks:
 - Add Dockerfile and local PostgreSQL compose file.
 - Add environment schema and fail-fast startup validation.
 - Add basic structured logger and request IDs.
+- Add reusable JSON content-type, Origin, and Fetch-Metadata mutation guards.
 - Add liveness/readiness endpoints.
 - Add GitHub Actions baseline.
 - Create documentation skeleton and ADR template.
@@ -1978,6 +2227,7 @@ Tasks:
 - Add database client/pool configuration.
 - Add test database lifecycle.
 - Add sample development seed.
+- Implement complete admin/session/audit and pending-import tables.
 - Write `docs/DATABASE.md`.
 
 Acceptance:
@@ -2022,6 +2272,7 @@ Tasks:
 - Implement expiry behavior.
 - Implement uniform random pair selection and left/right randomization.
 - Add infrastructure rate limiter shell.
+- Apply the shared mutation security guard to the Ballot endpoint.
 
 Acceptance:
 
@@ -2042,6 +2293,8 @@ Tasks:
 - Implement PairAggregate upsert.
 - Implement skip behavior.
 - Implement repeated-resolve behavior.
+- Reject new effects after an Edition leaves `ACTIVE` while preserving idempotent
+  reads of already resolved Ballots.
 - Implement revoke service and audit log.
 - Add score-integrity command.
 
@@ -2133,8 +2386,8 @@ Tasks:
 - Implement observe-mode risk reason collection.
 - Implement analytics event endpoint and KPI queries.
 - Implement daily snapshots and integrity checks.
-- Add security headers and mutation Origin/Fetch-Metadata checks.
-- Add retention/cleanup jobs.
+- Audit the already-required mutation guards, add security headers, and add
+  retention/cleanup jobs including IP-risk-key nulling.
 
 Acceptance:
 
