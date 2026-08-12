@@ -16,7 +16,23 @@ concurrency:
 jobs:
   quality:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
+    env:
+      DATABASE_URL: postgresql://csr:csr_local_dev_password@localhost:5432/csr
+    services:
+      postgres:
+        image: postgres:18.4-alpine3.24
+        env:
+          POSTGRES_DB: csr
+          POSTGRES_PASSWORD: csr_local_dev_password
+          POSTGRES_USER: csr
+        options: >-
+          --health-cmd "pg_isready -U csr -d csr"
+          --health-interval 2s
+          --health-timeout 3s
+          --health-retries 15
+        ports:
+          - 5432:5432
 
     steps:
       - name: Check out repository
@@ -48,6 +64,15 @@ jobs:
 
       - name: Run unit tests
         run: pnpm test:unit
+
+      - name: Prepare local environment contract
+        run: cp .env.example .env
+
+      - name: Apply migrations to an empty database
+        run: pnpm db:migrate
+
+      - name: Run PostgreSQL integration tests
+        run: pnpm test:integration
 
       - name: Build production application
         run: pnpm build

@@ -85,4 +85,21 @@ describe("parseEnv", () => {
       }),
     ).toThrow(/HLTV_USER_AGENT/);
   });
+
+  it("requires an explicit proxy header mode when proxy headers are trusted", () => {
+    expect(() =>
+      parseEnv({
+        ...validEnvironment,
+        TRUST_PROXY_HEADERS: "true",
+      }),
+    ).toThrow(/CLIENT_IP_MODE/);
+
+    expect(
+      parseEnv({
+        ...validEnvironment,
+        CLIENT_IP_MODE: "cloudflare",
+        TRUST_PROXY_HEADERS: "true",
+      }).CLIENT_IP_MODE,
+    ).toBe("cloudflare");
+  });
 });

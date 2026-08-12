@@ -8,6 +8,10 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import * as schema from "@/db/schema";
 import { createEdition, transitionEdition } from "@/domain/editions/service";
 import { createEvent, recordEventTeamResult, setEventWhitelist } from "@/domain/events/service";
+import {
+  upsertPlayerExternalIdentity,
+  upsertTeamExternalIdentity,
+} from "@/domain/external-identities/service";
 import { createPlayer, updatePlayer } from "@/domain/players/service";
 import { ActivePoolCache } from "@/domain/pool/active-pool-cache";
 import { CandidatePoolService } from "@/domain/pool/service";
@@ -109,6 +113,34 @@ describe("Milestone 2 Candidate Pool domain", () => {
       status: "STARTER",
       teamId: team.id,
     });
+    await expect(
+      addRosterMembership(database, {
+        actorAdminUserId,
+        playerId: player.id,
+        reason: "Reject an impossible calendar date before persistence",
+        startsAt: "2030-02-30",
+        status: "BENCH",
+        teamId: team.id,
+      }),
+    ).rejects.toMatchObject({ code: "INVALID_DATE" });
+
+    await upsertTeamExternalIdentity(database, {
+      actorAdminUserId,
+      externalId: "domain-team-42",
+      externalSlug: "domain-team",
+      provider: "HLTV",
+      reason: "Attach the verified Team provider identity",
+      sourceUrl: "https://example.com/team/42",
+      teamId: team.id,
+    });
+    await upsertPlayerExternalIdentity(database, {
+      actorAdminUserId,
+      externalId: "domain-player-84",
+      playerId: player.id,
+      provider: "LIQUIPEDIA",
+      reason: "Attach the verified Player provider identity",
+      sourceUrl: "https://example.com/player/84",
+    });
 
     await expect(
       addRosterMembership(database, {
@@ -204,6 +236,8 @@ describe("Milestone 2 Candidate Pool domain", () => {
         "CREATE_EDITION",
         "CREATE_TEAM",
         "CREATE_PLAYER",
+        "CREATE_PLAYER_EXTERNAL_IDENTITY",
+        "CREATE_TEAM_EXTERNAL_IDENTITY",
         "ADD_ROSTER_MEMBERSHIP",
         "END_ROSTER_MEMBERSHIP",
         "SET_EVENT_WHITELIST",
@@ -233,6 +267,15 @@ describe("Milestone 2 Candidate Pool domain", () => {
     const service = new CandidatePoolService(database, new ActivePoolCache(60_000));
 
     await expect(service.getActivePlayerIds(edition.id)).resolves.toEqual([]);
+    await expect(
+      service.admitAutomaticTeam({
+        actorAdminUserId,
+        editionId: edition.id,
+        evidence: { editionYear: 2030, eventResults: [], hltvRank: 12 },
+        reason: "Reject evidence from a different Edition",
+        teamId: automatic.team.id,
+      }),
+    ).rejects.toMatchObject({ code: "EVIDENCE_EDITION_MISMATCH" });
     const automaticResult = await service.admitAutomaticTeam({
       actorAdminUserId,
       editionId: edition.id,
@@ -252,6 +295,45 @@ describe("Milestone 2 Candidate Pool domain", () => {
     const activePlayerIds = await service.getActivePlayerIds(edition.id);
     expect(activePlayerIds).toHaveLength(10);
 
+    await database
+      .update(schema.rosterMemberships)
+      .set({ endsAt: "2031-06-30" })
+      .where(
+        and(
+          eq(schema.rosterMemberships.playerId, automatic.playerIds[0]!),
+          eq(schema.rosterMemberships.teamId, automatic.team.id),
+        ),
+      );
+    const [replacement] = await database
+      .insert(schema.players)
+      .values({
+        nickname: "automatic-replacement",
+        professionalStatus: "ACTIVE",
+        slug: "player-automatic-replacement",
+      })
+      .returning();
+    if (!replacement) throw new Error("Failed to create replacement player fixture");
+    await database.insert(schema.rosterMemberships).values({
+      playerId: replacement.id,
+      startsAt: "2031-07-01",
+      status: "STARTER",
+      teamId: automatic.team.id,
+    });
+    const replacementEntry = await service.admitTeamPlayer({
+      actorAdminUserId,
+      editionId: edition.id,
+      playerId: replacement.id,
+      reason: "Add the newly signed formal starter at the next Pool update",
+      teamId: automatic.team.id,
+    });
+    expect(replacementEntry).toMatchObject({
+      admissionType: "CORE",
+      playerId: replacement.id,
+      sourceTeamEntryId: automaticResult.teamEntry.id,
+    });
+    const activePlayerIdsAfterReplacement = await service.getActivePlayerIds(edition.id);
+    expect(activePlayerIdsAfterReplacement).toHaveLength(11);
+
     const poolEntries = await database
       .select({
         admissionType: schema.poolPlayerEntries.admissionType,
@@ -270,15 +352,15 @@ describe("Milestone 2 Candidate Pool domain", () => {
       new Set(["CORE", "REVIEW_MANUAL"]),
     );
     expect(poolEntries.every((entry) => entry.pairingEnabled)).toBe(true);
-    expect(activePlayerIds).toEqual(poolEntries.map((entry) => entry.playerId));
-    expect(rankings).toHaveLength(10);
+    expect(activePlayerIdsAfterReplacement).toEqual(poolEntries.map((entry) => entry.playerId));
+    expect(rankings).toHaveLength(11);
     expect(rankings.every((ranking) => ranking.score === 0)).toBe(true);
 
     const poolLogs = await database
       .select()
       .from(schema.poolChangeLogs)
       .where(eq(schema.poolChangeLogs.editionId, edition.id));
-    expect(poolLogs).toHaveLength(12);
+    expect(poolLogs).toHaveLength(13);
   });
 
   it("adds and disables a Special player through CLI without deleting history", async () => {

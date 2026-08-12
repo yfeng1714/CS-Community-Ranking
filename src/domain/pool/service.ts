@@ -83,10 +83,20 @@ async function admitTeamAndCurrentStarters(
     admissionReason: string;
     admissionType: TeamAdmissionType;
     editionId: bigint;
+    evidenceEditionYear?: number;
     teamId: bigint;
   },
 ) {
-  await requireModifiableEdition(transaction, input.editionId);
+  const edition = await requireModifiableEdition(transaction, input.editionId);
+  if (
+    input.evidenceEditionYear !== undefined &&
+    Number(edition.code) !== input.evidenceEditionYear
+  ) {
+    throw new DomainError(
+      "EVIDENCE_EDITION_MISMATCH",
+      `Admission evidence is for ${input.evidenceEditionYear}, not Edition ${edition.code}`,
+    );
+  }
 
   const [team] = await transaction
     .select()
@@ -364,6 +374,7 @@ export class CandidatePoolService {
         ...input,
         admissionReason,
         admissionType,
+        evidenceEditionYear: input.evidence.editionYear,
       }),
     );
     this.cache.invalidate(input.editionId);
@@ -403,6 +414,139 @@ export class CandidatePoolService {
     const result = await this.database.transaction((transaction) =>
       admitSpecialPlayerInTransaction(transaction, input),
     );
+    this.cache.invalidate(input.editionId);
+    return result;
+  }
+
+  async admitTeamPlayer(
+    input: MutationContext & {
+      editionId: bigint;
+      playerId: bigint;
+      teamId: bigint;
+    },
+  ) {
+    const reason = requireNonBlank(input.reason, "Team player admission reason");
+    const result = await this.database.transaction(async (transaction) => {
+      await requireModifiableEdition(transaction, input.editionId);
+
+      const [teamEntry] = await transaction
+        .select()
+        .from(poolTeamEntries)
+        .where(
+          and(
+            eq(poolTeamEntries.editionId, input.editionId),
+            eq(poolTeamEntries.teamId, input.teamId),
+          ),
+        )
+        .for("update")
+        .limit(1);
+      const admittedTeam = requireDomainValue(
+        teamEntry,
+        "POOL_TEAM_NOT_FOUND",
+        "Team is not admitted to this Edition",
+      );
+      const [team] = await transaction
+        .select({ active: teams.active })
+        .from(teams)
+        .where(eq(teams.id, input.teamId))
+        .limit(1);
+      if (!team?.active) {
+        throw new DomainError("TEAM_NOT_ACTIVE", "An inactive Team cannot add a Pool player");
+      }
+
+      const [player] = await transaction
+        .select({ professionalStatus: players.professionalStatus })
+        .from(players)
+        .where(eq(players.id, input.playerId))
+        .for("update")
+        .limit(1);
+      const admittedPlayer = requireDomainValue(
+        player,
+        "PLAYER_NOT_FOUND",
+        `Player ${input.playerId} does not exist`,
+      );
+      if (admittedPlayer.professionalStatus !== "ACTIVE") {
+        throw new DomainError("PLAYER_NOT_ACTIVE", "Only an ACTIVE player can join the Pool");
+      }
+
+      const [membership] = await transaction
+        .select({ id: rosterMemberships.id })
+        .from(rosterMemberships)
+        .where(
+          and(
+            eq(rosterMemberships.playerId, input.playerId),
+            eq(rosterMemberships.teamId, input.teamId),
+            eq(rosterMemberships.status, "STARTER"),
+            isNull(rosterMemberships.endsAt),
+          ),
+        )
+        .for("update")
+        .limit(1);
+      if (!membership) {
+        throw new DomainError(
+          "FORMAL_STARTER_REQUIRED",
+          "Player must be a current formal starter for the admitted Team",
+        );
+      }
+
+      const [existing] = await transaction
+        .select({ id: poolPlayerEntries.id })
+        .from(poolPlayerEntries)
+        .where(
+          and(
+            eq(poolPlayerEntries.editionId, input.editionId),
+            eq(poolPlayerEntries.playerId, input.playerId),
+          ),
+        )
+        .limit(1);
+      if (existing) {
+        throw new DomainError(
+          "PLAYER_ALREADY_ADMITTED",
+          "Player is already in this Edition's Pool",
+        );
+      }
+
+      const [entry] = await transaction
+        .insert(poolPlayerEntries)
+        .values({
+          admissionReason: reason,
+          admissionType: admittedTeam.admissionType,
+          approvedBy: input.actorAdminUserId,
+          editionId: input.editionId,
+          playerId: input.playerId,
+          sourceTeamEntryId: admittedTeam.id,
+        })
+        .returning();
+      const created = requireDomainValue(
+        entry,
+        "POOL_PLAYER_CREATE_FAILED",
+        "Pool Player insertion returned no row",
+      );
+
+      await transaction
+        .insert(playerRankings)
+        .values({ editionId: input.editionId, playerId: input.playerId })
+        .onConflictDoNothing();
+      await writePoolChange(transaction, {
+        action: "ADMIT_TEAM_PLAYER",
+        actorAdminUserId: input.actorAdminUserId,
+        after: created,
+        editionId: input.editionId,
+        reason,
+        targetId: created.id.toString(),
+        targetType: "POOL_PLAYER",
+      });
+      await writeAdminAudit(transaction, {
+        action: "ADMIT_POOL_TEAM_PLAYER",
+        actorAdminUserId: input.actorAdminUserId,
+        after: created,
+        reason,
+        targetId: created.id.toString(),
+        targetType: "POOL_PLAYER",
+      });
+
+      return created;
+    });
     this.cache.invalidate(input.editionId);
     return result;
   }
@@ -572,6 +716,10 @@ export class CandidatePoolService {
 
   invalidateActivePlayerIds(editionId: bigint): void {
     this.cache.invalidate(editionId);
+  }
+
+  invalidateAllActivePlayerIds(): void {
+    this.cache.clear();
   }
 }
 

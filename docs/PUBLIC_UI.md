@@ -54,9 +54,11 @@ Search is local to the loaded ranking and matches nickname, team name/short name
 pages display missing values as `—` or an explicit explanatory phrase; a missing value is never
 presented as zero.
 
-The latest approved recent `rating_3_0 / LAST_3_MONTHS` and `career_rating / CAREER` snapshots are
-used. Stats are `MISSING` when absent, `CURRENT` through 48 hours after capture, and `STALE` after 48
-hours. This threshold is an M5 presentation default and may be made provider-specific in M7.
+The latest approved HLTV recent `rating_3_0 / LAST_3_MONTHS` and `career_rating / CAREER` snapshots
+are used and labeled as HLTV Rating. Other providers' metrics remain isolated and cannot silently
+fill those fields. Stats are `MISSING` when absent, `CURRENT` through 48 hours after capture, and
+`STALE` after 48 hours. This threshold is an M5 presentation default and may be made
+provider-specific in M7.
 
 ## Theme, responsive behavior, and accessibility
 

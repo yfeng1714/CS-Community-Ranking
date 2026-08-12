@@ -8,8 +8,9 @@ simple pairwise votes.
 Milestones 0–6 are implemented: the runtime foundation, full V0.1 database schema, data-driven
 Candidate Pool, secure anonymous visitor identity, atomic random Ballot issuance, exactly-once
 Vote/ranking transactions, and the responsive public Vote/Ranking/Player vertical slice are in
-place, together with the authenticated and fully audited Admin Console. Milestone 6 is at its owner
-review gate; external VRS/HLTV adapters have not started.
+place, together with the authenticated and fully audited Admin Console. Milestones 0–6 and the M7
+import boundary passed an independent whole-repository review at Owner Review Gate D; external
+VRS/HLTV adapters have not started.
 
 ## Technology
 
@@ -51,7 +52,9 @@ The interface defaults to light mode and provides a persisted theme toggle. A tr
 the Vote page records the still-open Ballot as Skip and immediately shows the next Ballot; ordinary
 renders and API retries preserve it.
 
-Stop the local database with `docker compose down`.
+Stop the local database with `docker compose stop postgres`. On macOS, quit Docker Desktop afterward
+when no other project needs it so the Docker VM releases its CPU and memory. The named PostgreSQL
+volume remains available for the next start.
 
 If port `5432` is already occupied, set `POSTGRES_PORT` to another host port in
 `.env` and use the same port in `DATABASE_URL`.
@@ -82,6 +85,7 @@ If port `5432` is already occupied, set `POSTGRES_PORT` to another host port in
 - [`docs/CS_Community_Ranking_Product_Decision_Chronicle_V0.1.md`](docs/CS_Community_Ranking_Product_Decision_Chronicle_V0.1.md) — product intent and decision history
 - [`docs/IMPLEMENTATION_PLAN_V0.1.md`](docs/IMPLEMENTATION_PLAN_V0.1.md) — milestone implementation plan
 - [`docs/PROGRESS.md`](docs/PROGRESS.md) — current implementation status
+- [`docs/IMPLEMENTATION_REVIEW_2026-08-12.md`](docs/IMPLEMENTATION_REVIEW_2026-08-12.md) — independent Gate D findings, corrections, and verification evidence
 - [`docs/RUNBOOK.md`](docs/RUNBOOK.md) — development and operational procedures
 - [`docs/API.md`](docs/API.md) — API conventions
 - [`docs/DATABASE.md`](docs/DATABASE.md) — database conventions

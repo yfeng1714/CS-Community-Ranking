@@ -4,12 +4,20 @@ import { AdminLogoutButton } from "@/components/admin/logout-button";
 import { getDatabase } from "@/db/client";
 import { getAdminConsoleData } from "@/domain/admin/queries";
 import { requireAdminPageSession } from "@/domain/admin/runtime";
+import { getEnv } from "@/config/env";
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminPage() {
+export default async function AdminPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ voteId?: string | string[] }>;
+}) {
   const session = await requireAdminPageSession();
-  const data = await getAdminConsoleData(getDatabase());
+  const query = await searchParams;
+  const voteId = Array.isArray(query.voteId) ? query.voteId[0] : query.voteId;
+  const env = getEnv();
+  const data = await getAdminConsoleData(getDatabase(), voteId ? { voteId } : {});
   return (
     <>
       <header className="admin-header">
@@ -32,7 +40,13 @@ export default async function AdminPage() {
         </div>
       </header>
       <main className="admin-main">
-        <AdminConsole data={data} />
+        <AdminConsole
+          data={data}
+          defaults={{
+            ballotTtlMinutes: env.DEFAULT_BALLOT_TTL_MINUTES,
+            fullWeightBallotsPerDay: env.DEFAULT_FULL_WEIGHT_BALLOTS_PER_DAY,
+          }}
+        />
       </main>
     </>
   );

@@ -99,6 +99,40 @@ describe("Candidate Pool rule evaluation", () => {
     expect(result.reasonCodes).toContain("NO_QUALIFYING_EVENT_RESULT");
   });
 
+  it("does not treat an overlapping placement range as fully Top 4 or Top 8", () => {
+    const t1 = evaluateAutomaticTeamAdmission({
+      ...baseEvidence,
+      hltvRank: 13,
+      eventResults: [
+        {
+          eventEndsAt: "2026-04-12",
+          eventName: "Wide T1 bracket",
+          isMajor: false,
+          isT1Whitelisted: true,
+          placementFrom: 3,
+          placementTo: 6,
+        },
+      ],
+    });
+    const major = evaluateAutomaticTeamAdmission({
+      ...baseEvidence,
+      hltvRank: 13,
+      eventResults: [
+        {
+          eventEndsAt: "2026-06-21",
+          eventName: "Wide Major bracket",
+          isMajor: true,
+          isT1Whitelisted: true,
+          placementFrom: 5,
+          placementTo: 12,
+        },
+      ],
+    });
+
+    expect(t1.eligible).toBe(false);
+    expect(major.eligible).toBe(false);
+  });
+
   it("requires explicit approval and a public reason for Manual admission", () => {
     expect(
       evaluateManualTeamAdmission({ approved: true, reason: "Regional representation" }),

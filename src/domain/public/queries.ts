@@ -217,6 +217,7 @@ export async function getPublicPlayerStats(
     .where(
       and(
         eq(playerStatSnapshots.playerId, playerId),
+        eq(playerStatSnapshots.provider, "HLTV"),
         inArray(playerStatSnapshots.metric, ["rating_3_0", "career_rating"]),
       ),
     )

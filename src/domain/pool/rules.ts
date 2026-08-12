@@ -13,8 +13,8 @@ export interface TeamEventEvidence {
 
 export interface AutomaticTeamEvidence {
   editionYear: number;
-  hltvRank?: number | null;
-  vrsRank?: number | null;
+  hltvRank?: number | null | undefined;
+  vrsRank?: number | null | undefined;
   eventResults: readonly TeamEventEvidence[];
 }
 
@@ -52,6 +52,16 @@ function eventYear(event: TeamEventEvidence): number {
     throw new RangeError("eventEndsAt must use YYYY-MM-DD format");
   }
 
+  const [year, month, day] = event.eventEndsAt.split("-").map(Number);
+  const parsed = new Date(Date.UTC(year!, month! - 1, day!));
+  if (
+    parsed.getUTCFullYear() !== year ||
+    parsed.getUTCMonth() !== month! - 1 ||
+    parsed.getUTCDate() !== day
+  ) {
+    throw new RangeError("eventEndsAt must be a real calendar date");
+  }
+
   return Number(match[1]);
 }
 
@@ -72,11 +82,11 @@ function qualifyingEventReason(input: AutomaticTeamEvidence): string | null {
       continue;
     }
 
-    if (event.isMajor && event.placementFrom <= 8) {
+    if (event.isMajor && event.placementTo <= 8) {
       return `Major Top 8 at ${event.eventName}`;
     }
 
-    if (event.isT1Whitelisted && event.placementFrom <= 4) {
+    if (event.isT1Whitelisted && event.placementTo <= 4) {
       return `T1 Top 4 at ${event.eventName}`;
     }
   }

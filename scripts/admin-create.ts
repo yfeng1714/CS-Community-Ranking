@@ -45,6 +45,9 @@ async function readPassword(): Promise<string> {
 
 const username = parseUsername();
 const password = await readPassword();
-const admin = await createAdminUser(getDatabase(), { password, username });
-stdout.write(`Created active admin ${admin.username} (ID ${admin.id}).\n`);
-await closeDatabasePool();
+try {
+  const admin = await createAdminUser(getDatabase(), { password, username });
+  stdout.write(`Created active admin ${admin.username} (ID ${admin.id}).\n`);
+} finally {
+  await closeDatabasePool();
+}

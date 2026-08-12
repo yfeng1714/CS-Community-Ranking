@@ -8,10 +8,18 @@ import type { BoundedFixedWindowRateLimiter } from "@/security/rate-limiter";
 
 import { adminErrorResponse, guardAdminMutation, handleAdminError } from "../shared";
 
-const loginSchema = z.object({
+const loginSchema = z.strictObject({
   password: z.string().min(1).max(1024),
   username: z.string().min(1).max(100),
 });
+
+function rateLimitKey(request: NextRequest, env: AppEnv): string {
+  if (!env.TRUST_PROXY_HEADERS) return "direct";
+
+  const header = env.CLIENT_IP_MODE === "cloudflare" ? "cf-connecting-ip" : "x-real-ip";
+  const value = request.headers.get(header)?.split(",", 1)[0]?.trim();
+  return value ? `${env.CLIENT_IP_MODE}:${value.slice(0, 128)}` : "direct";
+}
 
 interface Dependencies {
   env: AppEnv;
@@ -25,8 +33,7 @@ export function createAdminLoginHandler(dependencies: Dependencies) {
     const rejected = guardAdminMutation(request, dependencies.env);
     if (rejected) return rejected;
 
-    const rateLimitKey = request.headers.get("x-real-ip") ?? "direct";
-    const rateLimit = dependencies.rateLimiter.check(rateLimitKey);
+    const rateLimit = dependencies.rateLimiter.check(rateLimitKey(request, dependencies.env));
     if (!rateLimit.allowed) {
       const response = adminErrorResponse(
         "ADMIN_LOGIN_RATE_LIMITED",
@@ -38,7 +45,13 @@ export function createAdminLoginHandler(dependencies: Dependencies) {
     }
 
     try {
-      const input = loginSchema.parse(await request.json());
+      let body: unknown;
+      try {
+        body = await request.json();
+      } catch {
+        return adminErrorResponse("INVALID_ADMIN_JSON", "Request body must be valid JSON", 400);
+      }
+      const input = loginSchema.parse(body);
       const result = await dependencies.sessions.login(input);
       const response = NextResponse.json(
         { admin: { username: result.session.username } },

@@ -103,7 +103,7 @@ export default async function PlayerPage({ params }: { params: Promise<{ slug: s
         </div>
         <div className="player-data-grid">
           <article>
-            <span>近三月 Rating</span>
+            <span>近三月 HLTV Rating</span>
             <strong>{formatMetric(player.recentRating)}</strong>
           </article>
           <article>
@@ -111,7 +111,7 @@ export default async function PlayerPage({ params }: { params: Promise<{ slug: s
             <strong>{player.recentMaps ?? "—"}</strong>
           </article>
           <article>
-            <span>生涯 Rating</span>
+            <span>生涯 HLTV Rating</span>
             <strong>{formatMetric(player.careerRating)}</strong>
           </article>
         </div>

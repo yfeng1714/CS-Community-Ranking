@@ -121,14 +121,6 @@ export const envSchema = z
       }
     }
 
-    if (env.TRUST_PROXY_HEADERS === true && !env.CLIENT_IP_MODE) {
-      context.addIssue({
-        code: "custom",
-        path: ["CLIENT_IP_MODE"],
-        message: "must be explicitly selected when proxy headers are trusted",
-      });
-    }
-
     if (env.HLTV_SYNC_ENABLED === true && !env.HLTV_USER_AGENT) {
       context.addIssue({
         code: "custom",
@@ -160,6 +152,12 @@ export function parseEnv(input: Record<string, unknown>): AppEnv {
     });
 
     throw new EnvironmentValidationError(issues);
+  }
+
+  if (result.data.TRUST_PROXY_HEADERS && input.CLIENT_IP_MODE === undefined) {
+    throw new EnvironmentValidationError([
+      "CLIENT_IP_MODE: must be explicitly selected when proxy headers are trusted",
+    ]);
   }
 
   return result.data;

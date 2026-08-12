@@ -15,15 +15,18 @@ const env = parseEnv({
   VISITOR_TOKEN_HASH_PEPPER: "c".repeat(32),
 });
 
-function request(headers: Record<string, string> = {}) {
+function request(
+  headers: Record<string, string> = {},
+  body = JSON.stringify({
+    action: "pool.pairing",
+    editionId: "1",
+    enabled: false,
+    playerId: "2",
+    reason: "Owner requested temporary exclusion",
+  }),
+) {
   return new NextRequest("https://ranking.example/api/v1/admin/mutate", {
-    body: JSON.stringify({
-      action: "pool.pairing",
-      editionId: "1",
-      enabled: false,
-      playerId: "2",
-      reason: "Owner requested temporary exclusion",
-    }),
+    body,
     headers: {
       "content-type": "application/json",
       cookie: "__Host-csr_admin=opaque",
@@ -84,5 +87,56 @@ describe("admin mutation handler", () => {
       playerId: 2n,
       reason: "Owner requested temporary exclusion",
     });
+  });
+
+  it("returns 400 for malformed JSON and rejects unknown mutation fields", async () => {
+    const expiresAt = new Date("2026-01-01T12:00:00.000Z");
+    const pairing = vi.fn();
+    const dependencies = {
+      database: {} as AppDatabase,
+      env,
+      pool: { setPairingEnabled: pairing } as unknown as CandidatePoolService,
+      sessions: {
+        authenticate: async () => ({
+          adminUserId: 9n,
+          expiresAt,
+          sessionId: 4n,
+          username: "owner",
+        }),
+      },
+    };
+
+    const malformed = await createAdminMutationHandler(dependencies)(request({}, "{"));
+    const extraField = await createAdminMutationHandler(dependencies)(
+      request(
+        {},
+        JSON.stringify({
+          action: "pool.pairing",
+          editionId: "1",
+          enabled: false,
+          playerId: "2",
+          reason: "Owner requested temporary exclusion",
+          unrecognized: true,
+        }),
+      ),
+    );
+    const outOfRangeId = await createAdminMutationHandler(dependencies)(
+      request(
+        {},
+        JSON.stringify({
+          action: "pool.pairing",
+          editionId: "9223372036854775808",
+          enabled: false,
+          playerId: "2",
+          reason: "Owner requested temporary exclusion",
+        }),
+      ),
+    );
+
+    expect(malformed.status).toBe(400);
+    expect(await malformed.json()).toMatchObject({ error: { code: "INVALID_ADMIN_JSON" } });
+    expect(extraField.status).toBe(400);
+    expect(outOfRangeId.status).toBe(400);
+    expect(pairing).not.toHaveBeenCalled();
   });
 });

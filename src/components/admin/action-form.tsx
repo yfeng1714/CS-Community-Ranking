@@ -40,7 +40,9 @@ export function AdminActionForm({
       const value = formData.get(field.name);
       if (field.type === "checkbox") payload[field.name] = value === "on";
       else if (field.type === "number") payload[field.name] = Number(value);
-      else payload[field.name] = value === "" ? null : value;
+      else if (field.type === "datetime-local" && value !== "") {
+        payload[field.name] = new Date(String(value)).toISOString();
+      } else payload[field.name] = value === "" ? null : value;
     }
 
     try {

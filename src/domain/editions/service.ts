@@ -35,8 +35,33 @@ export async function createEdition(
     throw new DomainError("INVALID_EDITION_CODE", "Edition code must be a four-digit year");
   }
 
+  if (Number.isNaN(input.startsAt.getTime()) || Number.isNaN(input.endsAt.getTime())) {
+    throw new DomainError("INVALID_EDITION_DATES", "Edition dates must be valid timestamps");
+  }
+
   if (input.endsAt <= input.startsAt) {
     throw new DomainError("INVALID_EDITION_DATES", "Edition end must be after its start");
+  }
+
+  if (
+    !Number.isInteger(input.fullWeightBallotsPerDay) ||
+    input.fullWeightBallotsPerDay < 0 ||
+    input.fullWeightBallotsPerDay > 2_147_483_647
+  ) {
+    throw new DomainError(
+      "INVALID_EDITION_QUOTA",
+      "Edition daily quota must fit a nonnegative PostgreSQL integer",
+    );
+  }
+  if (
+    !Number.isInteger(input.ballotTtlMinutes) ||
+    input.ballotTtlMinutes <= 0 ||
+    input.ballotTtlMinutes > 2_147_483_647
+  ) {
+    throw new DomainError(
+      "INVALID_BALLOT_TTL",
+      "Ballot TTL must fit a positive PostgreSQL integer",
+    );
   }
 
   return database.transaction(async (transaction) => {

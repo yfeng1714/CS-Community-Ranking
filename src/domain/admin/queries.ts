@@ -1,20 +1,23 @@
 import "server-only";
 
-import { desc } from "drizzle-orm";
+import { count, desc, eq } from "drizzle-orm";
 
 import {
   adminAuditLogs,
   adminUsers,
   editions,
+  eventTeamResults,
   events,
   moderationAuditLogs,
   pendingImportChanges,
+  playerExternalIdentities,
   players,
   poolChangeLogs,
   poolPlayerEntries,
   poolTeamEntries,
   rosterMemberships,
   syncRuns,
+  teamExternalIdentities,
   teams,
   votes,
 } from "../../db/schema/index.ts";
@@ -23,28 +26,45 @@ import { checkScoreIntegrity } from "../votes/integrity.ts";
 
 const iso = (value: Date | null) => value?.toISOString() ?? null;
 
-export async function getAdminConsoleData(database: AppDatabase) {
+export async function getAdminConsoleData(
+  database: AppDatabase,
+  options: { voteId?: string } = {},
+) {
+  const voteSearch = options.voteId?.trim() ?? "";
+  const parsedVoteId = /^[1-9]\d{0,18}$/.test(voteSearch) ? BigInt(voteSearch) : null;
+  const validVoteSearch =
+    voteSearch === "" || (parsedVoteId !== null && parsedVoteId <= 9_223_372_036_854_775_807n);
+  const voteRowsPromise = !validVoteSearch
+    ? Promise.resolve([])
+    : voteSearch
+      ? database.select().from(votes).where(eq(votes.id, parsedVoteId!)).limit(1)
+      : database.select().from(votes).orderBy(desc(votes.createdAt)).limit(100);
   const [
     teamRows,
     playerRows,
     rosterRows,
     editionRows,
     eventRows,
+    eventResultRows,
     poolTeamRows,
     poolPlayerRows,
     pendingRows,
+    pendingCountRows,
     voteRows,
     auditRows,
     poolLogRows,
     moderationRows,
     syncRows,
     adminRows,
+    playerIdentityRows,
+    teamIdentityRows,
   ] = await Promise.all([
     database.select().from(teams).orderBy(teams.name),
     database.select().from(players).orderBy(players.nickname),
     database.select().from(rosterMemberships).orderBy(desc(rosterMemberships.startsAt)),
     database.select().from(editions).orderBy(desc(editions.code)),
     database.select().from(events).orderBy(desc(events.startsAt)),
+    database.select().from(eventTeamResults),
     database.select().from(poolTeamEntries).orderBy(desc(poolTeamEntries.admittedAt)),
     database.select().from(poolPlayerEntries).orderBy(desc(poolPlayerEntries.admittedAt)),
     database
@@ -52,7 +72,11 @@ export async function getAdminConsoleData(database: AppDatabase) {
       .from(pendingImportChanges)
       .orderBy(desc(pendingImportChanges.createdAt))
       .limit(100),
-    database.select().from(votes).orderBy(desc(votes.createdAt)).limit(100),
+    database
+      .select({ value: count() })
+      .from(pendingImportChanges)
+      .where(eq(pendingImportChanges.status, "PENDING")),
+    voteRowsPromise,
     database.select().from(adminAuditLogs).orderBy(desc(adminAuditLogs.createdAt)).limit(100),
     database.select().from(poolChangeLogs).orderBy(desc(poolChangeLogs.createdAt)).limit(100),
     database
@@ -62,6 +86,8 @@ export async function getAdminConsoleData(database: AppDatabase) {
       .limit(100),
     database.select().from(syncRuns).orderBy(desc(syncRuns.startedAt)).limit(50),
     database.select({ id: adminUsers.id, username: adminUsers.username }).from(adminUsers),
+    database.select().from(playerExternalIdentities).orderBy(playerExternalIdentities.provider),
+    database.select().from(teamExternalIdentities).orderBy(teamExternalIdentities.provider),
   ]);
 
   const teamNames = new Map(teamRows.map((row) => [row.id, row.name]));
@@ -84,7 +110,7 @@ export async function getAdminConsoleData(database: AppDatabase) {
             status: syncRows[0].status,
           }
         : null,
-      pendingChanges: pendingRows.filter((row) => row.status === "PENDING").length,
+      pendingChanges: pendingCountRows[0]?.value ?? 0,
       poolPlayers: activeEdition
         ? poolPlayerRows.filter((row) => row.editionId === activeEdition.id).length
         : 0,
@@ -109,6 +135,24 @@ export async function getAdminConsoleData(database: AppDatabase) {
       professionalStatus: row.professionalStatus,
       realName: row.realName,
       slug: row.slug,
+    })),
+    playerIdentities: playerIdentityRows.map((row) => ({
+      externalId: row.externalId,
+      externalSlug: row.externalSlug,
+      lastVerifiedAt: row.lastVerifiedAt.toISOString(),
+      playerId: row.playerId.toString(),
+      playerName: playerNames.get(row.playerId) ?? "Unknown player",
+      provider: row.provider,
+      sourceUrl: row.sourceUrl,
+    })),
+    teamIdentities: teamIdentityRows.map((row) => ({
+      externalId: row.externalId,
+      externalSlug: row.externalSlug,
+      lastVerifiedAt: row.lastVerifiedAt.toISOString(),
+      provider: row.provider,
+      sourceUrl: row.sourceUrl,
+      teamId: row.teamId.toString(),
+      teamName: teamNames.get(row.teamId) ?? "Unknown team",
     })),
     rosters: rosterRows.map((row) => ({
       endsAt: row.endsAt,
@@ -141,6 +185,14 @@ export async function getAdminConsoleData(database: AppDatabase) {
       startsAt: row.startsAt,
       whitelistNote: row.whitelistNote,
       whitelistReason: row.whitelistReason,
+    })),
+    eventResults: eventResultRows.map((row) => ({
+      eventId: row.eventId.toString(),
+      eventName: eventRows.find((event) => event.id === row.eventId)?.name ?? "Unknown event",
+      placementFrom: row.placementFrom,
+      placementTo: row.placementTo,
+      teamId: row.teamId.toString(),
+      teamName: teamNames.get(row.teamId) ?? "Unknown team",
     })),
     poolTeams: poolTeamRows.map((row) => ({
       admissionReason: row.admissionReason,
@@ -179,6 +231,11 @@ export async function getAdminConsoleData(database: AppDatabase) {
       riskReasonCodes: row.riskReasonCodes,
       status: row.status,
     })),
+    voteSearch: {
+      invalid: !validVoteSearch,
+      query: voteSearch,
+      showingRecent: voteSearch === "",
+    },
     auditLogs: auditRows.map((row) => ({
       action: row.action,
       actor: adminNames.get(row.actorAdminUserId) ?? `Admin ${row.actorAdminUserId}`,
@@ -192,6 +249,8 @@ export async function getAdminConsoleData(database: AppDatabase) {
     poolChangeLogs: poolLogRows.map((row) => ({
       action: row.action,
       actor: adminNames.get(row.actorAdminUserId) ?? `Admin ${row.actorAdminUserId}`,
+      after: row.after,
+      before: row.before,
       createdAt: row.createdAt.toISOString(),
       editionCode: editionCodes.get(row.editionId) ?? "?",
       id: row.id.toString(),
@@ -201,6 +260,8 @@ export async function getAdminConsoleData(database: AppDatabase) {
     moderationLogs: moderationRows.map((row) => ({
       action: row.action,
       actor: adminNames.get(row.actorAdminUserId) ?? `Admin ${row.actorAdminUserId}`,
+      after: row.after,
+      before: row.before,
       createdAt: row.createdAt.toISOString(),
       id: row.id.toString(),
       reason: row.reason,

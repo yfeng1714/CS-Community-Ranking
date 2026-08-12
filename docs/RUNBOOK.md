@@ -70,10 +70,18 @@ Admin smoke checks:
 - Login sets only the strict opaque Admin cookie and reaches the Control room dashboard.
 - Disable then re-enable one Pool player's pairing state with different reasons; confirm both the
   general audit and Pool Change Log show the actions and score integrity remains healthy.
+- Update a Player's professional status and confirm the next Ballot request cannot select an
+  ineligible Player. In-process active-Pool snapshots are cleared immediately; selected rows are
+  still revalidated in PostgreSQL.
+- Use **Add starter from admitted team** for a formal roster replacement. Do not use Special
+  admission: the resulting Player entry must reference the Pool Team entry and inherit its category.
+- Search a Vote by an exact numeric ID before revocation; the default table intentionally shows only
+  the most recent 100 Votes.
 - Revoke only a known test Vote; confirm it remains visible as `REVOKED`, its counted effects are
   reversed, and both general and moderation audit rows exist.
 - A pending import with conflicts, a newer source run, or changed expected state must fail approval
-  and remain `PENDING`.
+  and remain `PENDING`. Pool proposals must also match the envelope Edition, and automatic Team
+  proposals must contain reviewable ranking/event evidence.
 
 If the default host port `5432` is occupied, set `POSTGRES_PORT` to an available
 port in `.env` and use the same port in `DATABASE_URL`. PostgreSQL continues to
@@ -82,6 +90,9 @@ listen on port `5432` inside the container.
 Run `pnpm test:integration` to create, migrate, test, and remove the isolated
 `csr_integration_test` database. The configured development database is never dropped by this
 lifecycle.
+
+CI now provisions pinned PostgreSQL, applies committed migrations to an empty database, and runs
+this integration suite. It must remain fixture-only; never add a live provider request to CI.
 
 ## Candidate Pool CLI
 

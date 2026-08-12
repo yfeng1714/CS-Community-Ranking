@@ -1,18 +1,14 @@
 import { and, eq } from "drizzle-orm";
 
 import { writeAdminAudit } from "../audit.ts";
+import { requireIsoDate } from "../date.ts";
 import type { AppDatabase } from "../database.ts";
 import { DomainError, requireDomainValue, requireNonBlank } from "../error.ts";
 import { events, eventTeamResults } from "../../db/schema/index.ts";
 
 export type WhitelistReason = "MAJOR" | "HLTV_HIGHLIGHT" | "MANUAL" | "NONE";
 
-function requireIsoDate(value: string, field: string): string {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(value) || Number.isNaN(Date.parse(`${value}T00:00:00Z`))) {
-    throw new DomainError("INVALID_DATE", `${field} must use a valid YYYY-MM-DD date`);
-  }
-  return value;
-}
+const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 export async function createEvent(
   database: AppDatabase,
@@ -28,9 +24,13 @@ export async function createEvent(
   const startsAt = requireIsoDate(input.startsAt, "Event start");
   const endsAt = requireIsoDate(input.endsAt, "Event end");
   const reason = requireNonBlank(input.reason, "Event creation reason");
+  const slug = requireNonBlank(input.slug, "Event slug");
 
   if (endsAt < startsAt) {
     throw new DomainError("INVALID_EVENT_DATES", "Event end cannot precede its start");
+  }
+  if (!slugPattern.test(slug)) {
+    throw new DomainError("INVALID_EVENT_SLUG", "Event slug must be lowercase kebab-case");
   }
 
   return database.transaction(async (transaction) => {
@@ -39,7 +39,7 @@ export async function createEvent(
       .values({
         endsAt,
         name: requireNonBlank(input.name, "Event name"),
-        slug: requireNonBlank(input.slug, "Event slug"),
+        slug,
         startsAt,
       })
       .returning();

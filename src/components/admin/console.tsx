@@ -42,7 +42,27 @@ function Section({
   );
 }
 
-export function AdminConsole({ data }: { data: AdminConsoleData }) {
+function Evidence({ after, before }: { after: unknown; before: unknown }) {
+  return (
+    <details>
+      <summary>Before / after</summary>
+      <pre>{JSON.stringify({ after, before }, null, 2)}</pre>
+    </details>
+  );
+}
+
+const providerOptions = ["HLTV", "LIQUIPEDIA", "PANDASCORE", "BO3", "OTHER"].map((provider) => ({
+  label: provider,
+  value: provider,
+}));
+
+export function AdminConsole({
+  data,
+  defaults,
+}: {
+  data: AdminConsoleData;
+  defaults: { ballotTtlMinutes: number; fullWeightBallotsPerDay: number };
+}) {
   const teamOptions = data.teams.map((team) => ({ label: team.name, value: team.id }));
   const playerOptions = data.players.map((player) => ({
     label: player.nickname,
@@ -52,6 +72,7 @@ export function AdminConsole({ data }: { data: AdminConsoleData }) {
     label: `${edition.code} · ${edition.status}`,
     value: edition.id,
   }));
+  const eventOptions = data.events.map((event) => ({ label: event.name, value: event.id }));
 
   return (
     <div className="admin-console">
@@ -113,6 +134,7 @@ export function AdminConsole({ data }: { data: AdminConsoleData }) {
                 { label: "Name", name: "name", required: true },
                 { label: "Short name", name: "shortName" },
                 { label: "Country code", name: "countryCode" },
+                { label: "Logo path", name: "logoPath", placeholder: "/images/teams/team.png" },
                 reasonField,
               ]}
             />
@@ -127,6 +149,11 @@ export function AdminConsole({ data }: { data: AdminConsoleData }) {
                 { label: "Nickname", name: "nickname", required: true },
                 { label: "Real name", name: "realName" },
                 { label: "Country code", name: "countryCode" },
+                {
+                  label: "Photo path",
+                  name: "photoPath",
+                  placeholder: "/images/players/player.png",
+                },
                 {
                   defaultValue: "ACTIVE",
                   label: "Professional status",
@@ -179,6 +206,60 @@ export function AdminConsole({ data }: { data: AdminConsoleData }) {
               ]}
             />
           </div>
+          <div className="admin-card">
+            <h3>Team external identity</h3>
+            <AdminActionForm
+              action="team.identity.upsert"
+              submitLabel="Save identity"
+              fields={[
+                {
+                  label: "Team",
+                  name: "teamId",
+                  required: true,
+                  type: "select",
+                  options: teamOptions,
+                },
+                {
+                  label: "Provider",
+                  name: "provider",
+                  required: true,
+                  type: "select",
+                  options: providerOptions,
+                },
+                { label: "External ID", name: "externalId", required: true },
+                { label: "External slug", name: "externalSlug" },
+                { label: "Source URL", name: "sourceUrl", required: true },
+                reasonField,
+              ]}
+            />
+          </div>
+          <div className="admin-card">
+            <h3>Player external identity</h3>
+            <AdminActionForm
+              action="player.identity.upsert"
+              submitLabel="Save identity"
+              fields={[
+                {
+                  label: "Player",
+                  name: "playerId",
+                  required: true,
+                  type: "select",
+                  options: playerOptions,
+                },
+                {
+                  label: "Provider",
+                  name: "provider",
+                  required: true,
+                  type: "select",
+                  options: providerOptions,
+                },
+                { label: "External ID", name: "externalId", required: true },
+                { label: "External slug", name: "externalSlug" },
+                { label: "Source URL", name: "sourceUrl", required: true },
+                reasonField,
+              ]}
+            />
+          </div>
         </div>
         <div className="admin-table-wrap">
           <table>
@@ -206,6 +287,35 @@ export function AdminConsole({ data }: { data: AdminConsoleData }) {
                       hidden={{ active: !team.active, teamId: team.id }}
                       fields={[reasonField]}
                     />
+                    <details>
+                      <summary>Edit details</summary>
+                      <AdminActionForm
+                        compact
+                        action="team.update"
+                        submitLabel="Save details"
+                        hidden={{ teamId: team.id }}
+                        fields={[
+                          { defaultValue: team.slug, label: "Slug", name: "slug", required: true },
+                          { defaultValue: team.name, label: "Name", name: "name", required: true },
+                          {
+                            defaultValue: team.shortName ?? "",
+                            label: "Short name",
+                            name: "shortName",
+                          },
+                          {
+                            defaultValue: team.countryCode ?? "",
+                            label: "Country code",
+                            name: "countryCode",
+                          },
+                          {
+                            defaultValue: team.logoPath ?? "",
+                            label: "Logo path",
+                            name: "logoPath",
+                          },
+                          reasonField,
+                        ]}
+                      />
+                    </details>
                   </td>
                 </tr>
               ))}
@@ -249,6 +359,45 @@ export function AdminConsole({ data }: { data: AdminConsoleData }) {
                         reasonField,
                       ]}
                     />
+                    <details>
+                      <summary>Edit details</summary>
+                      <AdminActionForm
+                        compact
+                        action="player.update"
+                        submitLabel="Save details"
+                        hidden={{ playerId: player.id }}
+                        fields={[
+                          {
+                            defaultValue: player.slug,
+                            label: "Slug",
+                            name: "slug",
+                            required: true,
+                          },
+                          {
+                            defaultValue: player.nickname,
+                            label: "Nickname",
+                            name: "nickname",
+                            required: true,
+                          },
+                          {
+                            defaultValue: player.realName ?? "",
+                            label: "Real name",
+                            name: "realName",
+                          },
+                          {
+                            defaultValue: player.countryCode ?? "",
+                            label: "Country code",
+                            name: "countryCode",
+                          },
+                          {
+                            defaultValue: player.photoPath ?? "",
+                            label: "Photo path",
+                            name: "photoPath",
+                          },
+                          reasonField,
+                        ]}
+                      />
+                    </details>
                   </td>
                 </tr>
               ))}
@@ -294,6 +443,35 @@ export function AdminConsole({ data }: { data: AdminConsoleData }) {
             </tbody>
           </table>
         </div>
+        <div className="admin-table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Entity</th>
+                <th>Provider</th>
+                <th>External identity</th>
+                <th>Verified</th>
+              </tr>
+            </thead>
+            <tbody>
+              {[...data.teamIdentities, ...data.playerIdentities].map((identity) => (
+                <tr
+                  key={`${"teamId" in identity ? "team" : "player"}:${identity.provider}:${identity.externalId}`}
+                >
+                  <td>{"teamName" in identity ? identity.teamName : identity.playerName}</td>
+                  <td>{identity.provider}</td>
+                  <td>
+                    <a href={identity.sourceUrl} rel="noreferrer" target="_blank">
+                      {identity.externalId}
+                    </a>
+                    <small>{identity.externalSlug ?? "No external slug"}</small>
+                  </td>
+                  <td>{formatTime(identity.lastVerifiedAt)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </Section>
 
       <Section
@@ -313,14 +491,14 @@ export function AdminConsole({ data }: { data: AdminConsoleData }) {
                 { label: "Starts", name: "startsAt", required: true, type: "datetime-local" },
                 { label: "Ends", name: "endsAt", required: true, type: "datetime-local" },
                 {
-                  defaultValue: "50",
+                  defaultValue: String(defaults.fullWeightBallotsPerDay),
                   label: "Full-weight ballots/day",
                   name: "fullWeightBallotsPerDay",
                   required: true,
                   type: "number",
                 },
                 {
-                  defaultValue: "30",
+                  defaultValue: String(defaults.ballotTtlMinutes),
                   label: "Ballot TTL (minutes)",
                   name: "ballotTtlMinutes",
                   required: true,
@@ -340,6 +518,32 @@ export function AdminConsole({ data }: { data: AdminConsoleData }) {
                 { label: "Name", name: "name", required: true },
                 { label: "Starts", name: "startsAt", required: true, type: "date" },
                 { label: "Ends", name: "endsAt", required: true, type: "date" },
+                reasonField,
+              ]}
+            />
+          </div>
+          <div className="admin-card">
+            <h3>Record event result</h3>
+            <AdminActionForm
+              action="event.result"
+              submitLabel="Save result"
+              fields={[
+                {
+                  label: "Event",
+                  name: "eventId",
+                  required: true,
+                  type: "select",
+                  options: eventOptions,
+                },
+                {
+                  label: "Team",
+                  name: "teamId",
+                  required: true,
+                  type: "select",
+                  options: teamOptions,
+                },
+                { label: "Placement from", name: "placementFrom", required: true, type: "number" },
+                { label: "Placement to", name: "placementTo", required: true, type: "number" },
                 reasonField,
               ]}
             />
@@ -452,6 +656,32 @@ export function AdminConsole({ data }: { data: AdminConsoleData }) {
             </tbody>
           </table>
         </div>
+        {data.eventResults.length > 0 && (
+          <div className="admin-table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Event</th>
+                  <th>Team</th>
+                  <th>Placement</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data.eventResults.map((result) => (
+                  <tr key={`${result.eventId}:${result.teamId}`}>
+                    <td>{result.eventName}</td>
+                    <td>{result.teamName}</td>
+                    <td>
+                      {result.placementFrom === result.placementTo
+                        ? result.placementFrom
+                        : `${result.placementFrom}–${result.placementTo}`}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </Section>
 
       <Section
@@ -496,6 +726,37 @@ export function AdminConsole({ data }: { data: AdminConsoleData }) {
                   required: true,
                   type: "select",
                   options: editionOptions,
+                },
+                {
+                  label: "Player",
+                  name: "playerId",
+                  required: true,
+                  type: "select",
+                  options: playerOptions,
+                },
+                reasonField,
+              ]}
+            />
+          </div>
+          <div className="admin-card">
+            <h3>Add starter from admitted team</h3>
+            <AdminActionForm
+              action="pool.admit-team-player"
+              submitLabel="Admit team starter"
+              fields={[
+                {
+                  label: "Edition",
+                  name: "editionId",
+                  required: true,
+                  type: "select",
+                  options: editionOptions,
+                },
+                {
+                  label: "Team",
+                  name: "teamId",
+                  required: true,
+                  type: "select",
+                  options: teamOptions,
                 },
                 {
                   label: "Player",
@@ -618,6 +879,32 @@ export function AdminConsole({ data }: { data: AdminConsoleData }) {
         id="moderation"
         title="Vote moderation"
       >
+        <form
+          action="/admin#moderation"
+          className="admin-action admin-action--compact"
+          method="get"
+        >
+          <label>
+            <span>Exact Vote ID</span>
+            <input
+              defaultValue={data.voteSearch.query}
+              inputMode="numeric"
+              name="voteId"
+              pattern="[0-9]+"
+              placeholder="12345"
+            />
+          </label>
+          <button className="admin-button" type="submit">
+            Search
+          </button>
+          {!data.voteSearch.showingRecent && <a href="/admin#moderation">Show recent Votes</a>}
+        </form>
+        {data.voteSearch.invalid && (
+          <p className="admin-empty">Vote ID must contain digits only.</p>
+        )}
+        {!data.voteSearch.invalid && !data.voteSearch.showingRecent && data.votes.length === 0 && (
+          <p className="admin-empty">No Vote has that ID.</p>
+        )}
         <div className="admin-table-wrap">
           <table>
             <thead>
@@ -674,6 +961,7 @@ export function AdminConsole({ data }: { data: AdminConsoleData }) {
                 <small>
                   {log.actor} · {formatTime(log.createdAt)}
                 </small>
+                <Evidence after={log.after} before={log.before} />
               </article>
             ))}
           </div>
@@ -689,6 +977,7 @@ export function AdminConsole({ data }: { data: AdminConsoleData }) {
                 <small>
                   {log.actor} · {formatTime(log.createdAt)}
                 </small>
+                <Evidence after={log.after} before={log.before} />
               </article>
             ))}
           </div>
@@ -702,6 +991,7 @@ export function AdminConsole({ data }: { data: AdminConsoleData }) {
                 <small>
                   {log.actor} · {formatTime(log.createdAt)}
                 </small>
+                <Evidence after={log.after} before={log.before} />
               </article>
             ))}
           </div>
@@ -720,6 +1010,10 @@ export function AdminConsole({ data }: { data: AdminConsoleData }) {
                   </span>
                   {run.errorSummary && <p>{run.errorSummary}</p>}
                   <small>{formatTime(run.startedAt)}</small>
+                  <details>
+                    <summary>Parser metadata</summary>
+                    <pre>{JSON.stringify(run.metadata, null, 2)}</pre>
+                  </details>
                 </article>
               ))
             )}

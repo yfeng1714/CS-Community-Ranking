@@ -1,18 +1,12 @@
 import { and, eq, isNull } from "drizzle-orm";
 
 import { writeAdminAudit } from "../audit.ts";
+import { requireIsoDate } from "../date.ts";
 import type { AppDatabase } from "../database.ts";
 import { DomainError, requireDomainValue, requireNonBlank } from "../error.ts";
 import { rosterMemberships } from "../../db/schema/index.ts";
 
 export type RosterStatus = "STARTER" | "BENCH" | "STAND_IN";
-
-function requireIsoDate(value: string, field: string): string {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(value) || Number.isNaN(Date.parse(`${value}T00:00:00Z`))) {
-    throw new DomainError("INVALID_DATE", `${field} must use a valid YYYY-MM-DD date`);
-  }
-  return value;
-}
 
 export async function addRosterMembership(
   database: AppDatabase,

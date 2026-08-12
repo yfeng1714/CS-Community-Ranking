@@ -11,7 +11,9 @@ session state.
 - Passwords are stored as Argon2id PHC strings using `argon2` with 19 MiB memory, two iterations,
   and one lane. The raw password is never stored or logged.
 - Login failures use the same message for missing, inactive, and wrong-password accounts. A bounded
-  per-process login limiter defaults to five attempts per minute per direct client key.
+  per-process login limiter defaults to five attempts per minute per direct client key. Proxy
+  identity headers are ignored unless `TRUST_PROXY_HEADERS=true`; trusted deployments must
+  explicitly choose Railway or Cloudflare header semantics with `CLIENT_IP_MODE`.
 - The browser receives a random 32-byte base64url token. PostgreSQL stores only its HMAC-SHA-256
   digest under `ADMIN_SESSION_SECRET`.
 - The default session lifetime is 12 hours. The cookie is `Secure`, `HttpOnly`, `SameSite=Strict`,
@@ -26,21 +28,24 @@ Admin actor. Successful login/logout and every product-data mutation write `admi
 
 The console manages the following without a deployment:
 
-- Team create/update and reversible active status.
-- Player create/update and professional status.
+- Team create/update, logo path, reversible active status, and provider identities.
+- Player create/update, image path, professional status, and provider identities.
 - Roster membership creation and explicit end dates.
 - Edition creation and forward-only `DRAFT → ACTIVE → FROZEN → ARCHIVED` transitions.
-- Event creation and one-way confirmed T1 whitelist decisions.
-- Manual Team admission, Special Player admission, and reversible pairing eligibility.
+- Event creation, one-way confirmed T1 whitelist decisions, and Team placement results.
+- Manual Team admission, Special Player admission, newly signed formal starters from an already
+  admitted Team, and reversible pairing eligibility.
 - Pending imported-change approval/rejection.
-- Vote revocation with counter rollback.
+- Exact-ID Vote search and revocation with counter rollback.
 
 There is no physical-delete control. Pool admissions and Votes remain historical records. Pairing
 disable and Vote revoke are explicit state transitions with reasons.
 
-All browser mutations use `POST /api/v1/admin/mutate` with exact JSON. The server rejects non-JSON,
-cross-site Fetch Metadata, and mismatched Origin requests before authentication, then injects the
-actor from the verified session rather than accepting an actor ID from the browser.
+All browser mutations use `POST /api/v1/admin/mutate` with exact JSON. The server rejects malformed
+or non-JSON bodies, unknown fields, IDs outside the positive signed PostgreSQL-bigint range,
+cross-site Fetch Metadata, and mismatched Origin requests, then injects the actor from the verified
+session rather than accepting an actor ID from the browser. Known uniqueness, reference, range, and
+check-constraint failures receive safe `400`/`409` responses without database details.
 
 ## Audit model
 
@@ -49,9 +54,10 @@ its state change. Pool mutations also write `pool_change_log`; Vote revocation a
 `moderation_audit_log`. Each record identifies actor, action, target, reason, time, and relevant
 before/after state. Failed transactions leave neither product changes nor successful audit rows.
 
-The Audit screen shows the three logs separately, plus sync-run status, record counts, error
-summaries, and parser metadata. The dashboard shows the active Edition, Team/Player pool counts,
-the full score-integrity report, pending proposal count, and last sync state.
+The Audit screen shows the three logs separately with inspectable before/after state, plus sync-run
+status, record counts, error summaries, and parser metadata. The dashboard shows the active Edition,
+Team/Player pool counts, the full score-integrity report, an untruncated pending proposal count, and
+last sync state.
 
 ## Pending imported-change safety
 
@@ -73,14 +79,27 @@ Approval does not blindly replay old JSON. In one outer transaction it:
 3. locks and requires a completed `SUCCEEDED` or `PARTIAL` source run;
 4. rejects the proposal when a newer run exists for the same job/provider;
 5. validates the versioned action and its change type;
-6. reloads and compares current database state with `expectedState`;
+6. reloads the canonical row by internal ID (or the create slug/composite key) and structurally
+   compares its canonical JSON state with `expectedState`;
 7. applies the normal audited domain service under a nested savepoint; and
 8. marks the proposal approved with reviewer, reason, and applied time.
 
 Rejection records reviewer and reason but applies no product change. Supported imported actions are
-Team/Player create or update, Roster add/end, Event create/whitelist, Pool Team admission, Pool
-Player admission, and pairing state. M7 must emit this contract or deliberately version it in docs
-and tests.
+Team/Player create/update/external-identity upsert, Roster add/end, Event create/whitelist/result,
+automatic Pool Team admission with complete evidence, team-derived or Special Pool Player
+admission, and pairing state. Edition actions are deliberately unsupported. Pool proposal Edition
+IDs must also match the pending envelope.
+
+Imported automatic Team proposals must include `editionYear`, nullable HLTV/VRS ranks, and typed
+event-result evidence. Approval re-evaluates that evidence and records the actual `CORE` or
+`REVIEW_AUTO` category; it never converts imported automatic evidence into a Manual admission.
+Likewise, a starter joining an admitted Team inherits that Team entry's category rather than being
+stored as `SPECIAL`.
+
+Runtime Pool cache invalidation occurs only after the outer approval transaction commits. Player
+professional-status updates clear all in-process Pool snapshots; Edition-scoped Pool actions
+invalidate their Edition. M7 must emit this exact contract or deliberately version it in docs and
+tests.
 
 ## Search-engine and response treatment
 

@@ -8,7 +8,11 @@ import type { AppDatabase } from "@/domain/database";
 import type { AdminSessionService } from "@/domain/admin/auth";
 import { PendingImportReviewService } from "@/domain/admin/pending-imports";
 import { createEdition, transitionEdition } from "@/domain/editions/service";
-import { createEvent, setEventWhitelist } from "@/domain/events/service";
+import { createEvent, recordEventTeamResult, setEventWhitelist } from "@/domain/events/service";
+import {
+  upsertPlayerExternalIdentity,
+  upsertTeamExternalIdentity,
+} from "@/domain/external-identities/service";
 import { createPlayer, updatePlayer } from "@/domain/players/service";
 import type { CandidatePoolService } from "@/domain/pool/service";
 import { addRosterMembership, endRosterMembership } from "@/domain/rosters/service";
@@ -22,13 +26,19 @@ import {
   handleAdminError,
 } from "../shared";
 
-const id = z.string().regex(/^\d+$/).transform(BigInt);
+const id = z
+  .string()
+  .regex(/^[1-9]\d{0,18}$/)
+  .transform(BigInt)
+  .refine((value) => value <= 9_223_372_036_854_775_807n, "ID exceeds PostgreSQL bigint range");
 const reason = z.string().trim().min(3).max(500);
 const nullableText = z.string().trim().max(500).nullable().optional();
+const provider = z.enum(["HLTV", "LIQUIPEDIA", "PANDASCORE", "BO3", "OTHER"]);
+const timestamp = z.iso.datetime({ offset: true }).transform((value) => new Date(value));
 const base = { reason };
 
 const mutationSchema = z.discriminatedUnion("action", [
-  z.object({
+  z.strictObject({
     action: z.literal("team.create"),
     ...base,
     countryCode: nullableText,
@@ -37,7 +47,7 @@ const mutationSchema = z.discriminatedUnion("action", [
     shortName: nullableText,
     slug: z.string().trim(),
   }),
-  z.object({
+  z.strictObject({
     action: z.literal("team.update"),
     ...base,
     active: z.boolean().optional(),
@@ -48,7 +58,7 @@ const mutationSchema = z.discriminatedUnion("action", [
     slug: z.string().trim().optional(),
     teamId: id,
   }),
-  z.object({
+  z.strictObject({
     action: z.literal("player.create"),
     ...base,
     countryCode: nullableText,
@@ -58,7 +68,7 @@ const mutationSchema = z.discriminatedUnion("action", [
     realName: nullableText,
     slug: z.string().trim(),
   }),
-  z.object({
+  z.strictObject({
     action: z.literal("player.update"),
     ...base,
     countryCode: nullableText,
@@ -69,7 +79,25 @@ const mutationSchema = z.discriminatedUnion("action", [
     realName: nullableText,
     slug: z.string().trim().optional(),
   }),
-  z.object({
+  z.strictObject({
+    action: z.literal("team.identity.upsert"),
+    ...base,
+    externalId: z.string().trim().min(1).max(500),
+    externalSlug: nullableText,
+    provider,
+    sourceUrl: z.string().url().max(2_000),
+    teamId: id,
+  }),
+  z.strictObject({
+    action: z.literal("player.identity.upsert"),
+    ...base,
+    externalId: z.string().trim().min(1).max(500),
+    externalSlug: nullableText,
+    playerId: id,
+    provider,
+    sourceUrl: z.string().url().max(2_000),
+  }),
+  z.strictObject({
     action: z.literal("roster.add"),
     ...base,
     endsAt: nullableText,
@@ -79,29 +107,29 @@ const mutationSchema = z.discriminatedUnion("action", [
     status: z.enum(["STARTER", "BENCH", "STAND_IN"]),
     teamId: id,
   }),
-  z.object({
+  z.strictObject({
     action: z.literal("roster.end"),
     ...base,
     endsAt: z.string(),
     membershipId: id,
   }),
-  z.object({
+  z.strictObject({
     action: z.literal("edition.create"),
     ...base,
     ballotTtlMinutes: z.number().int().positive(),
     code: z.string(),
-    endsAt: z.coerce.date(),
+    endsAt: timestamp,
     fullWeightBallotsPerDay: z.number().int().nonnegative(),
     name: z.string(),
-    startsAt: z.coerce.date(),
+    startsAt: timestamp,
   }),
-  z.object({
+  z.strictObject({
     action: z.literal("edition.transition"),
     ...base,
     editionId: id,
     status: z.enum(["DRAFT", "ACTIVE", "FROZEN", "ARCHIVED"]),
   }),
-  z.object({
+  z.strictObject({
     action: z.literal("event.create"),
     ...base,
     endsAt: z.string(),
@@ -109,7 +137,7 @@ const mutationSchema = z.discriminatedUnion("action", [
     slug: z.string(),
     startsAt: z.string(),
   }),
-  z.object({
+  z.strictObject({
     action: z.literal("event.whitelist"),
     ...base,
     enabled: z.boolean(),
@@ -118,32 +146,47 @@ const mutationSchema = z.discriminatedUnion("action", [
     note: nullableText,
     whitelistReason: z.enum(["MAJOR", "HLTV_HIGHLIGHT", "MANUAL", "NONE"]),
   }),
-  z.object({
+  z.strictObject({
+    action: z.literal("event.result"),
+    ...base,
+    eventId: id,
+    placementFrom: z.number().int().positive(),
+    placementTo: z.number().int().positive(),
+    teamId: id,
+  }),
+  z.strictObject({
     action: z.literal("pool.admit-team"),
     ...base,
     editionId: id,
     teamId: id,
   }),
-  z.object({
+  z.strictObject({
     action: z.literal("pool.admit-player"),
     ...base,
     editionId: id,
     playerId: id,
   }),
-  z.object({
+  z.strictObject({
+    action: z.literal("pool.admit-team-player"),
+    ...base,
+    editionId: id,
+    playerId: id,
+    teamId: id,
+  }),
+  z.strictObject({
     action: z.literal("pool.pairing"),
     ...base,
     editionId: id,
     enabled: z.boolean(),
     playerId: id,
   }),
-  z.object({
+  z.strictObject({
     action: z.literal("pending.review"),
     ...base,
     decision: z.enum(["APPROVE", "REJECT"]),
     pendingChangeId: id,
   }),
-  z.object({ action: z.literal("vote.revoke"), ...base, voteId: id }),
+  z.strictObject({ action: z.literal("vote.revoke"), ...base, voteId: id }),
 ]);
 
 interface Dependencies {
@@ -166,7 +209,13 @@ export function createAdminMutationHandler(dependencies: Dependencies) {
     if (!session) return adminErrorResponse("ADMIN_AUTH_REQUIRED", "Admin login required", 401);
 
     try {
-      const mutation = mutationSchema.parse(await request.json());
+      let body: unknown;
+      try {
+        body = await request.json();
+      } catch {
+        return adminErrorResponse("INVALID_ADMIN_JSON", "Request body must be valid JSON", 400);
+      }
+      const mutation = mutationSchema.parse(body);
       const actorAdminUserId = session.adminUserId;
       let result: unknown;
       switch (mutation.action) {
@@ -181,6 +230,19 @@ export function createAdminMutationHandler(dependencies: Dependencies) {
           break;
         case "player.update":
           result = await updatePlayer(dependencies.database, { ...mutation, actorAdminUserId });
+          dependencies.pool.invalidateAllActivePlayerIds();
+          break;
+        case "team.identity.upsert":
+          result = await upsertTeamExternalIdentity(dependencies.database, {
+            ...mutation,
+            actorAdminUserId,
+          });
+          break;
+        case "player.identity.upsert":
+          result = await upsertPlayerExternalIdentity(dependencies.database, {
+            ...mutation,
+            actorAdminUserId,
+          });
           break;
         case "roster.add":
           result = await addRosterMembership(dependencies.database, {
@@ -212,17 +274,29 @@ export function createAdminMutationHandler(dependencies: Dependencies) {
             actorAdminUserId,
           });
           break;
+        case "event.result":
+          result = await recordEventTeamResult(dependencies.database, {
+            ...mutation,
+            actorAdminUserId,
+          });
+          break;
         case "pool.admit-team":
           result = await dependencies.pool.admitManualTeam({ ...mutation, actorAdminUserId });
           break;
         case "pool.admit-player":
           result = await dependencies.pool.admitSpecialPlayer({ ...mutation, actorAdminUserId });
           break;
+        case "pool.admit-team-player":
+          result = await dependencies.pool.admitTeamPlayer({ ...mutation, actorAdminUserId });
+          break;
         case "pool.pairing":
           result = await dependencies.pool.setPairingEnabled({ ...mutation, actorAdminUserId });
           break;
         case "pending.review":
-          result = await new PendingImportReviewService(dependencies.database).review({
+          result = await new PendingImportReviewService(
+            dependencies.database,
+            dependencies.pool,
+          ).review({
             ...mutation,
             actorAdminUserId,
           });

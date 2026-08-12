@@ -15,10 +15,11 @@ You are implementing **CS Community Ranking / CS 野榜 V0.1**.
 
 ## Current handoff
 
-Milestones 0–6 are implemented. The repository is stopped at Owner Review Gate D after the private
-Admin Console, authentication/session layer, audited management workflows, pending-change review,
-Vote revocation, and integrity/sync visibility. Do not begin Milestone 7 external adapters or live
-provider work until the owner reviews M6 and explicitly requests the next milestone.
+Milestones 0–6 are implemented and the complete repository received an independent Gate D audit on
+2026-08-12. The private Admin/session/audit workflows and the M7 pending-import boundary were
+corrected and reverified; see `docs/IMPLEMENTATION_REVIEW_2026-08-12.md`. The repository is ready
+for owner handoff before Milestone 7. Do not begin external adapters or live provider work until the
+owner explicitly requests that milestone.
 
 Always trust the latest `docs/PROGRESS.md` over this summary if they ever differ.
 

@@ -73,7 +73,7 @@ export function VotePlayerCard({
 
       <dl className="vote-card__stats" aria-label={`${player.nickname} 默认数据`}>
         <div>
-          <dt>近三月 Rating</dt>
+          <dt>近三月 HLTV Rating</dt>
           <dd>{metric(player.recentRating)}</dd>
         </div>
         <div>
@@ -101,7 +101,7 @@ export function VotePlayerCard({
         </summary>
         <dl>
           <div>
-            <dt>生涯 Rating</dt>
+            <dt>生涯 HLTV Rating</dt>
             <dd>{metric(player.careerRating)}</dd>
           </div>
           <div>

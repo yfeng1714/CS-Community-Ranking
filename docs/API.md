@@ -106,6 +106,8 @@ same domain queries directly, so their display contract cannot drift from the JS
 Accepts exact JSON `username` and `password`, applies the shared mutation guard and bounded login
 limiter, and returns only the Admin username. Success sets the strict opaque Admin session cookie.
 Missing, inactive, and wrong-password accounts all return `401 INVALID_ADMIN_CREDENTIALS`.
+Malformed JSON is `400 INVALID_ADMIN_JSON`. Proxy identity headers affect the limiter only under an
+explicit trusted-proxy configuration.
 
 ### `POST /api/v1/admin/logout`
 
@@ -114,10 +116,12 @@ disclosing whether the prior token was valid.
 
 ### `POST /api/v1/admin/mutate`
 
-Accepts a discriminated JSON action for Team, Player, Roster, Edition, Event, Candidate Pool,
-pending-import review, or Vote revocation. Every request passes the shared mutation guard and a
-fresh database session/active-Admin check. The actor ID always comes from that session. Success is
-`200` and `no-store`; invalid input is `400`, missing auth is `401`, missing records are `404`, and
-domain-state conflicts are `409`. Unexpected errors are detail-free `500` responses.
+Accepts a discriminated JSON action for Team/Player details and external identities, Roster,
+Edition, Event whitelist/result, Candidate Pool Team/Special/team-derived Player admission and
+pairing state, pending-import review, or Vote revocation. Every request passes the shared mutation
+guard and a fresh database session/active-Admin check. The actor ID always comes from that session.
+Malformed JSON, unknown fields, and invalid/range-exceeding IDs are `400`; missing auth is `401`;
+missing records are `404`; domain, uniqueness, and reference conflicts are `409`. Success is `200`
+and `no-store`; unexpected errors are detail-free `500` responses.
 
 The action/body catalogue and transaction semantics are documented in `docs/ADMIN_CONSOLE.md`.
