@@ -26,11 +26,13 @@
     "db:migrate": "node --env-file=.env scripts/migrate.ts",
     "db:seed": "node --env-file=.env scripts/seed.ts",
     "db:check": "node --env-file=.env node_modules/drizzle-kit/bin.cjs check",
+    "admin:create": "node --env-file=.env scripts/admin-create.ts",
     "pool:add-player": "node --env-file=.env scripts/pool-add-player.ts",
     "pool:disable-player": "node --env-file=.env scripts/pool-disable-player.ts",
     "score:check": "node --env-file=.env scripts/score-check.ts"
   },
   "dependencies": {
+    "argon2": "0.45.1",
     "drizzle-orm": "0.45.2",
     "next": "16.3.0",
     "pg": "8.23.0",

@@ -98,3 +98,26 @@ unexpected failures return a detail-free `503`, all with `no-store`.
 
 Both are read-only public endpoints. The current server-rendered Ranking and Player pages use the
 same domain queries directly, so their display contract cannot drift from the JSON projection.
+
+## Implemented in Milestone 6
+
+### `POST /api/v1/admin/login`
+
+Accepts exact JSON `username` and `password`, applies the shared mutation guard and bounded login
+limiter, and returns only the Admin username. Success sets the strict opaque Admin session cookie.
+Missing, inactive, and wrong-password accounts all return `401 INVALID_ADMIN_CREDENTIALS`.
+
+### `POST /api/v1/admin/logout`
+
+Revokes the matching database session when present, clears the cookie, and returns `200` without
+disclosing whether the prior token was valid.
+
+### `POST /api/v1/admin/mutate`
+
+Accepts a discriminated JSON action for Team, Player, Roster, Edition, Event, Candidate Pool,
+pending-import review, or Vote revocation. Every request passes the shared mutation guard and a
+fresh database session/active-Admin check. The actor ID always comes from that session. Success is
+`200` and `no-store`; invalid input is `400`, missing auth is `401`, missing records are `404`, and
+domain-state conflicts are `409`. Unexpected errors are detail-free `500` responses.
+
+The action/body catalogue and transaction semantics are documented in `docs/ADMIN_CONSOLE.md`.

@@ -18,10 +18,10 @@ export async function addRosterMembership(
   database: AppDatabase,
   input: {
     actorAdminUserId: bigint;
-    endsAt?: string | null;
+    endsAt?: string | null | undefined;
     playerId: bigint;
     reason: string;
-    source?: string | null;
+    source?: string | null | undefined;
     startsAt: string;
     status: RosterStatus;
     teamId: bigint;

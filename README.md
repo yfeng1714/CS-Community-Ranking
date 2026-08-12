@@ -5,10 +5,11 @@ simple pairwise votes.
 
 ## Status
 
-Milestones 0–5 are implemented: the runtime foundation, full V0.1 database schema, data-driven
+Milestones 0–6 are implemented: the runtime foundation, full V0.1 database schema, data-driven
 Candidate Pool, secure anonymous visitor identity, atomic random Ballot issuance, exactly-once
 Vote/ranking transactions, and the responsive public Vote/Ranking/Player vertical slice are in
-place. Milestone 6 begins the authenticated Admin and audit surface.
+place, together with the authenticated and fully audited Admin Console. Milestone 6 is at its owner
+review gate; external VRS/HLTV adapters have not started.
 
 ## Technology
 
@@ -34,6 +35,10 @@ pnpm dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000).
+
+Create an Admin with `pnpm admin:create -- --username=owner`, then open
+[http://localhost:3000/admin](http://localhost:3000/admin). The CLI prompts for a hidden password;
+there is no web registration.
 
 Health endpoints:
 
@@ -67,6 +72,7 @@ If port `5432` is already occupied, set `POSTGRES_PORT` to another host port in
 | `pnpm db:migrate` | Apply committed PostgreSQL migrations |
 | `pnpm db:seed` | Load repeatable fictional development data |
 | `pnpm db:check` | Check the Drizzle migration journal |
+| `pnpm admin:create -- --username=<name>` | Create an active Admin with a hidden Argon2id password prompt |
 | `pnpm pool:add-player -- ...` | Create and admit an individual Special player |
 | `pnpm pool:disable-player -- ...` | Disable future pairing without deleting history |
 | `pnpm score:check -- --edition <code>` | Verify zero-sum and Vote/ranking/aggregate integrity |
@@ -83,6 +89,7 @@ If port `5432` is already occupied, set `POSTGRES_PORT` to another host port in
 - [`docs/BALLOT_ISSUANCE.md`](docs/BALLOT_ISSUANCE.md) — visitor identity, quota, random pairing, and issuance transaction
 - [`docs/VOTE_RESOLUTION.md`](docs/VOTE_RESOLUTION.md) — exactly-once resolution, ranking, revocation, and integrity checks
 - [`docs/PUBLIC_UI.md`](docs/PUBLIC_UI.md) — public pages, display rules, reload orchestration, and accessibility
+- [`docs/ADMIN_CONSOLE.md`](docs/ADMIN_CONSOLE.md) — Admin sessions, mutation/audit workflows, and pending-review safety
 - [`docs/SECURITY.md`](docs/SECURITY.md) — security baseline
 
 When documents disagree about product intent, use the Product Decision Chronicle

@@ -2,93 +2,102 @@
 
 ## Current position
 
-- **Milestone:** 5 — Public vertical slice
-- **Status:** Implemented; awaiting owner review before Milestone 6
-- **Review boundary:** Public Vote/Ranking/Player/About/Privacy journey is complete; implementation
-  stops before Admin authentication and mutation surfaces
+- **Milestone:** 6 — Admin Console and audited operations
+- **Status:** Implemented; awaiting Owner Review Gate D before Milestone 7
+- **Review boundary:** Private authentication/session management and Admin workflows are complete;
+  implementation stops before external provider adapters, sync jobs, or live data ingestion
 - **Last updated:** 2026-08-12
 
 ## Completed
 
-- Replaced the placeholder home page with a responsive Vote experience that uses the M3/M4 APIs,
-  shows complete two-player cards, supports details and keyboard shortcuts, reports counted versus
-  non-counting outcomes honestly, keeps results in place, and advances only through explicit Next.
-- Completed the browser half of ADR 0003. A true manual Vote-page reload skips only a confirmed
-  reused open Ballot, then displays the replacement directly. A session marker makes lost-response
-  recovery idempotent without ever skipping a newly issued replacement.
-- Added public Ranking and Player projections over the active Edition, current roster, rankings, and
-  latest approved stats. Ranking uses competition ties with deterministic equal-score display order;
-  unsafe bigint-to-number conversion fails closed.
-- Added `GET /api/v1/rankings` and `GET /api/v1/players/{slug}` with validation, short public cache
-  policies, no-store errors, safe not-found behavior, and detail-free unexpected failures.
-- Added Ranking search and responsive prioritization, Player profile/record/stats pages, About,
-  Privacy, public loading/error/not-found states, a shared header/footer, local monogram image
-  fallbacks, and accessible inline icons.
-- Made light mode deterministic on first visit, independent of system theme, and added an explicit
-  persisted light/dark toggle. The stored theme is separate from anonymous voting identity.
-- Added explicit current/missing/stale presentation. Approved snapshots become stale after 48 hours;
-  missing data renders as `—` or an explanatory label and never as a fabricated zero.
-- Added visible focus styles, skip-to-content, semantic table/button structure, result focus/live
-  handling, keyboard controls, reduced-motion behavior, and desktop/mobile layouts.
-- Added focused unit tests for reload recovery, public presentation, and public handlers; PostgreSQL
-  integration tests for public ordering/profile data; and a serial, resource-conscious Playwright
-  journey in desktop and mobile Chromium.
-- Added `docs/PUBLIC_UI.md` and updated README, API, runbook, open questions, and durable Codex
-  handoff documentation.
+- Added trusted `pnpm admin:create` provisioning with a hidden password prompt, normalized usernames,
+  a 12-character minimum, and pinned Argon2id password hashing. Removed the unused environment-based
+  bootstrap fields so there is one real account-creation path and no web registration/recovery flow.
+- Added database-backed Admin sessions with random 32-byte opaque tokens, HMAC-SHA-256 digests at
+  rest, configurable 12-hour expiry, bounded last-seen writes, explicit logout revocation, inactive
+  Admin rejection, and a strict Secure/HttpOnly/SameSite=Strict `__Host-` cookie.
+- Added bounded login throttling and detail-equivalent invalid-credential responses. All Admin POSTs
+  require exact JSON, reject cross-site Fetch Metadata and mismatched Origin, verify the current
+  database session, and derive the actor from that session.
+- Added responsive `/admin/login` and `/admin` interfaces. The dashboard reports active Edition,
+  Team/Player pool size, pending proposals, last sync, and a full score-integrity result.
+- Added audited Team/Player create and update/status workflows, Roster add/end, Edition create and
+  forward transition, Event create/whitelist, Pool Team/Special Player admission, and pairing toggle.
+  There is no physical-delete control.
+- Added pending imported-change review with versioned proposals, row/source-run locking, conflict and
+  newer-run rejection, expected-state comparison, typed action validation, nested-savepoint domain
+  application, and same-transaction approve/reject audit state. M7 will populate the currently empty
+  queue using this contract.
+- Added Vote-revocation UI and made revocation write both the specialized moderation record and the
+  general Admin Audit Log in the same transaction as counter rollback.
+- Added separate General Audit, Pool Change, Moderation, and sync/parser-history views. Admin pages
+  are dynamic and noindex/nofollow; Admin responses deny framing, disable MIME sniffing, and use
+  no-referrer.
+- Added Admin auth/CSRF/mutation unit coverage, PostgreSQL session and pending-approval integration
+  coverage, general-audit verification for Vote revocation, and a desktop/mobile Playwright login +
+  pairing-toggle journey.
+- Added `docs/ADMIN_CONSOLE.md` and updated README, API, Security, Runbook, environment, and durable
+  Codex handoff documentation.
 
 ## Validation
 
-| Command/check             | Result | Notes                                                                                                |
-| ------------------------- | ------ | ---------------------------------------------------------------------------------------------------- |
-| `pnpm lint`               | PASS   | Zero warnings.                                                                                       |
-| `pnpm format:check`       | PASS   | Source, tests, and documentation match Prettier.                                                     |
-| `pnpm typecheck`          | PASS   | Strict TypeScript `6.0.3`.                                                                           |
-| `pnpm test:unit`          | PASS   | 18 files, 66 tests; includes reload/retry, freshness/counter, and public handler coverage.           |
-| `pnpm test:integration`   | PASS   | 5 files, 23 tests against PostgreSQL 18; adds public ranking ties/order and profile/stat projection. |
-| `pnpm test:e2e`           | PASS   | 4 tests: complete public journey in desktop and mobile Chromium, one worker.                         |
-| `pnpm build`              | PASS   | Next.js `16.3.0` Webpack production build includes all public pages and read APIs.                   |
-| In-app browser inspection | PASS   | Desktop/mobile Vote and mobile Ranking inspected; no console errors.                                 |
-| `git diff --check`        | PASS   | No whitespace errors.                                                                                |
-| Migration/schema change   | N/A    | M5 uses the reviewed M1 schema and adds no migration.                                                |
+| Command/check             | Result | Notes                                                                                                     |
+| ------------------------- | ------ | --------------------------------------------------------------------------------------------------------- |
+| `pnpm lint`               | PASS   | Zero warnings.                                                                                            |
+| `pnpm format:check`       | PASS   | Source, tests, and documentation match Prettier.                                                          |
+| `pnpm typecheck`          | PASS   | Strict TypeScript `6.0.3`.                                                                                |
+| `pnpm test:unit`          | PASS   | 21 files, 75 tests; includes Argon2id/cookie, login limiter/CSRF, and authenticated mutation coverage.    |
+| `pnpm test:integration`   | PASS   | 7 files, 27 tests against PostgreSQL 18; includes session lifecycle, pending approval, and dual auditing. |
+| `pnpm test:e2e`           | PASS   | 6 tests: Admin + public journeys in desktop/mobile Chromium, one worker.                                  |
+| `pnpm build`              | PASS   | Next.js `16.3.0` Webpack build includes dynamic Admin pages and login/logout/mutation APIs.               |
+| In-app browser inspection | PASS   | Redirect/login/logout, Pool toggle/restore, desktop/mobile layout, and console inspected; no errors.      |
+| Admin response headers    | PASS   | Noindex/nofollow/noarchive, frame denial, no-referrer, nosniff, and request ID observed locally.          |
+| `git diff --check`        | PASS   | No whitespace errors.                                                                                     |
+| Migration/schema change   | N/A    | M6 uses the reviewed M1 Admin/audit/sync/pending schema and adds no migration.                            |
+
+Docker was kept off during implementation, started only for the final PostgreSQL/browser window on
+host port `5433` because local port `5432` was occupied, then the project container was stopped and
+Docker Desktop was quit.
 
 ## Decisions and corrections made during implementation
 
-- The working UI identity is `CS 野榜`; final product name, domain, slogan, and visual identity remain
-  a pre-launch owner decision. M5 does not freeze temporary branding.
-- First visit is deliberately light even when the operating system prefers dark. A user-selected
-  dark theme persists in local storage, satisfying the owner's M0 UI note without coupling display
-  preference to the anonymous visitor cookie.
-- Stats older than 48 hours are presented as stale. This is a conservative M5 display threshold,
-  recorded in `docs/PUBLIC_UI.md`, and can become provider-specific when M7 implements adapters.
-- Server-rendered public pages and JSON read endpoints share domain query functions instead of
-  fetching the app's own HTTP endpoints. This avoids an internal network hop and keeps one public
-  projection contract.
-- The Ranking mobile view was corrected after live visual inspection to prioritize rank, player, and
-  community score. Desktop retains team and full win/loss/rate/decision columns.
-- Owner review exposed a development-overlay hydration warning caused by a grammar browser extension
-  injecting attributes directly onto `<body>` before React loaded. The root layout now suppresses
-  hydration warnings only at that direct element boundary; application subtree mismatches remain
-  visible and actionable.
-- Playwright runs with one local worker so desktop and mobile coverage does not create avoidable CPU
-  pressure. Docker remained off during coding/static validation and was used only for the final
-  PostgreSQL/browser window.
+- M6 uses one same-origin discriminated mutation endpoint rather than duplicating thin Route
+  Handlers for every form. Domain services remain the business-rule boundary; the endpoint only
+  validates, authenticates, injects the actor, dispatches, and maps safe errors.
+- The initial Admin CLI creation is the unavoidable bootstrap exception to actor-attributed audit:
+  no valid actor exists yet. Login, logout, and every later successful mutation are attributed.
+- The M1 schema already contained every required Admin/session/audit/sync/pending table, so no
+  migration was manufactured merely to mark M6. Optional service input types were widened to accept
+  explicit `undefined` from validated HTTP data without changing runtime semantics.
+- Broader site-wide response headers remain M8 scope, but private Admin responses receive the narrow
+  M6 protections now. Development Next responses use revalidation headers; production dynamic pages
+  receive Next's private/no-store policy, while mutation responses explicitly use `no-store`.
+- Pending proposals use a documented version-1 action envelope and compare complete expected state
+  immediately before application. M7 must emit this contract or introduce a deliberately documented
+  and tested next version—never silently replay a different JSON shape.
+- Live inspection found wide table min-content sizing expanding the mobile document to 770px. Grid
+  children now opt into shrinking and each table scrolls inside its own container; the document was
+  rechecked at 390px with no horizontal overflow.
+- Argon2 is explicitly approved in pnpm's dependency build policy. This is required for the pinned
+  native implementation and is recorded in `pnpm-workspace.yaml` rather than approved implicitly.
 
 ## Known limitations
 
-- Development data is fictional and intentionally has no imported photos or external stat snapshots;
-  M5 demonstrates its deliberate missing-data fallbacks. Approved VRS/HLTV ingestion begins in M7.
-- `CS 野榜` and the current visual system are working choices, not launch-approved branding.
-- The Privacy contact/takedown address and final legal text remain explicit launch blockers.
-- M5 has no authenticated Admin surface. Pool/roster changes still use trusted services and CLIs;
-  Admin authentication, authorization, CRUD, approvals, and audit UI belong to M6.
-- Public read caching is short process/platform HTTP caching only. No Redis or external cache was
-  added.
-- The 48-hour stale threshold is global until M7 supplies provider-specific operating knowledge.
+- There is one Admin authority level in the reviewed V0.1 schema. All active Admins can perform all
+  console actions; role-based permissions and MFA are not part of M6.
+- Login throttling is bounded and process-local. Multi-instance coordination and broader abuse
+  enforcement remain M8; correctness never relies on this availability limiter.
+- M7 has not run, so the pending queue and sync history are normally empty and development records
+  remain fictional. No live HLTV/VRS request was made.
+- Pending proposal `expectedState` deliberately uses exact complete-state equality. An adapter must
+  regenerate a proposal after any relevant state drift rather than trying to merge automatically.
+- The console prioritizes safe complete operator coverage. Final branding and further visual polish
+  remain part of the later full-product refinement noted by the owner.
 
 ## Next task
 
-Owner review of the M5 desktop/mobile public journey, result disclosure, reload-as-Skip behavior,
-ranking ties/search, Player/About/Privacy content, light-default theme, and missing/stale states.
-After explicit approval, begin Milestone 6: authenticated Admin/session management, audited
-Team/Player/Roster/Edition/Event/Pool mutations, pending-change approval, Vote revocation UI, and
-integrity/sync visibility.
+Owner Review Gate D: review account provisioning/login/logout, strict session behavior, Team/Player/
+Roster/Edition/Event/Pool workflows, pending proposal safety, Vote revocation, dashboard integrity,
+audit visibility, and desktop/mobile usability. After explicit approval, begin Milestone 7 provider
+adapters and scheduled syncs; do not make live HLTV requests or invent production pool data before
+that authorization.

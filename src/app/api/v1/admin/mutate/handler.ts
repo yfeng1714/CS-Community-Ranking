@@ -1,0 +1,246 @@
+import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
+import { z } from "zod";
+
+import type { AppEnv } from "@/config/env";
+import { toAuditRecord } from "@/domain/audit";
+import type { AppDatabase } from "@/domain/database";
+import type { AdminSessionService } from "@/domain/admin/auth";
+import { PendingImportReviewService } from "@/domain/admin/pending-imports";
+import { createEdition, transitionEdition } from "@/domain/editions/service";
+import { createEvent, setEventWhitelist } from "@/domain/events/service";
+import { createPlayer, updatePlayer } from "@/domain/players/service";
+import type { CandidatePoolService } from "@/domain/pool/service";
+import { addRosterMembership, endRosterMembership } from "@/domain/rosters/service";
+import { createTeam, updateTeam } from "@/domain/teams/service";
+import { VoteModerationService } from "@/domain/votes/moderation";
+
+import {
+  adminErrorResponse,
+  authenticateAdminRequest,
+  guardAdminMutation,
+  handleAdminError,
+} from "../shared";
+
+const id = z.string().regex(/^\d+$/).transform(BigInt);
+const reason = z.string().trim().min(3).max(500);
+const nullableText = z.string().trim().max(500).nullable().optional();
+const base = { reason };
+
+const mutationSchema = z.discriminatedUnion("action", [
+  z.object({
+    action: z.literal("team.create"),
+    ...base,
+    countryCode: nullableText,
+    logoPath: nullableText,
+    name: z.string().trim().min(1).max(200),
+    shortName: nullableText,
+    slug: z.string().trim(),
+  }),
+  z.object({
+    action: z.literal("team.update"),
+    ...base,
+    active: z.boolean().optional(),
+    countryCode: nullableText,
+    logoPath: nullableText,
+    name: z.string().trim().min(1).max(200).optional(),
+    shortName: nullableText,
+    slug: z.string().trim().optional(),
+    teamId: id,
+  }),
+  z.object({
+    action: z.literal("player.create"),
+    ...base,
+    countryCode: nullableText,
+    nickname: z.string().trim().min(1).max(100),
+    photoPath: nullableText,
+    professionalStatus: z.enum(["ACTIVE", "INACTIVE", "RETIRED"]).optional(),
+    realName: nullableText,
+    slug: z.string().trim(),
+  }),
+  z.object({
+    action: z.literal("player.update"),
+    ...base,
+    countryCode: nullableText,
+    nickname: z.string().trim().min(1).max(100).optional(),
+    photoPath: nullableText,
+    playerId: id,
+    professionalStatus: z.enum(["ACTIVE", "INACTIVE", "RETIRED"]).optional(),
+    realName: nullableText,
+    slug: z.string().trim().optional(),
+  }),
+  z.object({
+    action: z.literal("roster.add"),
+    ...base,
+    endsAt: nullableText,
+    playerId: id,
+    source: nullableText,
+    startsAt: z.string(),
+    status: z.enum(["STARTER", "BENCH", "STAND_IN"]),
+    teamId: id,
+  }),
+  z.object({
+    action: z.literal("roster.end"),
+    ...base,
+    endsAt: z.string(),
+    membershipId: id,
+  }),
+  z.object({
+    action: z.literal("edition.create"),
+    ...base,
+    ballotTtlMinutes: z.number().int().positive(),
+    code: z.string(),
+    endsAt: z.coerce.date(),
+    fullWeightBallotsPerDay: z.number().int().nonnegative(),
+    name: z.string(),
+    startsAt: z.coerce.date(),
+  }),
+  z.object({
+    action: z.literal("edition.transition"),
+    ...base,
+    editionId: id,
+    status: z.enum(["DRAFT", "ACTIVE", "FROZEN", "ARCHIVED"]),
+  }),
+  z.object({
+    action: z.literal("event.create"),
+    ...base,
+    endsAt: z.string(),
+    name: z.string(),
+    slug: z.string(),
+    startsAt: z.string(),
+  }),
+  z.object({
+    action: z.literal("event.whitelist"),
+    ...base,
+    enabled: z.boolean(),
+    eventId: id,
+    isMajor: z.boolean(),
+    note: nullableText,
+    whitelistReason: z.enum(["MAJOR", "HLTV_HIGHLIGHT", "MANUAL", "NONE"]),
+  }),
+  z.object({
+    action: z.literal("pool.admit-team"),
+    ...base,
+    editionId: id,
+    teamId: id,
+  }),
+  z.object({
+    action: z.literal("pool.admit-player"),
+    ...base,
+    editionId: id,
+    playerId: id,
+  }),
+  z.object({
+    action: z.literal("pool.pairing"),
+    ...base,
+    editionId: id,
+    enabled: z.boolean(),
+    playerId: id,
+  }),
+  z.object({
+    action: z.literal("pending.review"),
+    ...base,
+    decision: z.enum(["APPROVE", "REJECT"]),
+    pendingChangeId: id,
+  }),
+  z.object({ action: z.literal("vote.revoke"), ...base, voteId: id }),
+]);
+
+interface Dependencies {
+  database: AppDatabase;
+  env: AppEnv;
+  onUnexpectedError?(error: unknown): void;
+  pool: CandidatePoolService;
+  sessions: Pick<AdminSessionService, "authenticate">;
+}
+
+export function createAdminMutationHandler(dependencies: Dependencies) {
+  return async function adminMutationHandler(request: NextRequest): Promise<Response> {
+    const rejected = guardAdminMutation(request, dependencies.env);
+    if (rejected) return rejected;
+    const session = await authenticateAdminRequest(
+      request,
+      dependencies.env,
+      dependencies.sessions,
+    );
+    if (!session) return adminErrorResponse("ADMIN_AUTH_REQUIRED", "Admin login required", 401);
+
+    try {
+      const mutation = mutationSchema.parse(await request.json());
+      const actorAdminUserId = session.adminUserId;
+      let result: unknown;
+      switch (mutation.action) {
+        case "team.create":
+          result = await createTeam(dependencies.database, { ...mutation, actorAdminUserId });
+          break;
+        case "team.update":
+          result = await updateTeam(dependencies.database, { ...mutation, actorAdminUserId });
+          break;
+        case "player.create":
+          result = await createPlayer(dependencies.database, { ...mutation, actorAdminUserId });
+          break;
+        case "player.update":
+          result = await updatePlayer(dependencies.database, { ...mutation, actorAdminUserId });
+          break;
+        case "roster.add":
+          result = await addRosterMembership(dependencies.database, {
+            ...mutation,
+            actorAdminUserId,
+          });
+          break;
+        case "roster.end":
+          result = await endRosterMembership(dependencies.database, {
+            ...mutation,
+            actorAdminUserId,
+          });
+          break;
+        case "edition.create":
+          result = await createEdition(dependencies.database, { ...mutation, actorAdminUserId });
+          break;
+        case "edition.transition":
+          result = await transitionEdition(dependencies.database, {
+            ...mutation,
+            actorAdminUserId,
+          });
+          break;
+        case "event.create":
+          result = await createEvent(dependencies.database, { ...mutation, actorAdminUserId });
+          break;
+        case "event.whitelist":
+          result = await setEventWhitelist(dependencies.database, {
+            ...mutation,
+            actorAdminUserId,
+          });
+          break;
+        case "pool.admit-team":
+          result = await dependencies.pool.admitManualTeam({ ...mutation, actorAdminUserId });
+          break;
+        case "pool.admit-player":
+          result = await dependencies.pool.admitSpecialPlayer({ ...mutation, actorAdminUserId });
+          break;
+        case "pool.pairing":
+          result = await dependencies.pool.setPairingEnabled({ ...mutation, actorAdminUserId });
+          break;
+        case "pending.review":
+          result = await new PendingImportReviewService(dependencies.database).review({
+            ...mutation,
+            actorAdminUserId,
+          });
+          break;
+        case "vote.revoke":
+          result = await new VoteModerationService(dependencies.database).revoke({
+            ...mutation,
+            actorAdminUserId,
+          });
+          break;
+      }
+
+      return NextResponse.json(
+        { data: toAuditRecord((result ?? {}) as object) },
+        { headers: { "cache-control": "no-store" } },
+      );
+    } catch (error) {
+      return handleAdminError(error, dependencies.onUnexpectedError);
+    }
+  };
+}

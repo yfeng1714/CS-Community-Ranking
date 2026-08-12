@@ -15,9 +15,10 @@ You are implementing **CS Community Ranking / CS 野榜 V0.1**.
 
 ## Current handoff
 
-Milestones 0–5 are implemented. The repository is stopped after the public voting, ranking, player,
-About, and Privacy vertical slice. Do not begin Milestone 6 Admin/authentication work until the owner
-reviews M5 and explicitly requests the next milestone.
+Milestones 0–6 are implemented. The repository is stopped at Owner Review Gate D after the private
+Admin Console, authentication/session layer, audited management workflows, pending-change review,
+Vote revocation, and integrity/sync visibility. Do not begin Milestone 7 external adapters or live
+provider work until the owner reviews M6 and explicitly requests the next milestone.
 
 Always trust the latest `docs/PROGRESS.md` over this summary if they ever differ.
 

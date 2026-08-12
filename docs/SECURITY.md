@@ -42,8 +42,24 @@
 
 ## Deferred controls
 
-Admin authentication, broader security headers, IP-risk processing, retention jobs, and abuse
-enforcement are implemented in their scheduled milestones. Their invariants remain defined by the
-Implementation Plan.
+## Milestone 6 controls
+
+- Admin accounts are created only through the trusted CLI. Argon2id password hashes use a maintained
+  pinned implementation; login does not disclose whether a username exists or is inactive.
+- The browser holds a random opaque 32-byte token. PostgreSQL stores only its HMAC-SHA-256 digest;
+  the strict `__Host-` cookie is Secure, HttpOnly, SameSite=Strict, Path=/, and has no Domain.
+- Protected reads and every mutation perform a fresh database check for expiry, revocation, and an
+  active Admin. UI visibility is never treated as authorization.
+- Login is bounded by a small process-local availability limiter. Admin POSTs use the shared JSON,
+  Origin, and Fetch-Metadata guard and never accept a browser-supplied actor ID.
+- Every successful product mutation and login/logout state change has a same-transaction general
+  audit. Pool and Vote moderation retain their specialized immutable logs as well.
+- Admin pages are no-store/noindex/nofollow, deny framing, disable MIME sniffing, and use no-referrer.
+  No physical-delete UI exists.
+- Pending approvals re-lock the proposal and source run, reject conflicts/newer runs/state drift,
+  validate a versioned action, and apply under the review transaction. Rejection never applies data.
+
+Broader site-wide security headers, IP-risk processing, retention jobs, and abuse enforcement remain
+in their scheduled milestones. Their invariants remain defined by the Implementation Plan.
 
 Never add a raw IP, visitor cookie, Admin token, password, or complete provider HTML body to logs.

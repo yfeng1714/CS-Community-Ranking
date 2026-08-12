@@ -59,6 +59,9 @@ export const envSchema = z
     VISITOR_TOKEN_HASH_PEPPER: z.string().min(32),
     IP_HMAC_SECRET: z.string().min(32),
     ADMIN_SESSION_SECRET: z.string().min(32),
+    ADMIN_SESSION_COOKIE_NAME: z.string().min(1).default("__Host-csr_admin"),
+    ADMIN_SESSION_TTL_HOURS: positiveIntegerFromEnvironment.default(12),
+    ADMIN_LOGIN_RATE_LIMIT_PER_MINUTE: positiveIntegerFromEnvironment.default(5),
 
     ACTIVE_EDITION_CODE: z
       .string()
@@ -84,9 +87,6 @@ export const envSchema = z
     HLTV_REQUEST_DELAY_MS: positiveIntegerFromEnvironment.default(3000),
     HLTV_USER_AGENT: optionalNonEmptyString,
     VRS_SOURCE_URL: optionalUrl,
-
-    ADMIN_BOOTSTRAP_USERNAME: optionalNonEmptyString,
-    ADMIN_BOOTSTRAP_PASSWORD_HASH: optionalNonEmptyString,
   })
   .superRefine((env, context) => {
     if (env.NODE_ENV === "production") {
@@ -111,6 +111,14 @@ export const envSchema = z
           message: "must use the __Host- prefix in production",
         });
       }
+
+      if (!env.ADMIN_SESSION_COOKIE_NAME.startsWith("__Host-")) {
+        context.addIssue({
+          code: "custom",
+          path: ["ADMIN_SESSION_COOKIE_NAME"],
+          message: "must use the __Host- prefix in production",
+        });
+      }
     }
 
     if (env.TRUST_PROXY_HEADERS === true && !env.CLIENT_IP_MODE) {
@@ -128,22 +136,16 @@ export const envSchema = z
         message: "is required when HLTV sync is enabled",
       });
     }
-
-    const bootstrapFields = [env.ADMIN_BOOTSTRAP_USERNAME, env.ADMIN_BOOTSTRAP_PASSWORD_HASH];
-    if (bootstrapFields.filter(Boolean).length === 1) {
-      context.addIssue({
-        code: "custom",
-        path: ["ADMIN_BOOTSTRAP_USERNAME"],
-        message: "username and password hash must be provided together",
-      });
-    }
   });
 
 export type AppEnv = z.infer<typeof envSchema>;
 
 export class EnvironmentValidationError extends Error {
-  constructor(readonly issues: readonly string[]) {
+  readonly issues: readonly string[];
+
+  constructor(issues: readonly string[]) {
     super(`Invalid environment configuration:\n${issues.map((issue) => `- ${issue}`).join("\n")}`);
+    this.issues = issues;
     this.name = "EnvironmentValidationError";
   }
 }

@@ -19,11 +19,11 @@ export async function createTeam(
   database: AppDatabase,
   input: {
     actorAdminUserId: bigint;
-    countryCode?: string | null;
-    logoPath?: string | null;
+    countryCode?: string | null | undefined;
+    logoPath?: string | null | undefined;
     name: string;
     reason: string;
-    shortName?: string | null;
+    shortName?: string | null | undefined;
     slug: string;
   },
 ) {
@@ -62,14 +62,14 @@ export async function createTeam(
 export async function updateTeam(
   database: AppDatabase,
   input: {
-    active?: boolean;
+    active?: boolean | undefined;
     actorAdminUserId: bigint;
-    countryCode?: string | null;
-    logoPath?: string | null;
-    name?: string;
+    countryCode?: string | null | undefined;
+    logoPath?: string | null | undefined;
+    name?: string | undefined;
     reason: string;
-    shortName?: string | null;
-    slug?: string;
+    shortName?: string | null | undefined;
+    slug?: string | undefined;
     teamId: bigint;
   },
 ) {

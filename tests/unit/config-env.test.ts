@@ -23,6 +23,8 @@ describe("parseEnv", () => {
     expect(env.ACTIVE_POOL_CACHE_TTL_SECONDS).toBe(60);
     expect(env.BALLOT_NEXT_RATE_LIMIT_PER_MINUTE).toBe(30);
     expect(env.BALLOT_RESOLVE_RATE_LIMIT_PER_MINUTE).toBe(60);
+    expect(env.ADMIN_SESSION_TTL_HOURS).toBe(12);
+    expect(env.ADMIN_LOGIN_RATE_LIMIT_PER_MINUTE).toBe(5);
     expect(env.RATE_LIMITER_MAX_KEYS).toBe(10_000);
     expect(env.TRUST_PROXY_HEADERS).toBe(false);
     expect(env.HLTV_SYNC_ENABLED).toBe(false);

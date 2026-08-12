@@ -19,11 +19,11 @@ function normalizeSlug(value: string): string {
 
 export interface CreatePlayerInput {
   actorAdminUserId: bigint;
-  countryCode?: string | null;
+  countryCode?: string | null | undefined;
   nickname: string;
-  photoPath?: string | null;
-  professionalStatus?: ProfessionalStatus;
-  realName?: string | null;
+  photoPath?: string | null | undefined;
+  professionalStatus?: ProfessionalStatus | undefined;
+  realName?: string | null | undefined;
   reason: string;
   slug: string;
 }
@@ -66,13 +66,13 @@ export async function updatePlayer(
   database: AppDatabase,
   input: {
     actorAdminUserId: bigint;
-    countryCode?: string | null;
-    nickname?: string;
-    photoPath?: string | null;
-    professionalStatus?: ProfessionalStatus;
-    realName?: string | null;
+    countryCode?: string | null | undefined;
+    nickname?: string | undefined;
+    photoPath?: string | null | undefined;
+    professionalStatus?: ProfessionalStatus | undefined;
+    realName?: string | null | undefined;
     reason: string;
-    slug?: string;
+    slug?: string | undefined;
     playerId: bigint;
   },
 ) {

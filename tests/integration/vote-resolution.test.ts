@@ -371,6 +371,17 @@ describe.sequential("Milestone 4 Vote resolution", () => {
         .from(schema.moderationAuditLogs)
         .where(eq(schema.moderationAuditLogs.voteId, vote.id)),
     ).toHaveLength(1);
+    expect(
+      await database
+        .select()
+        .from(schema.adminAuditLogs)
+        .where(
+          and(
+            eq(schema.adminAuditLogs.targetType, "VOTE"),
+            eq(schema.adminAuditLogs.targetId, vote.id.toString()),
+          ),
+        ),
+    ).toHaveLength(1);
   });
 
   it("revokes a decision, preserves zero-sum integrity, and blocks unresolved effects after freeze", async () => {

@@ -69,7 +69,7 @@ export async function setEventWhitelist(
     enabled: boolean;
     eventId: bigint;
     isMajor: boolean;
-    note?: string | null;
+    note?: string | null | undefined;
     reason: string;
     whitelistReason: WhitelistReason;
   },

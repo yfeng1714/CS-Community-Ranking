@@ -7,7 +7,7 @@ import {
   playerRankings,
   votes,
 } from "../../db/schema/index.ts";
-import { toAuditRecord } from "../audit.ts";
+import { toAuditRecord, writeAdminAudit } from "../audit.ts";
 import type { AppDatabase, AppTransaction } from "../database.ts";
 import { DomainError, requireDomainValue, requireNonBlank } from "../error.ts";
 
@@ -177,6 +177,15 @@ export class VoteModerationService {
       before: toAuditRecord(current)!,
       reason: input.reason,
       voteId: current.id,
+    });
+    await writeAdminAudit(transaction, {
+      action: "REVOKE_VOTE",
+      actorAdminUserId: input.actorAdminUserId,
+      after,
+      before: current,
+      reason: input.reason,
+      targetId: current.id.toString(),
+      targetType: "VOTE",
     });
 
     return after;
