@@ -28,6 +28,8 @@ describe("parseEnv", () => {
     expect(env.RATE_LIMITER_MAX_KEYS).toBe(10_000);
     expect(env.TRUST_PROXY_HEADERS).toBe(false);
     expect(env.HLTV_SYNC_ENABLED).toBe(false);
+    expect(env.EXTERNAL_SOURCE_MAX_AGE_DAYS).toBe(14);
+    expect(env.EXTERNAL_STATS_STALE_AFTER_HOURS).toBe(48);
   });
 
   it("parses the string false as false instead of JavaScript truthiness", () => {

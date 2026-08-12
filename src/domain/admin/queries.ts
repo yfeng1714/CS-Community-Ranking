@@ -15,6 +15,7 @@ import {
   poolChangeLogs,
   poolPlayerEntries,
   poolTeamEntries,
+  rankingSourceSnapshots,
   rosterMemberships,
   syncRuns,
   teamExternalIdentities,
@@ -58,6 +59,7 @@ export async function getAdminConsoleData(
     adminRows,
     playerIdentityRows,
     teamIdentityRows,
+    rankingSnapshotRows,
   ] = await Promise.all([
     database.select().from(teams).orderBy(teams.name),
     database.select().from(players).orderBy(players.nickname),
@@ -88,6 +90,11 @@ export async function getAdminConsoleData(
     database.select({ id: adminUsers.id, username: adminUsers.username }).from(adminUsers),
     database.select().from(playerExternalIdentities).orderBy(playerExternalIdentities.provider),
     database.select().from(teamExternalIdentities).orderBy(teamExternalIdentities.provider),
+    database
+      .select()
+      .from(rankingSourceSnapshots)
+      .orderBy(desc(rankingSourceSnapshots.capturedAt))
+      .limit(50),
   ]);
 
   const teamNames = new Map(teamRows.map((row) => [row.id, row.name]));
@@ -276,8 +283,33 @@ export async function getAdminConsoleData(
       provider: row.provider,
       recordsChanged: row.recordsChanged,
       recordsSeen: row.recordsSeen,
+      sourceFreshnessAt: iso(row.sourceFreshnessAt),
       startedAt: row.startedAt.toISOString(),
       status: row.status,
+    })),
+    rankingSourceSnapshots: rankingSnapshotRows.map((row) => ({
+      approvedAt: iso(row.approvedAt),
+      capturedAt: row.capturedAt.toISOString(),
+      id: row.id.toString(),
+      parserVersion: row.parserVersion,
+      provider: row.provider,
+      publishedAt: iso(row.publishedAt),
+      rawChecksum: row.rawChecksum,
+      normalizedData: row.normalizedData,
+      sourceUrl:
+        typeof row.normalizedData === "object" &&
+        row.normalizedData !== null &&
+        "sourceUrl" in row.normalizedData &&
+        typeof row.normalizedData.sourceUrl === "string"
+          ? row.normalizedData.sourceUrl
+          : null,
+      recordCount:
+        typeof row.normalizedData === "object" &&
+        row.normalizedData !== null &&
+        "teams" in row.normalizedData &&
+        Array.isArray(row.normalizedData.teams)
+          ? row.normalizedData.teams.length
+          : null,
     })),
   };
 }

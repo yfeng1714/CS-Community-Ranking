@@ -61,7 +61,9 @@ last sync state.
 
 ## Pending imported-change safety
 
-M7 adapters will populate `pending_import_change`. M6 defines the review envelope now:
+M7 adapters populate immutable source snapshots and `pending_import_change`. Ranking sources require
+a first explicit Admin approval; generated Pool proposals require a separate second review. M6's
+review envelope remains the exact application contract:
 
 ```json
 {

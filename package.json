@@ -29,7 +29,13 @@
     "admin:create": "node --env-file=.env scripts/admin-create.ts",
     "pool:add-player": "node --env-file=.env scripts/pool-add-player.ts",
     "pool:disable-player": "node --env-file=.env scripts/pool-disable-player.ts",
-    "score:check": "node --env-file=.env scripts/score-check.ts"
+    "score:check": "node --env-file=.env scripts/score-check.ts",
+    "job:sync-vrs": "node --env-file=.env scripts/job-sync-vrs.ts",
+    "job:sync-hltv": "node --env-file=.env scripts/job-sync-hltv.ts",
+    "job:build-pool-draft": "node --env-file=.env scripts/job-build-pool-draft.ts",
+    "pool:build-draft": "node --env-file=.env scripts/job-build-pool-draft.ts",
+    "job:snapshot-ranking": "node --env-file=.env scripts/job-snapshot-ranking.ts",
+    "assets:check": "node scripts/assets-check.ts"
   },
   "dependencies": {
     "argon2": "0.45.1",

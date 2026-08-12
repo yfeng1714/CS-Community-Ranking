@@ -15,11 +15,12 @@ You are implementing **CS Community Ranking / CS 野榜 V0.1**.
 
 ## Current handoff
 
-Milestones 0–6 are implemented and the complete repository received an independent Gate D audit on
-2026-08-12. The private Admin/session/audit workflows and the M7 pending-import boundary were
-corrected and reverified; see `docs/IMPLEMENTATION_REVIEW_2026-08-12.md`. The repository is ready
-for owner handoff before Milestone 7. Do not begin external adapters or live provider work until the
-owner explicitly requests that milestone.
+Milestones 0–7 are implemented. The complete repository received an independent Gate D audit on
+2026-08-12, followed by fixture-tested Valve VRS/HLTV adapters, scheduled sync commands, explicit
+source-snapshot approval, freshness/stale fallback, review-only Pool draft generation, daily ranking
+snapshots, and local asset attribution. Do not begin Milestone 8 until the owner explicitly requests
+it. See `docs/IMPLEMENTATION_REVIEW_2026-08-12.md` for Gate D and `docs/PROGRESS.md` for the latest
+M7 verification.
 
 Always trust the latest `docs/PROGRESS.md` over this summary if they ever differ.
 

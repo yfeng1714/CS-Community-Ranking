@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { ArrowRightIcon } from "@/components/icons";
 import { PlayerPortrait } from "@/components/player-portrait";
 import { getDatabase } from "@/db/client";
+import { getEnv } from "@/config/env";
 import { getPublicPlayer } from "@/domain/public/queries";
 
 export const dynamic = "force-dynamic";
@@ -15,7 +16,12 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const player = await getPublicPlayer(getDatabase(), slug);
+  const player = await getPublicPlayer(
+    getDatabase(),
+    slug,
+    new Date(),
+    getEnv().EXTERNAL_STATS_STALE_AFTER_HOURS,
+  );
   return player
     ? { title: player.nickname, description: `${player.nickname} 的 CS 野榜社区排名与数据。` }
     : { title: "选手未找到" };
@@ -31,7 +37,12 @@ function formatMetric(value: number | null): string {
 
 export default async function PlayerPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const player = await getPublicPlayer(getDatabase(), slug);
+  const player = await getPublicPlayer(
+    getDatabase(),
+    slug,
+    new Date(),
+    getEnv().EXTERNAL_STATS_STALE_AFTER_HOURS,
+  );
   if (!player) {
     notFound();
   }

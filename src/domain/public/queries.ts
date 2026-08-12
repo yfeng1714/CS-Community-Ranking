@@ -150,6 +150,7 @@ export async function getPublicPlayer(
   database: AppDatabase,
   slug: string,
   now: Date = new Date(),
+  statsStaleAfterHours = 48,
 ): Promise<PublicPlayerProfile | null> {
   const [player] = await database
     .select({
@@ -178,7 +179,7 @@ export async function getPublicPlayer(
   const edition = await getActivePublicEdition(database);
   const [rankingRows, stats] = await Promise.all([
     edition ? loadRankingRows(database, edition.id) : Promise.resolve([]),
-    getPublicPlayerStats(database, player.id, now),
+    getPublicPlayerStats(database, player.id, now, statsStaleAfterHours),
   ]);
   const ranking = presentRankingRows(rankingRows).find((row) => row.slug === slug) ?? null;
 
@@ -204,6 +205,7 @@ export async function getPublicPlayerStats(
   database: AppDatabase,
   playerId: bigint,
   now: Date = new Date(),
+  staleAfterHours = 48,
 ): Promise<PublicPlayerStats> {
   const statRows = await database
     .select({
@@ -232,7 +234,7 @@ export async function getPublicPlayerStats(
 
   return {
     careerRating: toPublicMetric(career?.value),
-    freshness: dataFreshness(capturedAt, now),
+    freshness: dataFreshness(capturedAt, now, staleAfterHours * 60 * 60 * 1_000),
     recentMaps: recent?.maps ?? null,
     recentRating: toPublicMetric(recent?.value),
     statsCapturedAt: capturedAt?.toISOString() ?? null,

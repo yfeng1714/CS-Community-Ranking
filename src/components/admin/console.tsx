@@ -78,7 +78,7 @@ export function AdminConsole({
     <div className="admin-console">
       <section className="admin-dashboard" id="overview">
         <div className="admin-dashboard__intro">
-          <span className="eyebrow">Milestone 6</span>
+          <span className="eyebrow">Milestone 7</span>
           <h1>Control room</h1>
           <p>
             Every successful change below is attributed, reasoned, and committed with its audit
@@ -810,12 +810,78 @@ export function AdminConsole({
       </Section>
 
       <Section
-        description="Approval re-locks the proposal, rejects conflicts and newer sync runs, compares expected state, then applies and audits in one transaction."
+        description="Approve a parsed source snapshot before draft generation. Pool proposals receive a separate review before any product change is applied."
         id="imports"
-        title="Pending imports"
+        title="External sources & pending imports"
       >
+        {data.rankingSourceSnapshots.length === 0 ? (
+          <p className="admin-empty">No ranking source snapshots yet.</p>
+        ) : (
+          <div className="admin-table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Source</th>
+                  <th>Freshness</th>
+                  <th>Parser</th>
+                  <th>Approval</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data.rankingSourceSnapshots.map((snapshot) => (
+                  <tr key={snapshot.id}>
+                    <td>
+                      {snapshot.provider}
+                      <small>{snapshot.recordCount ?? "?"} records</small>
+                      {snapshot.sourceUrl && (
+                        <a href={snapshot.sourceUrl} rel="noreferrer" target="_blank">
+                          Open source
+                        </a>
+                      )}
+                    </td>
+                    <td>
+                      Published {formatTime(snapshot.publishedAt)}
+                      <small>Captured {formatTime(snapshot.capturedAt)}</small>
+                    </td>
+                    <td>{snapshot.parserVersion}</td>
+                    <td>
+                      <details>
+                        <summary>Inspect normalized snapshot</summary>
+                        <pre>
+                          {JSON.stringify(
+                            {
+                              checksum: snapshot.rawChecksum,
+                              data: snapshot.normalizedData,
+                            },
+                            null,
+                            2,
+                          )}
+                        </pre>
+                      </details>
+                      {snapshot.approvedAt ? (
+                        <>
+                          Approved<small>{formatTime(snapshot.approvedAt)}</small>
+                        </>
+                      ) : (
+                        <AdminActionForm
+                          compact
+                          action="ranking-source.approve"
+                          submitLabel="Approve source"
+                          hidden={{ snapshotId: snapshot.id }}
+                          fields={[reasonField]}
+                        />
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
         {data.pendingImports.length === 0 ? (
-          <p className="admin-empty">No import proposals yet. M7 will populate this queue.</p>
+          <p className="admin-empty">
+            No import proposals yet. Approve current sources, then run the Pool draft job.
+          </p>
         ) : (
           <div className="admin-table-wrap">
             <table>
@@ -1009,7 +1075,9 @@ export function AdminConsole({
                     {run.provider} · {run.recordsChanged}/{run.recordsSeen} changed
                   </span>
                   {run.errorSummary && <p>{run.errorSummary}</p>}
-                  <small>{formatTime(run.startedAt)}</small>
+                  <small>
+                    Started {formatTime(run.startedAt)} · source {formatTime(run.sourceFreshnessAt)}
+                  </small>
                   <details>
                     <summary>Parser metadata</summary>
                     <pre>{JSON.stringify(run.metadata, null, 2)}</pre>

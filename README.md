@@ -5,12 +5,12 @@ simple pairwise votes.
 
 ## Status
 
-Milestones 0–6 are implemented: the runtime foundation, full V0.1 database schema, data-driven
+Milestones 0–7 are implemented: the runtime foundation, full V0.1 database schema, data-driven
 Candidate Pool, secure anonymous visitor identity, atomic random Ballot issuance, exactly-once
 Vote/ranking transactions, and the responsive public Vote/Ranking/Player vertical slice are in
-place, together with the authenticated and fully audited Admin Console. Milestones 0–6 and the M7
-import boundary passed an independent whole-repository review at Owner Review Gate D; external
-VRS/HLTV adapters have not started.
+place, together with the authenticated Admin Console, fixture-tested VRS/HLTV adapters, external
+snapshot approval, freshness, and review-only Candidate Pool drafts. Gate D remains the governing
+import boundary: no provider result becomes a live Pool change automatically.
 
 ## Technology
 
@@ -45,6 +45,9 @@ Health endpoints:
 
 - [http://localhost:3000/api/health/live](http://localhost:3000/api/health/live)
 - [http://localhost:3000/api/health/ready](http://localhost:3000/api/health/ready)
+
+External sync jobs are deliberately separate from web requests. See `docs/DATA_SOURCES.md` before
+enabling HLTV or running `job:sync-vrs`, `job:sync-hltv`, or `job:build-pool-draft`.
 
 The fictional seed activates its Edition only when no other Edition is active. Use `/` to vote,
 `/ranking` to search the current community ranking, and a ranking-row link to open a Player page.

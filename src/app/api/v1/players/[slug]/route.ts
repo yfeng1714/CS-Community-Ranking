@@ -1,4 +1,5 @@
 import { getDatabase } from "@/db/client";
+import { getEnv } from "@/config/env";
 import { getPublicPlayer } from "@/domain/public/queries";
 import { getLogger } from "@/observability/logger";
 
@@ -8,7 +9,8 @@ export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 const handler = createPlayerHandler({
-  loadPlayer: (slug) => getPublicPlayer(getDatabase(), slug),
+  loadPlayer: (slug) =>
+    getPublicPlayer(getDatabase(), slug, new Date(), getEnv().EXTERNAL_STATS_STALE_AFTER_HOURS),
   onUnexpectedError(error) {
     const errorCode =
       typeof error === "object" &&

@@ -25,9 +25,13 @@ export function calculateWinRate(wins: number, losses: number): number | null {
   return decisions === 0 ? null : wins / decisions;
 }
 
-export function dataFreshness(capturedAt: Date | null, now: Date): DataFreshness {
+export function dataFreshness(
+  capturedAt: Date | null,
+  now: Date,
+  staleAfterMilliseconds: number = PUBLIC_STATS_STALE_AFTER_MS,
+): DataFreshness {
   if (!capturedAt) {
     return "MISSING";
   }
-  return now.getTime() - capturedAt.getTime() > PUBLIC_STATS_STALE_AFTER_MS ? "STALE" : "CURRENT";
+  return now.getTime() - capturedAt.getTime() > staleAfterMilliseconds ? "STALE" : "CURRENT";
 }

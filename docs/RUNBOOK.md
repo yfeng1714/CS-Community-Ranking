@@ -94,6 +94,28 @@ lifecycle.
 CI now provisions pinned PostgreSQL, applies committed migrations to an empty database, and runs
 this integration suite. It must remain fixture-only; never add a live provider request to CI.
 
+## External data jobs
+
+Run jobs only from a trusted scheduled service or terminal with database access. They are one-shot
+commands and never run inside the web request path.
+
+```bash
+pnpm job:sync-vrs
+pnpm job:sync-hltv -- --rankingUrl <official-ranking-url> --published <ISO-timestamp>
+pnpm job:sync-hltv -- --start YYYY-MM-DD --end YYYY-MM-DD
+pnpm job:build-pool-draft -- --edition 2026
+pnpm job:snapshot-ranking -- --edition 2026 --date YYYY-MM-DD
+pnpm assets:check
+```
+
+Keep `HLTV_SYNC_ENABLED=false` until the User-Agent, low-frequency schedule, and source URLs have
+been reviewed. Never respond to blocking by bypassing access controls. A failed sync is visible in
+Admin under **Sync runs / parser failures** and leaves stale snapshots intact.
+
+The safe operating order is: sync → inspect and approve each source snapshot → generate Pool draft
+→ inspect conflicts/freshness/JSON → approve or reject individual proposals. The generator reports
+possible removals but deliberately cannot remove live Pool entries.
+
 ## Candidate Pool CLI
 
 Milestone 2 provides trusted operational commands before the Admin UI exists:

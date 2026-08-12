@@ -2,14 +2,29 @@
 
 ## Current position
 
-- **Milestone:** 6 — Admin Console and audited operations
-- **Status:** Implemented and independently audited at Owner Review Gate D; ready for owner handoff
-  before Milestone 7
-- **Review boundary:** Milestones 0–6 and the M7 import-approval boundary were reverified across the
-  whole repository. External adapters, sync jobs, and live data ingestion have not started.
+- **Milestone:** 7 — External data adapters and scheduled jobs
+- **Status:** Implemented and verified; ready for owner review before Milestone 8
+- **Review boundary:** VRS/HLTV adapters, source snapshots/approval, freshness/stale fallback,
+  review-only Pool drafts, commands, daily ranking snapshots, and asset attribution are complete.
+  No production sync was run.
 - **Last updated:** 2026-08-12
 
 ## Completed
+
+- Official-repository Valve VRS Markdown and narrow HLTV HTML adapters normalize only approved
+  ranking and Rating fields. Saved fixtures cover expected fields and parser drift; CI makes no live
+  provider request.
+- Provider fetches enforce HTTPS/source boundaries, content type, a 5 MiB cap, timeout, bounded
+  retry/backoff, single-request sequencing, configured HLTV delay/User-Agent, and a host circuit
+  breaker. Failures close `sync_run` and preserve stale database data.
+- Ranking syncs store immutable normalized snapshots with parser version, freshness, and SHA-256
+  checksum. Admin explicitly approves each source with an audit before Pool generation consumes it.
+- Pool draft generation reads only latest approved HLTV/VRS snapshots, verifies formal rosters,
+  emits stale/identity/roster conflicts, reports would-be removals, and writes only Gate-D `PENDING`
+  additions. It never changes or removes live Pool membership automatically.
+- One-shot commands cover VRS sync, HLTV ranking/player-stat sync, Pool draft generation, and
+  idempotent tied daily ranking snapshots. The local asset manifest/check prohibits hotlinking and
+  requires rights notes.
 
 - Milestones 0–5 remain implemented: pinned runtime/CI foundation, full schema and migrations,
   data-driven Candidate Pool, anonymous visitor identity, atomic uniform-random Ballot issuance,
@@ -45,8 +60,8 @@
 | `pnpm lint`                 | PASS   | Zero warnings.                                                           |
 | `pnpm format:check`         | PASS   | Source, tests, configuration, and docs match Prettier.                   |
 | `pnpm typecheck`            | PASS   | Strict TypeScript `6.0.3`.                                               |
-| `pnpm test:unit`            | PASS   | 24 files, 90 tests.                                                      |
-| `pnpm test:integration`     | PASS   | 7 files, 31 tests against PostgreSQL 18 and isolated migrated databases. |
+| `pnpm test:unit`            | PASS   | 27 files, 98 tests.                                                      |
+| `pnpm test:integration`     | PASS   | 8 files, 35 tests against PostgreSQL 18 and isolated migrated databases. |
 | `pnpm test:e2e`             | PASS   | 6 public/Admin journeys in desktop and mobile Chromium.                  |
 | `pnpm build`                | PASS   | Optimized Next.js `16.3.0` Webpack build.                                |
 | `pnpm db:check`             | PASS   | Drizzle schema and migration journal are consistent.                     |
@@ -76,9 +91,11 @@ Docker was kept off for static work, used only for PostgreSQL/browser verificati
 
 ## Known limitations
 
-- M7 has not run: provider adapters, snapshot writers, import proposal generators, scheduled job
-  commands, attribution/assets, and real freshness data do not exist yet. No live HLTV/VRS request
-  was made.
+- No production provider sync or real Candidate Pool draft was run. HLTV remains disabled by
+  default, and its replaceable parser fails closed when upstream markup changes.
+- VRS Team matching primarily uses normalized Team name because Valve's table exposes no stable
+  organization ID. Ambiguous/missing matches are review conflicts and are never guessed.
+- Scheduled-service configuration belongs to deployment in M9; M7 supplies one-shot commands.
 - There is one Admin authority level. Roles, MFA, distributed login throttling, IP-risk processing,
   analytics, retention jobs, and broader response-header work remain outside M6.
 - Pending expected-state equality is deliberately exact. State drift requires a regenerated
@@ -90,7 +107,6 @@ Docker was kept off for static work, used only for PostgreSQL/browser verificati
 
 ## Next task
 
-Wait for the owner's review of this independent gate and explicit instruction before starting
-Milestone 7. Then implement fixture-tested Valve VRS and narrow HLTV adapters, sync history,
-approved snapshot writes, attribution/freshness, and reviewable Candidate Pool proposals. Do not
-make live provider requests in tests/CI and do not make any imported change live automatically.
+Wait for owner review and explicit instruction before Milestone 8. Then implement observe-mode
+anti-abuse risk keys, product analytics/KPI queries, broader integrity and retention jobs, and
+security hardening. Deployment and production cloud-database selection remain Milestone 9.

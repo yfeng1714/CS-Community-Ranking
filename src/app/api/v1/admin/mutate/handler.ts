@@ -18,6 +18,7 @@ import type { CandidatePoolService } from "@/domain/pool/service";
 import { addRosterMembership, endRosterMembership } from "@/domain/rosters/service";
 import { createTeam, updateTeam } from "@/domain/teams/service";
 import { VoteModerationService } from "@/domain/votes/moderation";
+import { approveRankingSourceSnapshot } from "@/domain/external-data/snapshots";
 
 import {
   adminErrorResponse,
@@ -186,6 +187,7 @@ const mutationSchema = z.discriminatedUnion("action", [
     decision: z.enum(["APPROVE", "REJECT"]),
     pendingChangeId: id,
   }),
+  z.strictObject({ action: z.literal("ranking-source.approve"), ...base, snapshotId: id }),
   z.strictObject({ action: z.literal("vote.revoke"), ...base, voteId: id }),
 ]);
 
@@ -297,6 +299,12 @@ export function createAdminMutationHandler(dependencies: Dependencies) {
             dependencies.database,
             dependencies.pool,
           ).review({
+            ...mutation,
+            actorAdminUserId,
+          });
+          break;
+        case "ranking-source.approve":
+          result = await approveRankingSourceSnapshot(dependencies.database, {
             ...mutation,
             actorAdminUserId,
           });

@@ -87,6 +87,8 @@ export const envSchema = z
     HLTV_REQUEST_DELAY_MS: positiveIntegerFromEnvironment.default(3000),
     HLTV_USER_AGENT: optionalNonEmptyString,
     VRS_SOURCE_URL: optionalUrl,
+    EXTERNAL_SOURCE_MAX_AGE_DAYS: positiveIntegerFromEnvironment.default(14),
+    EXTERNAL_STATS_STALE_AFTER_HOURS: positiveIntegerFromEnvironment.default(48),
   })
   .superRefine((env, context) => {
     if (env.NODE_ENV === "production") {
