@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ProductPageView } from "@/components/analytics/page-view";
 
 export const metadata: Metadata = {
   title: "关于与规则",
@@ -9,6 +10,7 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   return (
     <main className="public-page reading-page" id="main-content">
+      <ProductPageView event={{ eventType: "PAGE_VIEW", metadata: { page: "about" } }} />
       <header className="reading-hero">
         <span className="eyebrow">关于这张野榜</span>
         <h1>数据看专业榜，争论留给社区。</h1>

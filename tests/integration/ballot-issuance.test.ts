@@ -83,6 +83,7 @@ describe("Milestone 3 visitor identity and Ballot issuance", () => {
     const created = await service.resolve(undefined);
 
     expect(created.tokenToSet).toBeDefined();
+    expect(created.created).toBe(true);
     const token = created.tokenToSet ?? "";
     const [stored] = await database
       .select({ tokenHash: schema.anonymousVisitors.tokenHash })
@@ -93,7 +94,7 @@ describe("Milestone 3 visitor identity and Ballot issuance", () => {
     );
     expect(stored?.tokenHash.toString("utf8")).not.toContain(token);
 
-    await expect(service.resolve(token)).resolves.toMatchObject({ id: created.id });
+    await expect(service.resolve(token)).resolves.toMatchObject({ created: false, id: created.id });
   });
 
   it("serializes concurrent next requests, preserves the ordinal, expires without refund, and rejects stale Pool IDs", async () => {
@@ -190,5 +191,51 @@ describe("Milestone 3 visitor identity and Ballot issuance", () => {
         ),
       );
     expect(finalUsage?.ballotsIssued).toBe(3);
+  });
+
+  it("records risk reasons in observe mode and enforces them only when configured", async () => {
+    const [observeVisitor, enforceVisitor] = await database
+      .insert(schema.anonymousVisitors)
+      .values([
+        { tokenHash: Buffer.from("observe-risk-visitor") },
+        { tokenHash: Buffer.from("enforce-risk-visitor") },
+      ])
+      .returning();
+    if (!observeVisitor || !enforceVisitor) throw new Error("Missing risk visitors");
+    const risk = {
+      ipRiskKey: Buffer.alloc(32, 7),
+      reasonCodes: ["EXTREME_REQUEST_VELOCITY" as const],
+    };
+    const now = () => new Date("2026-08-12T10:00:00Z");
+    const observe = new BallotIssuanceService(
+      database,
+      activePool,
+      { riskEnforcementMode: "observe", timeZone: "Asia/Shanghai" },
+      now,
+    );
+    const enforce = new BallotIssuanceService(
+      database,
+      activePool,
+      { riskEnforcementMode: "enforce", timeZone: "Asia/Shanghai" },
+      now,
+    );
+
+    await observe.issue(observeVisitor.id, risk);
+    await enforce.issue(enforceVisitor.id, risk);
+    const rows = await database
+      .select({
+        eligibility: schema.ballots.rankingEligibility,
+        reasons: schema.ballots.riskReasonCodes,
+      })
+      .from(schema.ballots)
+      .where(
+        and(eq(schema.ballots.editionId, editionId), eq(schema.ballots.usageDate, "2026-08-12")),
+      );
+    expect(rows).toEqual(
+      expect.arrayContaining([
+        { eligibility: "ELIGIBLE", reasons: ["EXTREME_REQUEST_VELOCITY"] },
+        { eligibility: "SUSPICIOUS", reasons: ["EXTREME_REQUEST_VELOCITY"] },
+      ]),
+    );
   });
 });

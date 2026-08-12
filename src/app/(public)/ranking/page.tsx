@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { RankingTable } from "@/components/ranking-table";
+import { ProductPageView } from "@/components/analytics/page-view";
 import { getDatabase } from "@/db/client";
 import { getPublicRanking } from "@/domain/public/queries";
 
@@ -27,6 +28,7 @@ export default async function RankingPage() {
 
   return (
     <main className="public-page ranking-page" id="main-content">
+      <ProductPageView event={{ eventType: "RANKING_VIEW", metadata: { page: "ranking" } }} />
       <header className="page-hero page-hero--ranking">
         <div>
           <span className="eyebrow">

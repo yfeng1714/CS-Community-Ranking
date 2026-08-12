@@ -1,6 +1,7 @@
 import { getDatabase } from "@/db/client";
 import { getPublicRanking } from "@/domain/public/queries";
 import { getLogger } from "@/observability/logger";
+import { getPublicRiskMonitor } from "@/security/runtime";
 
 import { createRankingsHandler } from "./handler";
 
@@ -22,4 +23,13 @@ const handler = createRankingsHandler({
   },
 });
 
-export const GET = handler;
+export function GET(request: Request): Promise<Response> | Response {
+  const limit = getPublicRiskMonitor().inspect(request.headers).infrastructureLimit;
+  if (limit && !limit.allowed) {
+    return Response.json(
+      { error: { code: "INFRASTRUCTURE_RATE_LIMITED", message: "Request rate limited" } },
+      { headers: { "retry-after": limit.retryAfterSeconds.toString() }, status: 429 },
+    );
+  }
+  return handler();
+}

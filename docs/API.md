@@ -125,3 +125,19 @@ missing records are `404`; domain, uniqueness, and reference conflicts are `409`
 and `no-store`; unexpected errors are detail-free `500` responses.
 
 The action/body catalogue and transaction semantics are documented in `docs/ADMIN_CONSOLE.md`.
+
+## Implemented in Milestone 8
+
+### `POST /api/v1/events`
+
+Accepts one exact first-party event from `PAGE_VIEW`, `RANKING_VIEW`, `PLAYER_VIEW`,
+`VOTE_RESULT_VIEW`, `NEXT_CLICK`, or `SHARE_CLICK`, with only bounded page/player-slug metadata.
+Vote choices, cookies, IPs, and arbitrary metadata are rejected. Valid events return `204`; an
+analytics write failure returns `202` and never blocks the product. A page view without an existing
+visitor cookie is stored anonymously and does not create identity.
+
+All public APIs share the bounded process-local public limiter. Under explicitly trusted proxy
+configuration its key is the daily IP HMAC; otherwise an unattributed global bucket protects
+availability without inventing a client identity. This limiter never changes quota or ranking
+truth. Ballot issuance persists risk reasons and the HMAC; observe mode records them, while enforce
+mode makes the Ballot internally suspicious.

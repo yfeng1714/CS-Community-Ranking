@@ -1,15 +1,19 @@
 # Database Model and Operations
 
-## Milestone 1 status
+## Schema status
 
 The complete V0.1 PostgreSQL model is implemented in:
 
 - `src/db/schema/enums.ts`
 - `src/db/schema/tables.ts`
 - `drizzle/0000_m1_initial_schema.sql`
+- `drizzle/0001_m8_integrity_hardening.sql`
+- `drizzle/0002_m8_risk_key_constraints.sql`
 
-The initial migration creates 27 tables and 21 PostgreSQL enums. It is generated from the Drizzle
-schema, committed for review, and tested against an empty PostgreSQL 18 database before Gate B.
+The initial migration creates 27 tables and 21 PostgreSQL enums. M8 adds `risk_observation`,
+`api_request_metric`, and persisted Ballot risk reasons through an ordered forward migration. The
+migrations are generated from the Drizzle schema, committed for review, and tested against an empty
+PostgreSQL 18 database.
 
 ## Conventions
 
@@ -35,7 +39,7 @@ schema, committed for review, and tested against an empty PostgreSQL 18 database
 | Anonymous voting           | `anonymous_visitor`, `visitor_daily_usage`, `ballot`, `vote`                                                                                 |
 | Admin and audit            | `admin_user`, `admin_session`, `admin_audit_log`, `pool_change_log`, `moderation_audit_log`                                                  |
 | Imports and external data  | `sync_run`, `pending_import_change`, `player_external_identity`, `team_external_identity`, `player_stat_snapshot`, `ranking_source_snapshot` |
-| Product analytics          | `product_event`                                                                                                                              |
+| Product analytics/risk     | `product_event`, `api_request_metric`, `risk_observation`                                                                                    |
 
 ## Database-enforced invariants
 
@@ -138,3 +142,6 @@ run when `NODE_ENV=production`. It is illustrative test data, not the launch Can
 - No migration rollback is generated automatically; before production data exists, a failed local
   migration is tested by rebuilding an empty database.
 - PostgreSQL extensions are not required by the initial schema.
+- M8 persists only date-rotating 32-byte IP HMAC keys, bounded reason codes, and API timing/status
+  metrics. Raw IP addresses have no schema column. Retention nulls old Ballot/Vote keys and either
+  nulls or removes old risk observations while preserving Vote/ranking history.

@@ -148,6 +148,7 @@ export class VoteResolutionService {
         ipRiskKey: ballot.issuedIpRiskKey,
         loserPlayerId: choicePlayers.loserPlayerId,
         status: voteStatus,
+        riskReasonCodes: ballot.riskReasonCodes,
         visitorId: ballot.visitorId,
         winnerPlayerId: choicePlayers.winnerPlayerId,
       })

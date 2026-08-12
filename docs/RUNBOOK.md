@@ -116,6 +116,33 @@ The safe operating order is: sync → inspect and approve each source snapshot �
 → inspect conflicts/freshness/JSON → approve or reject individual proposals. The generator reports
 possible removals but deliberately cannot remove live Pool entries.
 
+## M8 analytics, integrity, and retention jobs
+
+Run these one-shot commands from a trusted terminal or the M9 scheduled services:
+
+```bash
+pnpm report:kpi -- --edition 2026 --date YYYY-MM-DD
+pnpm job:integrity-check -- --edition 2026
+pnpm job:expire-ballots -- --batch 500
+pnpm job:retention-cleanup
+```
+
+Dates use `Asia/Shanghai`. The KPI report is first-party and reports issuance/decision averages,
+resolution/skip/throttle rates, per-player skip rate, repeat visitors, result-to-Next and
+post-vote-ranking navigation, provider freshness, and public voting API latency/errors. A missing
+denominator is `null`, never an invented percentage.
+
+`job:integrity-check` exits nonzero on a violation and should alert in M9. Never repair data
+automatically from the job output; preserve the report and investigate transactions/audit logs.
+`job:expire-ballots` is bounded and idempotent. `job:retention-cleanup` keeps Vote/ranking history,
+nulls expired network HMACs on durable Ballot/Vote rows, purges transient risk observations, and
+purges expired product/API metric rows.
+
+Keep `RISK_ENFORCEMENT_MODE=observe` through initial closed beta. Switching to `enforce` is a
+configuration action but should follow false-positive review of shared campus/office/NAT traffic.
+`TRUST_PROXY_HEADERS=true` is safe only when the app is reached exclusively through the selected
+Railway or Cloudflare proxy mode; otherwise leave it false.
+
 ## Candidate Pool CLI
 
 Milestone 2 provides trusted operational commands before the Admin UI exists:

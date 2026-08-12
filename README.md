@@ -5,12 +5,14 @@ simple pairwise votes.
 
 ## Status
 
-Milestones 0–7 are implemented: the runtime foundation, full V0.1 database schema, data-driven
+Milestones 0–8 are implemented: the runtime foundation, full V0.1 database schema, data-driven
 Candidate Pool, secure anonymous visitor identity, atomic random Ballot issuance, exactly-once
 Vote/ranking transactions, and the responsive public Vote/Ranking/Player vertical slice are in
 place, together with the authenticated Admin Console, fixture-tested VRS/HLTV adapters, external
 snapshot approval, freshness, and review-only Candidate Pool drafts. Gate D remains the governing
-import boundary: no provider result becomes a live Pool change automatically.
+import boundary: no provider result becomes a live Pool change automatically. M8 adds daily
+privacy-preserving network risk keys, observe/enforce risk collection, first-party analytics/KPIs,
+integrity and retention jobs, bounded public API protection, and site-wide security headers.
 
 ## Technology
 
@@ -82,6 +84,10 @@ If port `5432` is already occupied, set `POSTGRES_PORT` to another host port in
 | `pnpm pool:add-player -- ...` | Create and admit an individual Special player |
 | `pnpm pool:disable-player -- ...` | Disable future pairing without deleting history |
 | `pnpm score:check -- --edition <code>` | Verify zero-sum and Vote/ranking/aggregate integrity |
+| `pnpm report:kpi -- --edition <code> [--date YYYY-MM-DD]` | Generate the first-party daily KPI report |
+| `pnpm job:integrity-check -- --edition <code>` | Check ranking, Pool, Vote, aggregate, and risk-key integrity |
+| `pnpm job:expire-ballots [-- --batch <count>]` | Batch-expire overdue open Ballots |
+| `pnpm job:retention-cleanup` | Apply configured analytics and IP-risk-key retention |
 
 ## Documentation
 

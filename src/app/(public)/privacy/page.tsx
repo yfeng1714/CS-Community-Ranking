@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ProductPageView } from "@/components/analytics/page-view";
 
 export const metadata: Metadata = {
   title: "隐私说明",
@@ -8,6 +9,7 @@ export const metadata: Metadata = {
 export default function PrivacyPage() {
   return (
     <main className="public-page reading-page privacy-page" id="main-content">
+      <ProductPageView event={{ eventType: "PAGE_VIEW", metadata: { page: "privacy" } }} />
       <header className="reading-hero reading-hero--compact">
         <span className="eyebrow">隐私说明 · V0.1</span>
         <h1>不要求登录，也不保存你的原始 IP。</h1>

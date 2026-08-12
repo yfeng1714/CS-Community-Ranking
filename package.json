@@ -35,6 +35,10 @@
     "job:build-pool-draft": "node --env-file=.env scripts/job-build-pool-draft.ts",
     "pool:build-draft": "node --env-file=.env scripts/job-build-pool-draft.ts",
     "job:snapshot-ranking": "node --env-file=.env scripts/job-snapshot-ranking.ts",
+    "job:integrity-check": "node --env-file=.env scripts/job-integrity-check.ts",
+    "job:expire-ballots": "node --env-file=.env scripts/job-expire-ballots.ts",
+    "job:retention-cleanup": "node --env-file=.env scripts/job-retention-cleanup.ts",
+    "report:kpi": "node --env-file=.env scripts/report-kpi.ts",
     "assets:check": "node scripts/assets-check.ts"
   },
   "dependencies": {

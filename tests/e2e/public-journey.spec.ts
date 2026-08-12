@@ -9,7 +9,10 @@ function ordinal(text: string | null): number {
 test("votes, keeps the result visible, advances explicitly, and treats reload as Skip", async ({
   page,
 }) => {
-  await page.goto("/");
+  const response = await page.goto("/");
+  expect(response?.headers()["content-security-policy"]).toContain("frame-ancestors 'none'");
+  expect(response?.headers()["x-content-type-options"]).toBe("nosniff");
+  expect(response?.headers()["referrer-policy"]).toBe("strict-origin-when-cross-origin");
   await expect(page.getByRole("heading", { name: "两个人。选一个。" })).toBeVisible();
 
   const groupLabel = page.locator(".vote-intro .eyebrow");

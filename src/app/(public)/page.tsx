@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { VoteExperience } from "@/components/vote/vote-experience";
+import { ProductPageView } from "@/components/analytics/page-view";
 
 export const metadata: Metadata = {
   title: "投票",
@@ -10,6 +11,7 @@ export const metadata: Metadata = {
 export default function VotePage() {
   return (
     <main className="vote-page" id="main-content">
+      <ProductPageView event={{ eventType: "PAGE_VIEW", metadata: { page: "vote" } }} />
       <VoteExperience />
     </main>
   );

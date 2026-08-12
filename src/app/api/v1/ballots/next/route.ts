@@ -6,7 +6,9 @@ import { BallotIssuanceService } from "@/domain/ballots/service";
 import { getRuntimeCandidatePoolService } from "@/domain/pool/runtime";
 import { VisitorIdentityService } from "@/domain/visitors/service";
 import { getLogger } from "@/observability/logger";
+import { errorCodeFromResponse, recordApiMetric } from "@/observability/api-metrics";
 import { BoundedFixedWindowRateLimiter } from "@/security/rate-limiter";
+import { getPublicRiskMonitor } from "@/security/runtime";
 
 import { createNextBallotHandler } from "./handler";
 
@@ -41,6 +43,7 @@ function getHandler(): ReturnType<typeof createNextBallotHandler> {
         env.BALLOT_NEXT_RATE_LIMIT_PER_MINUTE,
         env.RATE_LIMITER_MAX_KEYS,
       ),
+      riskMonitor: getPublicRiskMonitor(),
       visitorCookieMaxAgeDays: env.VISITOR_COOKIE_MAX_AGE_DAYS,
       visitorCookieName: env.VISITOR_COOKIE_NAME,
       visitors: new VisitorIdentityService(database, env.VISITOR_TOKEN_HASH_PEPPER),
@@ -50,6 +53,31 @@ function getHandler(): ReturnType<typeof createNextBallotHandler> {
   return handler;
 }
 
-export function POST(request: NextRequest): Promise<Response> {
-  return getHandler()(request);
+export async function POST(request: NextRequest): Promise<Response> {
+  const startedAt = performance.now();
+  const response = await getHandler()(request);
+  const latencyMs = Math.max(0, Math.round(performance.now() - startedAt));
+  const errorCode = await errorCodeFromResponse(response);
+  getLogger().info(
+    {
+      errorCode,
+      event: "http_request",
+      latencyMs,
+      requestId: request.headers.get("x-request-id"),
+      route: "/api/v1/ballots/next",
+      statusCode: response.status,
+    },
+    "Public API request completed",
+  );
+  try {
+    await recordApiMetric(getDatabase(), {
+      errorCode,
+      latencyMs,
+      route: "/api/v1/ballots/next",
+      statusCode: response.status,
+    });
+  } catch {
+    getLogger().warn({ event: "api_metric_write_failed" }, "API metric write failed");
+  }
+  return response;
 }

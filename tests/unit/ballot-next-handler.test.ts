@@ -64,7 +64,10 @@ describe("POST /api/v1/ballots/next handler", () => {
     expect(response.headers.get("set-cookie")).toMatch(/HttpOnly/);
     expect(response.headers.get("set-cookie")).toMatch(/Secure/);
     expect(response.headers.get("set-cookie")).toMatch(/SameSite=lax/i);
-    expect(deps.ballotIssuance.issue).toHaveBeenCalledWith(7n);
+    expect(deps.ballotIssuance.issue).toHaveBeenCalledWith(7n, {
+      ipRiskKey: null,
+      reasonCodes: [],
+    });
     await expect(response.json()).resolves.toEqual(ballotResponse);
   });
 

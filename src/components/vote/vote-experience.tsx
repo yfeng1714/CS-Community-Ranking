@@ -5,6 +5,7 @@ import { useCallback, useEffect, useRef, useState, type RefObject } from "react"
 
 import type { IssuedBallotResponse } from "@/domain/ballots/service";
 import type { ResolutionChoice, ResolutionResponse } from "@/domain/votes/presentation";
+import { recordBrowserProductEvent } from "@/components/analytics/product-event";
 
 import { ArrowRightIcon, RefreshIcon } from "../icons";
 import { browserVotingApi, PublicApiError } from "./api";
@@ -105,6 +106,7 @@ export function VoteExperience() {
       setError(null);
       try {
         const resolved = await browserVotingApi.resolve(ballot.ballot.id, choice);
+        recordBrowserProductEvent({ eventType: "VOTE_RESULT_VIEW" });
         setResult(resolved);
         setPhase("result");
       } catch (caught) {
@@ -136,6 +138,7 @@ export function VoteExperience() {
   }, [choose, phase]);
 
   async function nextBallot() {
+    recordBrowserProductEvent({ eventType: "NEXT_CLICK" });
     setPhase("loading");
     setError(null);
     try {

@@ -11,6 +11,7 @@ const VISITOR_TOKEN_BYTES = 32;
 const VISITOR_TOKEN_PATTERN = /^[A-Za-z0-9_-]{43}$/;
 
 export interface ResolvedVisitor {
+  created: boolean;
   id: bigint;
   tokenToSet?: string;
 }
@@ -52,6 +53,13 @@ export class VisitorIdentityService {
   ) {}
 
   async resolve(cookieToken: string | undefined): Promise<ResolvedVisitor> {
+    const existing = await this.find(cookieToken);
+    if (existing) return { created: false, id: existing.id };
+
+    return this.createVisitor();
+  }
+
+  async find(cookieToken: string | undefined): Promise<{ id: bigint } | null> {
     if (isValidVisitorToken(cookieToken)) {
       const [visitor] = await this.database
         .select({ disabledAt: anonymousVisitors.disabledAt, id: anonymousVisitors.id })
@@ -71,8 +79,7 @@ export class VisitorIdentityService {
         return { id: visitor.id };
       }
     }
-
-    return this.createVisitor();
+    return null;
   }
 
   private async createVisitor(): Promise<ResolvedVisitor> {
@@ -91,6 +98,7 @@ export class VisitorIdentityService {
           .values({ tokenHash: hashVisitorToken(token, this.pepper) })
           .returning({ id: anonymousVisitors.id });
         return {
+          created: true,
           id: requireDomainValue(
             visitor,
             "VISITOR_CREATE_FAILED",

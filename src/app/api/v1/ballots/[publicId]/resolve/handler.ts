@@ -8,6 +8,9 @@ import type { VisitorIdentityService } from "@/domain/visitors/service";
 import { visitorCookieOptions } from "@/domain/visitors/service";
 import type { BoundedFixedWindowRateLimiter } from "@/security/rate-limiter";
 import { mutationRejectionResponse, validateMutationRequest } from "@/security/mutation-request";
+import type { PublicRiskMonitorLike, RiskInspection } from "@/security/risk-monitor";
+
+const ROUTE = "/api/v1/ballots/{public_id}/resolve";
 
 const publicBallotIdSchema = z.uuid();
 const resolveBodySchema = z.object({ choice: z.enum(["LEFT", "RIGHT", "SKIP"]) }).strict();
@@ -17,6 +20,7 @@ interface ResolveBallotHandlerDependencies {
   onUnexpectedError?(error: unknown): void;
   production: boolean;
   rateLimiter: Pick<BoundedFixedWindowRateLimiter, "check">;
+  riskMonitor?: PublicRiskMonitorLike;
   resolution: Pick<VoteResolutionService, "resolve">;
   visitorCookieMaxAgeDays: number;
   visitorCookieName: string;
@@ -40,6 +44,22 @@ export function createResolveBallotHandler(dependencies: ResolveBallotHandlerDep
     request: NextRequest,
     rawPublicBallotId: string,
   ): Promise<Response> {
+    const inspection: RiskInspection = dependencies.riskMonitor?.inspect(request.headers) ?? {
+      infrastructureLimit: null,
+      ipRiskKey: null,
+    };
+    if (inspection.infrastructureLimit && !inspection.infrastructureLimit.allowed) {
+      const response = errorResponse(
+        "INFRASTRUCTURE_RATE_LIMITED",
+        "Too many public API requests; retry shortly",
+        429,
+      );
+      response.headers.set(
+        "retry-after",
+        inspection.infrastructureLimit.retryAfterSeconds.toString(),
+      );
+      return response;
+    }
     const guard = validateMutationRequest(request, {
       appOrigin: dependencies.appOrigin,
       production: dependencies.production,
@@ -65,6 +85,7 @@ export function createResolveBallotHandler(dependencies: ResolveBallotHandlerDep
     }
 
     let tokenToSet: string | undefined;
+    let visitorId: bigint | undefined;
     const attachVisitorCookie = (response: NextResponse): NextResponse => {
       if (tokenToSet) {
         response.cookies.set(
@@ -80,7 +101,16 @@ export function createResolveBallotHandler(dependencies: ResolveBallotHandlerDep
       const visitor = await dependencies.visitors.resolve(
         request.cookies.get(dependencies.visitorCookieName)?.value,
       );
+      visitorId = visitor.id;
       tokenToSet = visitor.tokenToSet;
+      if (dependencies.riskMonitor) {
+        await dependencies.riskMonitor.assess({
+          inspection,
+          route: ROUTE,
+          visitorCreated: visitor.created ?? false,
+          visitorId: visitor.id,
+        });
+      }
       const rateLimit = dependencies.rateLimiter.check(visitor.id.toString());
       if (!rateLimit.allowed) {
         const response = errorResponse(
@@ -104,6 +134,14 @@ export function createResolveBallotHandler(dependencies: ResolveBallotHandlerDep
       );
     } catch (error) {
       if (error instanceof DomainError) {
+        if (typeof visitorId === "bigint" && dependencies.riskMonitor) {
+          await dependencies.riskMonitor.recordResolutionFailure({
+            errorCode: error.code,
+            ipRiskKey: inspection?.ipRiskKey ?? null,
+            route: ROUTE,
+            visitorId,
+          });
+        }
         const mapped = {
           BALLOT_ALREADY_RESOLVED: {
             message: "Ballot was already resolved with a different choice",

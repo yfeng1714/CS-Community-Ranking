@@ -16,6 +16,7 @@ import { getPublicPlayerStats } from "../public/queries.ts";
 import { dateInTimeZone } from "./date.ts";
 import { selectRandomPair, type RandomIndex } from "./random.ts";
 import { withTransactionRetry } from "./retry.ts";
+import type { RiskAssessment } from "../../security/risk-monitor.ts";
 
 type RankingEligibility = "ELIGIBLE" | "THROTTLED" | "SUSPICIOUS";
 
@@ -119,7 +120,10 @@ export class BallotIssuanceService {
     private readonly randomIndex?: RandomIndex,
   ) {}
 
-  async issue(visitorId: bigint): Promise<IssuedBallotResponse> {
+  async issue(
+    visitorId: bigint,
+    risk: RiskAssessment = { ipRiskKey: null, reasonCodes: [] },
+  ): Promise<IssuedBallotResponse> {
     let core: IssuedBallotCore | undefined;
 
     for (let poolAttempt = 0; poolAttempt < 3; poolAttempt += 1) {
@@ -136,7 +140,13 @@ export class BallotIssuanceService {
       try {
         core = await withTransactionRetry(() =>
           this.database.transaction((transaction) =>
-            this.issueInTransaction(transaction, visitorId, activeEdition.id, activePlayerIds),
+            this.issueInTransaction(
+              transaction,
+              visitorId,
+              activeEdition.id,
+              activePlayerIds,
+              risk,
+            ),
           ),
         );
         break;
@@ -184,6 +194,7 @@ export class BallotIssuanceService {
     visitorId: bigint,
     expectedEditionId: bigint,
     activePlayerIds: readonly bigint[],
+    risk: RiskAssessment,
   ): Promise<IssuedBallotCore> {
     const now = this.now();
     const [edition] = await transaction
@@ -254,7 +265,8 @@ export class BallotIssuanceService {
       "Daily usage update returned no row",
     ).dailyOrdinal;
     const rankingEligibility: RankingEligibility =
-      this.options.riskEnforcementMode === "enforce" && lockedVisitor.riskState === "SUSPICIOUS"
+      this.options.riskEnforcementMode === "enforce" &&
+      (lockedVisitor.riskState === "SUSPICIOUS" || risk.reasonCodes.length > 0)
         ? "SUSPICIOUS"
         : dailyOrdinal <= edition.fullWeightBallotsPerDay
           ? "ELIGIBLE"
@@ -284,10 +296,12 @@ export class BallotIssuanceService {
       editionId: edition.id,
       expiresAt: new Date(now.getTime() + edition.ballotTtlMinutes * 60_000),
       issuedAt: now,
+      issuedIpRiskKey: risk.ipRiskKey,
       leftPlayerId: pair.leftPlayerId,
       player1Id: pair.player1Id,
       player2Id: pair.player2Id,
       rankingEligibility,
+      riskReasonCodes: risk.reasonCodes,
       rightPlayerId: pair.rightPlayerId,
       usageDate,
       visitorId,

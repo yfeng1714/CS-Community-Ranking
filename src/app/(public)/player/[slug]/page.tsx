@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { ArrowRightIcon } from "@/components/icons";
+import { ProductPageView } from "@/components/analytics/page-view";
 import { PlayerPortrait } from "@/components/player-portrait";
 import { getDatabase } from "@/db/client";
 import { getEnv } from "@/config/env";
@@ -49,6 +50,9 @@ export default async function PlayerPage({ params }: { params: Promise<{ slug: s
 
   return (
     <main className="public-page player-page" id="main-content">
+      <ProductPageView
+        event={{ eventType: "PLAYER_VIEW", metadata: { page: "player", playerSlug: slug } }}
+      />
       <Link className="back-link" href="/ranking">
         ← 返回榜单
       </Link>

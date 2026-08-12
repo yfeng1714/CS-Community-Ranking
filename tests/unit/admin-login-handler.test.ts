@@ -108,12 +108,17 @@ describe("admin login handler", () => {
       TRUST_PROXY_HEADERS: "true",
       VISITOR_TOKEN_HASH_PEPPER: "c".repeat(32),
     });
-    const proxyCheck = vi.fn(() => ({ allowed: false, retryAfterSeconds: 30 }));
+    const proxyCheck = vi.fn((key: string) => ({
+      allowed: key.length < 0,
+      retryAfterSeconds: 30,
+    }));
     await createAdminLoginHandler({
       env: proxyEnv,
       rateLimiter: { check: proxyCheck },
       sessions: { login: vi.fn() },
     })(request({ "cf-connecting-ip": "203.0.113.8", "x-real-ip": "spoofed" }));
-    expect(proxyCheck).toHaveBeenCalledWith("cloudflare:203.0.113.8");
+    const key = proxyCheck.mock.calls[0]?.[0];
+    expect(key).toMatch(/^[A-Za-z0-9_-]{43}$/);
+    expect(key).not.toContain("203.0.113.8");
   });
 });

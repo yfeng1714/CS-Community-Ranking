@@ -72,8 +72,14 @@ export const envSchema = z
     ACTIVE_POOL_CACHE_TTL_SECONDS: positiveIntegerFromEnvironment.default(60),
     BALLOT_NEXT_RATE_LIMIT_PER_MINUTE: positiveIntegerFromEnvironment.default(30),
     BALLOT_RESOLVE_RATE_LIMIT_PER_MINUTE: positiveIntegerFromEnvironment.default(60),
+    PUBLIC_API_RATE_LIMIT_PER_MINUTE: positiveIntegerFromEnvironment.default(300),
     RATE_LIMITER_MAX_KEYS: positiveIntegerFromEnvironment.default(10_000),
     RISK_ENFORCEMENT_MODE: z.enum(["observe", "enforce"]).default("observe"),
+    RISK_NEW_VISITORS_PER_IP_PER_DAY: positiveIntegerFromEnvironment.default(25),
+    RISK_INVALID_OWNERSHIP_PER_IP_PER_DAY: positiveIntegerFromEnvironment.default(10),
+    RISK_IMPOSSIBLE_CLIENT_FLOW_PER_IP_PER_DAY: positiveIntegerFromEnvironment.default(5),
+    RISK_REPLAY_MISMATCH_PER_IP_PER_DAY: positiveIntegerFromEnvironment.default(10),
+    RISK_REQUEST_VELOCITY_PER_MINUTE: positiveIntegerFromEnvironment.default(120),
     IP_RISK_KEY_RETENTION_DAYS: positiveIntegerFromEnvironment.default(90),
     PRODUCT_EVENT_RETENTION_DAYS: positiveIntegerFromEnvironment.default(90),
 
@@ -91,6 +97,15 @@ export const envSchema = z
     EXTERNAL_STATS_STALE_AFTER_HOURS: positiveIntegerFromEnvironment.default(48),
   })
   .superRefine((env, context) => {
+    if (env.RISK_REQUEST_VELOCITY_PER_MINUTE >= env.PUBLIC_API_RATE_LIMIT_PER_MINUTE) {
+      context.addIssue({
+        code: "custom",
+        path: ["RISK_REQUEST_VELOCITY_PER_MINUTE"],
+        message:
+          "must be below PUBLIC_API_RATE_LIMIT_PER_MINUTE so risk can be observed before rejection",
+      });
+    }
+
     if (env.NODE_ENV === "production") {
       for (const key of [
         "VISITOR_TOKEN_HASH_PEPPER",

@@ -63,9 +63,27 @@
   validate an exact versioned action plus change/Edition agreement, and apply under the review
   transaction. Runtime cache invalidation occurs after commit. Rejection never applies data.
 
+## Milestone 8 controls
+
+- Trusted Railway `X-Real-IP` or Cloudflare `CF-Connecting-IP` values are normalized only at the
+  application boundary, IPv6 is aggregated to `/64`, and the only durable value is
+  `HMAC-SHA-256(secret, Shanghai-date|normalized-IP)`. With proxy trust off, identity headers are
+  ignored and only a bounded unattributed availability bucket is used.
+- Same-day cookie churn, request velocity, invalid Ballot ownership, replay mismatch, and impossible
+  flow produce bounded reason codes. Observe mode stores reasons but leaves otherwise-valid Votes
+  counted; enforce mode makes a flagged Ballot `SUSPICIOUS` without exposing the reason before
+  resolution. Daily quota remains PostgreSQL truth and never depends on Cloudflare.
+- Product events accept an exact event/metadata allowlist and never accept Vote choices. Anonymous
+  page views do not mint visitor identity; events link only when the voting cookie already exists.
+- Site-wide CSP, anti-framing, MIME-sniffing, referrer, permissions, and production HTTPS-only HSTS
+  headers are configured. Development alone allows `unsafe-eval` for the Next.js debugger.
+- Scheduled cleanup nulls retained IP HMACs and purges old first-party analytics/API metrics. The
+  integrity job checks zero-sum ranking, Vote/aggregate agreement, uniqueness, Pool coverage, and
+  pseudonymous-key shape and exits non-zero when unhealthy.
+
 ## Deferred controls
 
-Broader site-wide security headers, IP-risk processing, retention jobs, and abuse enforcement remain
-in their scheduled milestones. Their invariants remain defined by the Implementation Plan.
+Staging proxy/header validation, alert delivery, backup/restore, and external error-tracker choice
+remain Milestone 9 deployment work.
 
 Never add a raw IP, visitor cookie, Admin token, password, or complete provider HTML body to logs.

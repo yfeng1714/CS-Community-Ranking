@@ -5,6 +5,7 @@ import { z } from "zod";
 import { adminSessionCookieOptions, type AdminSessionService } from "@/domain/admin/auth";
 import type { AppEnv } from "@/config/env";
 import type { BoundedFixedWindowRateLimiter } from "@/security/rate-limiter";
+import { extractDailyIpRiskKey } from "@/security/ip-risk-key";
 
 import { adminErrorResponse, guardAdminMutation, handleAdminError } from "../shared";
 
@@ -14,11 +15,14 @@ const loginSchema = z.strictObject({
 });
 
 function rateLimitKey(request: NextRequest, env: AppEnv): string {
-  if (!env.TRUST_PROXY_HEADERS) return "direct";
-
-  const header = env.CLIENT_IP_MODE === "cloudflare" ? "cf-connecting-ip" : "x-real-ip";
-  const value = request.headers.get(header)?.split(",", 1)[0]?.trim();
-  return value ? `${env.CLIENT_IP_MODE}:${value.slice(0, 128)}` : "direct";
+  const key = extractDailyIpRiskKey(request.headers, {
+    clientIpMode: env.CLIENT_IP_MODE,
+    now: new Date(),
+    secret: env.IP_HMAC_SECRET,
+    timeZone: env.APP_TIME_ZONE,
+    trustProxyHeaders: env.TRUST_PROXY_HEADERS,
+  });
+  return key?.toString("base64url") ?? "direct";
 }
 
 interface Dependencies {

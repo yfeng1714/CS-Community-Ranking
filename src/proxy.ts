@@ -19,10 +19,7 @@ export function proxy(request: NextRequest) {
 
   if (request.nextUrl.pathname.startsWith("/admin")) {
     response.headers.set("cache-control", "no-store");
-    response.headers.set("content-security-policy", "frame-ancestors 'none'");
     response.headers.set("referrer-policy", "no-referrer");
-    response.headers.set("x-content-type-options", "nosniff");
-    response.headers.set("x-frame-options", "DENY");
     response.headers.set("x-robots-tag", "noindex, nofollow, noarchive");
   }
 

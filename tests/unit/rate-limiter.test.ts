@@ -9,7 +9,11 @@ describe("BoundedFixedWindowRateLimiter", () => {
 
     expect(limiter.check("visitor").allowed).toBe(true);
     expect(limiter.check("visitor").allowed).toBe(true);
-    expect(limiter.check("visitor")).toEqual({ allowed: false, retryAfterSeconds: 60 });
+    expect(limiter.check("visitor")).toEqual({
+      allowed: false,
+      currentCount: 2,
+      retryAfterSeconds: 60,
+    });
     now += 60_000;
     expect(limiter.check("visitor").allowed).toBe(true);
   });

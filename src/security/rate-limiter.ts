@@ -5,6 +5,7 @@ interface RateLimitEntry {
 
 export interface RateLimitResult {
   allowed: boolean;
+  currentCount?: number;
   retryAfterSeconds: number;
 }
 
@@ -36,7 +37,7 @@ export class BoundedFixedWindowRateLimiter {
       this.entries.delete(key);
       this.makeRoom(now);
       this.entries.set(key, { count: 1, windowEndsAt: now + this.windowMs });
-      return { allowed: true, retryAfterSeconds: 0 };
+      return { allowed: true, currentCount: 1, retryAfterSeconds: 0 };
     }
 
     this.entries.delete(key);
@@ -44,12 +45,13 @@ export class BoundedFixedWindowRateLimiter {
     if (current.count >= this.limit) {
       return {
         allowed: false,
+        currentCount: current.count,
         retryAfterSeconds: Math.max(1, Math.ceil((current.windowEndsAt - now) / 1_000)),
       };
     }
 
     current.count += 1;
-    return { allowed: true, retryAfterSeconds: 0 };
+    return { allowed: true, currentCount: current.count, retryAfterSeconds: 0 };
   }
 
   get size(): number {

@@ -397,6 +397,10 @@ export const ballots = pgTable(
     rankingEligibility: rankingEligibilityEnum("ranking_eligibility").notNull(),
     dailyOrdinal: integer("daily_ordinal").notNull(),
     issuedIpRiskKey: bytea("issued_ip_risk_key"),
+    riskReasonCodes: jsonb("risk_reason_codes")
+      .$type<string[]>()
+      .notNull()
+      .default(sql`'[]'::jsonb`),
     resolvedAt: timestamp("resolved_at", { withTimezone: true }),
   },
   (table) => [
@@ -425,6 +429,11 @@ export const ballots = pgTable(
     ),
     check("ballot_expiry_order", sql`${table.expiresAt} > ${table.issuedAt}`),
     check("ballot_daily_ordinal_positive", sql`${table.dailyOrdinal} > 0`),
+    check(
+      "ballot_ip_risk_key_sha256",
+      sql`${table.issuedIpRiskKey} is null or octet_length(${table.issuedIpRiskKey}) = 32`,
+    ),
+    check("ballot_risk_reasons_array", sql`jsonb_typeof(${table.riskReasonCodes}) = 'array'`),
     check(
       "ballot_resolution_state",
       sql`(${table.status} = 'OPEN' and ${table.resolution} is null and ${table.resolvedAt} is null) or (${table.status} = 'RESOLVED' and ${table.resolution} is not null and ${table.resolvedAt} is not null) or (${table.status} = 'EXPIRED' and ${table.resolution} is null and ${table.resolvedAt} is null)`,
@@ -474,6 +483,10 @@ export const votes = pgTable(
       sql`(${table.choice} = 'SKIP' and ${table.winnerPlayerId} is null and ${table.loserPlayerId} is null) or (${table.choice} <> 'SKIP' and ${table.winnerPlayerId} is not null and ${table.loserPlayerId} is not null and ${table.winnerPlayerId} <> ${table.loserPlayerId})`,
     ),
     check("vote_risk_reasons_array", sql`jsonb_typeof(${table.riskReasonCodes}) = 'array'`),
+    check(
+      "vote_ip_risk_key_sha256",
+      sql`${table.ipRiskKey} is null or octet_length(${table.ipRiskKey}) = 32`,
+    ),
     check(
       "vote_revocation_state",
       sql`(${table.status} = 'REVOKED' and ${table.revokedAt} is not null and ${table.revokedBy} is not null and length(btrim(${table.revokedReason})) > 0) or (${table.status} <> 'REVOKED' and ${table.revokedAt} is null and ${table.revokedBy} is null and ${table.revokedReason} is null)`,
@@ -594,6 +607,62 @@ export const productEvents = pgTable(
     index("product_event_occurred_idx").on(table.occurredAt),
     index("product_event_edition_type_idx").on(table.editionId, table.eventType, table.occurredAt),
     check("product_event_metadata_object", sql`jsonb_typeof(${table.metadata}) = 'object'`),
+  ],
+);
+
+export const riskObservations = pgTable(
+  "risk_observation",
+  {
+    id: identity(),
+    visitorId: bigint("visitor_id", { mode: "bigint" }).references(() => anonymousVisitors.id, {
+      onDelete: "restrict",
+    }),
+    ipRiskKey: bytea("ip_risk_key"),
+    reasonCode: text("reason_code").notNull(),
+    route: text("route").notNull(),
+    occurredAt: requiredTimestamp("occurred_at").defaultNow(),
+  },
+  (table) => [
+    index("risk_observation_ip_occurred_idx").on(table.ipRiskKey, table.occurredAt),
+    index("risk_observation_visitor_occurred_idx").on(table.visitorId, table.occurredAt),
+    check("risk_observation_reason_code_safe", sql`${table.reasonCode} ~ '^[A-Z0-9_]{1,64}$'`),
+    check("risk_observation_route_safe", sql`${table.route} ~ '^/[a-z0-9_/{}/-]{1,127}$'`),
+    check(
+      "risk_observation_has_pseudonymous_subject",
+      sql`${table.visitorId} is not null or ${table.ipRiskKey} is not null`,
+    ),
+    check(
+      "risk_observation_ip_risk_key_sha256",
+      sql`${table.ipRiskKey} is null or octet_length(${table.ipRiskKey}) = 32`,
+    ),
+  ],
+);
+
+export const apiRequestMetrics = pgTable(
+  "api_request_metric",
+  {
+    id: identity(),
+    visitorId: bigint("visitor_id", { mode: "bigint" }).references(() => anonymousVisitors.id, {
+      onDelete: "restrict",
+    }),
+    route: text("route").notNull(),
+    statusCode: integer("status_code").notNull(),
+    latencyMs: integer("latency_ms").notNull(),
+    errorCode: text("error_code"),
+    occurredAt: requiredTimestamp("occurred_at").defaultNow(),
+  },
+  (table) => [
+    index("api_request_metric_route_occurred_idx").on(table.route, table.occurredAt),
+    check("api_request_metric_route_safe", sql`${table.route} ~ '^/[a-z0-9_/{}/-]{1,127}$'`),
+    check(
+      "api_request_metric_status_range",
+      sql`${table.statusCode} >= 100 and ${table.statusCode} <= 599`,
+    ),
+    check("api_request_metric_latency_nonnegative", sql`${table.latencyMs} >= 0`),
+    check(
+      "api_request_metric_error_code_safe",
+      sql`${table.errorCode} is null or ${table.errorCode} ~ '^[A-Z0-9_]{1,64}$'`,
+    ),
   ],
 );
 

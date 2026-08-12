@@ -2,111 +2,93 @@
 
 ## Current position
 
-- **Milestone:** 7 — External data adapters and scheduled jobs
-- **Status:** Implemented and verified; ready for owner review before Milestone 8
-- **Review boundary:** VRS/HLTV adapters, source snapshots/approval, freshness/stale fallback,
-  review-only Pool drafts, commands, daily ranking snapshots, and asset attribution are complete.
-  No production sync was run.
+- **Milestone:** 8 — Anti-abuse, analytics, and integrity hardening
+- **Status:** Implemented and verified; ready for owner review before Milestone 9
+- **Review boundary:** Privacy-preserving daily IP HMAC risk signals, observe/enforce controls,
+  bounded public API protection, first-party analytics/KPIs, integrity/retention/expiration jobs,
+  request metrics/logging, and site-wide security headers are complete. No deployment occurred.
 - **Last updated:** 2026-08-12
 
 ## Completed
 
-- Official-repository Valve VRS Markdown and narrow HLTV HTML adapters normalize only approved
-  ranking and Rating fields. Saved fixtures cover expected fields and parser drift; CI makes no live
-  provider request.
-- Provider fetches enforce HTTPS/source boundaries, content type, a 5 MiB cap, timeout, bounded
-  retry/backoff, single-request sequencing, configured HLTV delay/User-Agent, and a host circuit
-  breaker. Failures close `sync_run` and preserve stale database data.
-- Ranking syncs store immutable normalized snapshots with parser version, freshness, and SHA-256
-  checksum. Admin explicitly approves each source with an audit before Pool generation consumes it.
-- Pool draft generation reads only latest approved HLTV/VRS snapshots, verifies formal rosters,
-  emits stale/identity/roster conflicts, reports would-be removals, and writes only Gate-D `PENDING`
-  additions. It never changes or removes live Pool membership automatically.
-- One-shot commands cover VRS sync, HLTV ranking/player-stat sync, Pool draft generation, and
-  idempotent tied daily ranking snapshots. The local asset manifest/check prohibits hotlinking and
-  requires rights notes.
-
-- Milestones 0–5 remain implemented: pinned runtime/CI foundation, full schema and migrations,
-  data-driven Candidate Pool, anonymous visitor identity, atomic uniform-random Ballot issuance,
-  exactly-once Vote/ranking transactions, true-refresh-as-Skip, and the responsive public vertical
-  slice.
-- Milestone 6 provides CLI Admin bootstrap, Argon2id credentials, database-backed opaque sessions,
-  strict same-origin Admin mutations, bounded login throttling, responsive private pages, and
-  same-transaction audit attribution.
-- The Admin Console now covers detailed Team/Player/image editing, external identities, rosters,
-  Editions, Events/whitelist/results, Manual Team and Special Player admission, newly signed
-  starters from admitted Teams, pairing state, pending-import review, exact Vote lookup/revocation,
-  integrity metrics, full audit evidence, and sync/parser history. No UI physically deletes public
-  data.
-- The pending-import boundary is an exact version-1 discriminated contract. It rejects conflicts,
-  incomplete or superseded source runs, type/Edition mismatch, unsupported actions, extra fields,
-  and structurally changed current state before applying the ordinary audited domain service under
-  the outer review transaction.
-- Runtime Pool cache invalidation now follows committed Pool approvals and Player eligibility
-  changes. Automatic evidence is tied to the persisted Edition year, placement ranges must be fully
-  Top 4/Top 8, and team-derived starters retain their Team admission category.
-- Admin JSON/date/ID/database-error handling and trusted-proxy selection were hardened. Dates are
-  calendar-exact, browser-local Edition times retain their offset, and public Rating projections
-  cannot mix non-HLTV providers.
-- CI now starts pinned PostgreSQL, applies migrations, and runs integration tests in addition to the
-  static/unit/build gate.
-- The independent findings and correction rationale are recorded in
-  `docs/IMPLEMENTATION_REVIEW_2026-08-12.md`.
+- Trusted Railway/Cloudflare client IP input is normalized in memory only. IPv4 is canonicalized,
+  IPv6 is aggregated to `/64`, and PostgreSQL stores only a 32-byte daily HMAC keyed by the
+  Shanghai-local date. Proxy headers are ignored by default; an unattributed bounded bucket still
+  protects availability without inventing an IP identity.
+- The risk monitor records configurable new-visitor churn, extreme velocity, invalid Ballot
+  ownership, replay mismatch, and impossible-flow reasons. Observe mode persists reasons without
+  changing an otherwise-valid Vote; enforce mode persists `SUSPICIOUS` Ballot eligibility. Risk is
+  never exposed before resolution and never replaces the per-visitor PostgreSQL quota.
+- `/next`, `/resolve`, public JSON reads, and the first-party event endpoint use a bounded
+  process-local public limiter. Visitor-specific limiters remain separate. Cloudflare is optional
+  and ranking correctness remains database-only.
+- `POST /api/v1/events` accepts only six event types and bounded page/player metadata. It rejects
+  Vote choice/arbitrary metadata and degrades to `202` on analytics failure. Anonymous page views do
+  not race Ballot issuance to create visitor identity.
+- `report:kpi` generates a Shanghai-local daily report from first-party rows: Ballots/decisions per
+  visitor, resolution/skip/throttle rates, per-player skip rate, repeat visitors, result-to-Next and
+  post-vote ranking navigation, provider freshness, and public voting API latency/errors.
+- One-shot jobs now provide full cross-table integrity checks, bounded open-Ballot expiration, and
+  configured retention cleanup. Old Ballot/Vote IP HMACs are nulled while Votes/rankings remain;
+  expired analytics and transient risk observations are purged.
+- The site emits restrictive CSP, anti-framing, MIME-sniffing, referrer, and permissions headers.
+  HSTS is production-and-HTTPS only. Admin keeps stricter no-referrer/noindex behavior. Structured
+  public API summaries include request ID, route, status, latency, and safe error code only.
+- Ordered migrations `0001_m8_integrity_hardening.sql` and
+  `0002_m8_risk_key_constraints.sql` add risk observations, API metrics, Ballot risk reasons, and
+  database-enforced SHA-256 key shape. No existing migration was rewritten and no production
+  `db push` was used.
+- Milestones 0–7 remain implemented, including the independently audited Gate D import boundary,
+  authenticated Admin Console, fixture-tested external adapters, review-only Pool drafts, and
+  daily ranking snapshots.
 
 ## Validation
 
-| Command/check               | Result | Notes                                                                    |
-| --------------------------- | ------ | ------------------------------------------------------------------------ |
-| `pnpm lint`                 | PASS   | Zero warnings.                                                           |
-| `pnpm format:check`         | PASS   | Source, tests, configuration, and docs match Prettier.                   |
-| `pnpm typecheck`            | PASS   | Strict TypeScript `6.0.3`.                                               |
-| `pnpm test:unit`            | PASS   | 27 files, 98 tests.                                                      |
-| `pnpm test:integration`     | PASS   | 8 files, 35 tests against PostgreSQL 18 and isolated migrated databases. |
-| `pnpm test:e2e`             | PASS   | 6 public/Admin journeys in desktop and mobile Chromium.                  |
-| `pnpm build`                | PASS   | Optimized Next.js `16.3.0` Webpack build.                                |
-| `pnpm db:check`             | PASS   | Drizzle schema and migration journal are consistent.                     |
-| `pnpm db:migrate`           | PASS   | Committed migrations apply through the normal runner.                    |
-| Production dependency audit | PASS   | No known vulnerability at moderate-or-higher threshold.                  |
-| Admin visual inspection     | PASS   | Desktop and 390 px layouts inspected; forms/tables remain contained.     |
-| `git diff --check`          | PASS   | No whitespace errors.                                                    |
+| Command/check                   | Result | Notes                                                                    |
+| ------------------------------- | ------ | ------------------------------------------------------------------------ |
+| `pnpm lint`                     | PASS   | Zero warnings.                                                           |
+| `pnpm format:check`             | PASS   | Source, tests, configuration, migration metadata, and docs formatted.    |
+| `pnpm typecheck`                | PASS   | Strict TypeScript `6.0.3`.                                               |
+| `pnpm test:unit`                | PASS   | 31 files, 106 tests: IP/HMAC, analytics, CSP, guards, and domain logic.  |
+| `pnpm test:integration`         | PASS   | 9 files, 40 tests against PostgreSQL 18 and ordered fresh migrations.    |
+| M8 verbose PostgreSQL scenarios | PASS   | KPI, cookie-churn signal, observe/enforce, expiry, retention, integrity. |
+| `pnpm test:e2e`                 | PASS   | 6 public/Admin journeys in desktop and mobile Chromium.                  |
+| `pnpm build`                    | PASS   | Optimized Next.js `16.3.0` Webpack build.                                |
+| `pnpm db:check`                 | PASS   | Drizzle schema and migration journal consistent.                         |
+| `git diff --check`              | PASS   | No whitespace errors.                                                    |
 
-Docker was kept off for static work, used only for PostgreSQL/browser verification on host port
-`5433`, then the project container was stopped and Docker Desktop was quit.
+Docker was kept off during ordinary work, used only for PostgreSQL/browser verification, then the
+project container was stopped and Docker Desktop was quit to release the local VM resources.
 
-## Material corrections
+## Material corrections and decisions
 
-- Review Gate D exposed genuine implementation gaps rather than a product-decision change. The
-  Chronicle remains authoritative and no ranking, randomness, refresh, identity, or history rule
-  changed.
-- An imported automatically eligible Team now enters as `CORE`/`REVIEW_AUTO`, never as
-  `REVIEW_MANUAL`; an imported team-derived starter inherits that Team category, never `SPECIAL`.
-- `expectedState` is compared structurally after canonical JSON conversion and updates are resolved
-  by their internal IDs. External provider keys remain proposal metadata, not database identity.
-- Player professional-status updates clear all in-process active-Pool snapshots after commit. DB
-  revalidation remains the final Ballot safety boundary, including across multiple app instances.
-- Public Rating fields are explicitly HLTV-owned. M7 may store other provider metrics, but it must
-  not present them under the HLTV label.
-- No migration was manufactured for this review because the existing schema already supports the
-  corrected workflows.
+- M8 required a forward schema change because pre-resolution risk reasons and failed abuse signals
+  could not be audited in the reserved M1 fields alone. This extends the existing privacy model; it
+  does not change product meaning.
+- Shared-network safety is explicit: no low per-IP Vote cap exists, all risk thresholds are
+  configuration, initial mode remains `observe`, and Cloudflare cannot grant extra ranking power.
+- First page-view analytics may be anonymous. This avoids competing visitor-cookie creation while
+  retaining later linked result/Next/ranking metrics once voting identity exists.
+- CSP allows `unsafe-eval` only during local Next.js development; production does not. HSTS is not
+  emitted locally and still requires real HTTPS/proxy validation in staging.
 
 ## Known limitations
 
-- No production provider sync or real Candidate Pool draft was run. HLTV remains disabled by
-  default, and its replaceable parser fails closed when upstream markup changes.
-- VRS Team matching primarily uses normalized Team name because Valve's table exposes no stable
-  organization ID. Ambiguous/missing matches are review conflicts and are never guessed.
-- Scheduled-service configuration belongs to deployment in M9; M7 supplies one-shot commands.
-- There is one Admin authority level. Roles, MFA, distributed login throttling, IP-risk processing,
-  analytics, retention jobs, and broader response-header work remain outside M6.
-- Pending expected-state equality is deliberately exact. State drift requires a regenerated
-  proposal; the review service never merges provider changes automatically.
-- Pool cache invalidation is process-local. Other instances can retain a snapshot only until the
-  short TTL, while Ballot issuance always revalidates selected rows in PostgreSQL before use.
-- Final public/Admin visual polish remains a later refinement; the current UI prioritizes complete,
-  safe operator coverage.
+- The limiter and risk-velocity map are intentionally per process for the initial single web
+  instance; process restart resets them. PostgreSQL quota and exactly-once Vote correctness do not.
+- IP HMAC monitoring requires correctly configured trusted proxy headers in staging. With trust off,
+  there is no network correlation, only bounded unattributed availability protection.
+- Risk thresholds are safe starting defaults, not production-tuned truth. Closed-beta traffic from
+  shared networks must be reviewed before enforcement remains enabled.
+- API timing metrics currently cover `/next` and `/resolve`; infrastructure-level saturation before
+  the process must come from M9 platform monitoring.
+- Scheduled-service cadence, alert delivery, Railway/Cloudflare configuration, external error
+  tracking, backup/restore, and China-network validation remain Milestone 9.
+- No production provider sync, real Candidate Pool draft, or production data was created.
 
 ## Next task
 
-Wait for owner review and explicit instruction before Milestone 8. Then implement observe-mode
-anti-abuse risk keys, product analytics/KPI queries, broader integrity and retention jobs, and
-security hardening. Deployment and production cloud-database selection remain Milestone 9.
+Wait for owner review and explicit instruction before Milestone 9. Then deploy Web/PostgreSQL/jobs
+to Railway Singapore staging, apply migrations through the release path, configure schedules,
+backups, alerts/logs, run a restore drill, compare Cloudflare proxy-on/DNS-only paths, and validate
+Mainland China access before Owner Review Gate E.
