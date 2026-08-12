@@ -5,9 +5,9 @@ simple pairwise votes.
 
 ## Status
 
-Milestones 0–3 are implemented: the runtime foundation, full V0.1 database schema, data-driven
-Candidate Pool, secure anonymous visitor identity, and atomic random Ballot issuance are in place.
-Vote resolution and exactly-once ranking effects begin in Milestone 4.
+Milestones 0–4 are implemented: the runtime foundation, full V0.1 database schema, data-driven
+Candidate Pool, secure anonymous visitor identity, atomic random Ballot issuance, and exactly-once
+Vote/ranking transactions are in place. The public voting interface begins in Milestone 5.
 
 ## Technology
 
@@ -46,10 +46,10 @@ await fetch("/api/v1/ballots/next", {
 }).then((response) => response.json());
 ```
 
-The fictional seed activates its Edition only when no other Edition is active. Until Milestone 4,
-repeated requests correctly return the same unexpired Ballot because it cannot yet be resolved.
-After M4/M5, a true manual voting-page refresh will resolve that reused Ballot as Skip and immediately
-show a new pair; ordinary API retries will continue to reuse it safely.
+The fictional seed activates its Edition only when no other Edition is active. Resolve the returned
+Ballot with `POST /api/v1/ballots/{id}/resolve` and `{ "choice": "LEFT" }` (or `RIGHT`/`SKIP`). A
+same-choice retry is idempotent. In M5, a true manual voting-page refresh will resolve the reused
+Ballot as Skip and immediately show a new pair; ordinary API retries continue to be safe.
 
 Stop the local database with `docker compose down`.
 
@@ -74,6 +74,7 @@ If port `5432` is already occupied, set `POSTGRES_PORT` to another host port in
 | `pnpm db:check` | Check the Drizzle migration journal |
 | `pnpm pool:add-player -- ...` | Create and admit an individual Special player |
 | `pnpm pool:disable-player -- ...` | Disable future pairing without deleting history |
+| `pnpm score:check -- --edition <code>` | Verify zero-sum and Vote/ranking/aggregate integrity |
 
 ## Documentation
 
@@ -85,6 +86,7 @@ If port `5432` is already occupied, set `POSTGRES_PORT` to another host port in
 - [`docs/DATABASE.md`](docs/DATABASE.md) — database conventions
 - [`docs/CANDIDATE_POOL.md`](docs/CANDIDATE_POOL.md) — Candidate Pool rules, services, cache, and CLI
 - [`docs/BALLOT_ISSUANCE.md`](docs/BALLOT_ISSUANCE.md) — visitor identity, quota, random pairing, and issuance transaction
+- [`docs/VOTE_RESOLUTION.md`](docs/VOTE_RESOLUTION.md) — exactly-once resolution, ranking, revocation, and integrity checks
 - [`docs/SECURITY.md`](docs/SECURITY.md) — security baseline
 
 When documents disagree about product intent, use the Product Decision Chronicle

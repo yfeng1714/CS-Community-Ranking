@@ -69,7 +69,8 @@ service responsibilities and require integration coverage when those services ar
 - Vote Edition, visitor, winner, and loser agree with the referenced Ballot orientation;
 - Edition status transitions expire open Ballots atomically;
 - a Ballot is issued only for the currently active Edition and two currently active Pool entries;
-- the sum of all player scores in an Edition remains zero;
+- the sum of all player scores in an Edition remains zero; M4 enforces this transactionally and
+  provides `pnpm score:check -- --edition <code>` for cross-table verification;
 - admin/session activity and expiration are evaluated at authentication time;
 - pending import approval revalidates source freshness and current state before applying changes.
 
@@ -130,8 +131,10 @@ run when `NODE_ENV=production`. It is illustrative test data, not the launch Can
 
 ## Current implementation boundaries
 
-- M3 implements visitor creation, one-open-Ballot issuance, expiry, and opportunity ordinals. Vote
-  resolution and score mutation begin in M4.
+- M4 implements locked Vote resolution, ranking and PairAggregate mutation, audited service-level
+  revocation, and cross-table score integrity reporting without changing the M1 schema.
+- Vote revocation deliberately preserves observed aggregate and usage history while reversing only
+  counted ranking effects. See `docs/VOTE_RESOLUTION.md`.
 - No migration rollback is generated automatically; before production data exists, a failed local
   migration is tested by rebuilding an empty database.
 - PostgreSQL extensions are not required by the initial schema.

@@ -20,10 +20,19 @@ await fetch("/api/v1/ballots/next", {
 }).then((response) => response.json());
 ```
 
-The first request creates a secure anonymous visitor cookie. Repeated requests return the same open
-Ballot until M4 supplies resolve/skip or the configured TTL expires. These direct console calls are
-transport-level retries. Once M4/M5 are complete, a true manual refresh of the voting page will
-record the reused Ballot as Skip and immediately request a new pair.
+The first request creates a secure anonymous visitor cookie. Resolve that Ballot from the same
+browser context by substituting its returned UUID:
+
+```js
+await fetch("/api/v1/ballots/BALLOT_UUID/resolve", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ choice: "LEFT" }),
+}).then((response) => response.json());
+```
+
+Repeating the same choice is an idempotent transport retry; changing the choice returns a conflict.
+The M5 voting page will automate the approved true-refresh-as-Skip workflow.
 
 If the default host port `5432` is occupied, set `POSTGRES_PORT` to an available
 port in `.env` and use the same port in `DATABASE_URL`. PostgreSQL continues to
@@ -74,6 +83,20 @@ its reserved CPU and memory. Start it again only for the next database or image 
   daily ranking quota.
 - `BALLOT_ISSUANCE_UNAVAILABLE`: inspect structured logs by request ID and safe error code. Never log
   the visitor cookie or token.
+
+## Vote and score triage
+
+Run `pnpm score:check -- --edition <code>` after suspicious moderation activity, a failed release,
+or any ranking discrepancy. A healthy report has `healthy: true`, `scoreSum: "0"`, and no
+violations. The command is read-only and exits nonzero if it detects a mismatch; preserve the report
+and investigate transaction/audit history before attempting any manual repair.
+
+- `BALLOT_ALREADY_RESOLVED`: the client retried with a different choice; use `originalChoice` as the
+  authoritative result.
+- `BALLOT_EXPIRED`: request a new Ballot; expired opportunities are not refunded.
+- `EDITION_NOT_ACTIVE`: the Edition closed before this unresolved Ballot could create an effect.
+- `BALLOT_RESOLUTION_UNAVAILABLE`: correlate the request ID with safe structured logs. Do not expose
+  database error text or visitor identity.
 
 Railway deployment, migrations, backup/restore, scheduled jobs, alerts, and incident procedures are
 completed and tested in Milestone 9. This file must be expanded before staging approval.

@@ -25,10 +25,25 @@
 - Internal suspicious eligibility is not disclosed before resolution, preventing a risk feedback
   oracle.
 
+## Milestone 4 controls
+
+- `POST /api/v1/ballots/{publicId}/resolve` uses the shared JSON, Origin, and Fetch-Metadata mutation
+  guard, strict UUID/body validation, `no-store`, and a separate bounded availability limiter.
+- Ballot ownership failures return the same detail-free `404` whether the UUID is absent or belongs
+  to another visitor, preventing an ownership oracle.
+- The locked Ballot—not client input—is authoritative for players, orientation, Edition, quota
+  eligibility, issued risk key, expiry, and usage date.
+- Suspicious and throttled status is disclosed only after the action has been irreversibly stored;
+  neither changes public ranking or counted head-to-head data.
+- Conflicting retries reveal only the already stored choice. Unexpected errors log a bounded safe
+  code and return a detail-free `503`.
+- Vote revocation requires a trusted service caller, Admin actor, and nonblank reason and writes an
+  immutable moderation audit record. Its HTTP Admin surface remains M6.
+
 ## Deferred controls
 
 Admin authentication, broader security headers, IP-risk processing, retention jobs, and abuse
-enforcement are implemented in their scheduled milestones. Vote resolution receives the same
-mutation guard in M4. Their invariants remain defined by the Implementation Plan.
+enforcement are implemented in their scheduled milestones. Their invariants remain defined by the
+Implementation Plan.
 
 Never add a raw IP, visitor cookie, Admin token, password, or complete provider HTML body to logs.

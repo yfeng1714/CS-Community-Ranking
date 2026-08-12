@@ -45,3 +45,35 @@ Errors:
 | `503`  | `BALLOT_ISSUANCE_UNAVAILABLE`             | Detail-free unexpected failure response                           |
 
 See `docs/BALLOT_ISSUANCE.md` for transaction, cache, randomness, and risk-display details.
+
+## Implemented in Milestone 4
+
+### `POST /api/v1/ballots/{publicId}/resolve`
+
+Accepts a strict JSON body with one `choice` of `LEFT`, `RIGHT`, or `SKIP`. The caller must own the
+Ballot through the anonymous visitor cookie. The server derives all player, Edition, quota, and risk
+state from the locked Ballot; these values are never client-controlled.
+
+Successful new resolutions and same-choice idempotent replays return `200`, `no-store`, the Vote's
+counted/status outcome, current left/right ranking records, and current counted head-to-head data.
+The `resolution.alreadyResolved` field distinguishes a replay. Throttled and suspicious actions are
+stored and return `200` with `counted: false`.
+
+Errors:
+
+| Status | Code                                      | Meaning                                                                |
+| ------ | ----------------------------------------- | ---------------------------------------------------------------------- |
+| `400`  | `INVALID_BALLOT_ID`                       | Path identifier is not a UUID                                          |
+| `400`  | `INVALID_JSON`                            | Body is not valid JSON                                                 |
+| `400`  | `INVALID_RESOLUTION_CHOICE`               | Body is not exactly a valid choice                                     |
+| `403`  | `VISITOR_DISABLED`                        | Anonymous identity was administratively disabled                       |
+| `403`  | `ORIGIN_REJECTED` / `CROSS_SITE_REJECTED` | Shared mutation security guard rejected the caller                     |
+| `404`  | `BALLOT_NOT_FOUND`                        | Ballot does not exist for this visitor; ownership is intentionally hid |
+| `409`  | `BALLOT_ALREADY_RESOLVED`                 | Retry conflicts with stored choice; response includes `originalChoice` |
+| `409`  | `EDITION_NOT_ACTIVE`                      | Unresolved Ballot's Edition no longer accepts effects                  |
+| `410`  | `BALLOT_EXPIRED`                          | Ballot expired before resolution                                       |
+| `415`  | `CONTENT_TYPE_REJECTED`                   | JSON mutation content type was absent                                  |
+| `429`  | `INFRASTRUCTURE_RATE_LIMITED`             | Process-local availability limit; response includes `Retry-After`      |
+| `503`  | `BALLOT_RESOLUTION_UNAVAILABLE`           | Detail-free unexpected failure response                                |
+
+See `docs/VOTE_RESOLUTION.md` for transaction ordering, counters, revocation, and integrity checks.

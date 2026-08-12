@@ -15,8 +15,9 @@ You are implementing **CS Community Ranking / CS 野榜 V0.1**.
 
 ## Current handoff
 
-Milestones 0–3 are implemented. The repository is stopped before Milestone 4: locked, idempotent Vote
-resolution and ranking effects. Do not begin M4 or later work until the owner explicitly requests it.
+Milestones 0–4 are implemented. The repository is stopped at Owner Review Gate C before Milestone 5:
+the public voting, ranking, player, About, and Privacy vertical slice. Do not begin M5 or later work
+until the owner explicitly approves the M4 voting core and requests it.
 
 Always trust the latest `docs/PROGRESS.md` over this summary if they ever differ.
 
