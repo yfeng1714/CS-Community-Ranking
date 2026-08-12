@@ -1,0 +1,105 @@
+"use client";
+
+import Link from "next/link";
+import { useMemo, useState } from "react";
+
+import type { PublicRankingPlayer } from "@/domain/public/types";
+
+import { SearchIcon } from "./icons";
+import { PlayerPortrait } from "./player-portrait";
+
+function percent(value: number | null): string {
+  return value === null ? "—" : `${Math.round(value * 100)}%`;
+}
+
+function score(value: number): string {
+  return value > 0 ? `+${value}` : String(value);
+}
+
+export function RankingTable({ players }: { players: PublicRankingPlayer[] }) {
+  const [query, setQuery] = useState("");
+  const filtered = useMemo(() => {
+    const normalized = query.trim().toLocaleLowerCase("en");
+    if (!normalized) {
+      return players;
+    }
+    return players.filter((player) =>
+      [player.nickname, player.team, player.teamShortName, player.country]
+        .filter((value): value is string => Boolean(value))
+        .some((value) => value.toLocaleLowerCase("en").includes(normalized)),
+    );
+  }, [players, query]);
+
+  return (
+    <section aria-labelledby="ranking-table-title" className="ranking-board">
+      <div className="ranking-board__toolbar">
+        <div>
+          <span className="eyebrow">全体候选</span>
+          <h2 id="ranking-table-title">社区实时排名</h2>
+        </div>
+        <label className="ranking-search">
+          <SearchIcon />
+          <span className="sr-only">搜索选手或战队</span>
+          <input
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="搜索选手或战队"
+            type="search"
+            value={query}
+          />
+        </label>
+      </div>
+
+      <div className="ranking-table-wrap">
+        <table className="ranking-table">
+          <thead>
+            <tr>
+              <th scope="col">排名</th>
+              <th scope="col">选手</th>
+              <th scope="col">分数</th>
+              <th scope="col">战队</th>
+              <th scope="col">胜 / 负</th>
+              <th scope="col">胜率</th>
+              <th scope="col">有效对决</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filtered.map((player) => (
+              <tr key={player.slug}>
+                <td className="ranking-table__rank">#{player.rank}</td>
+                <td>
+                  <Link className="ranking-player" href={`/player/${player.slug}`}>
+                    <div className="ranking-player__portrait">
+                      <PlayerPortrait nickname={player.nickname} photoUrl={player.photoUrl} />
+                    </div>
+                    <span>
+                      <strong>{player.nickname}</strong>
+                      <small>{player.country ?? "—"}</small>
+                    </span>
+                  </Link>
+                </td>
+                <td className="ranking-table__score" data-positive={player.score > 0}>
+                  {score(player.score)}
+                </td>
+                <td>{player.teamShortName ?? player.team ?? "—"}</td>
+                <td>
+                  {player.wins.toLocaleString("zh-CN")} / {player.losses.toLocaleString("zh-CN")}
+                </td>
+                <td>{percent(player.winRate)}</td>
+                <td>{player.decisions.toLocaleString("zh-CN")}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {filtered.length === 0 ? (
+        <div className="ranking-empty">
+          <p>没有找到匹配的选手。</p>
+          <button onClick={() => setQuery("")} type="button">
+            清除搜索
+          </button>
+        </div>
+      ) : null}
+    </section>
+  );
+}

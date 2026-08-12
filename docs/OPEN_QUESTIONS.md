@@ -2,9 +2,10 @@
 
 No unresolved owner decision blocks Milestone 0.
 
-## Before Milestone 5
+## Before public launch
 
-- Final public product name, domain, slogan, and visual identity.
+- Final public product name, domain, slogan, and visual identity. M5 deliberately uses `CS 野榜` as
+  a working identity rather than treating it as final branding.
 - Whether the late-2026 launch is labeled a normal Edition or explicitly a beta Edition.
 
 ## Before Milestone 10

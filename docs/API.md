@@ -77,3 +77,24 @@ Errors:
 | `503`  | `BALLOT_RESOLUTION_UNAVAILABLE`           | Detail-free unexpected failure response                                |
 
 See `docs/VOTE_RESOLUTION.md` for transaction ordering, counters, revocation, and integrity checks.
+
+## Implemented in Milestone 5
+
+### `GET /api/v1/rankings`
+
+Returns the active Edition and its complete public ranking projection. Equal scores receive the
+same competition rank; equal-score rows are displayed by counted decisions descending, then
+nickname ascending. Counts are JSON numbers only after a safe-integer check. A successful response
+uses `Cache-Control: public, max-age=15, stale-while-revalidate=45`; an unexpected failure returns a
+detail-free `503 RANKING_UNAVAILABLE` with `no-store`.
+
+### `GET /api/v1/players/{slug}`
+
+Returns the public player identity, current roster, active-Edition ranking, latest approved recent
+and career Rating snapshots, and an explicit `CURRENT`, `STALE`, or `MISSING` freshness state.
+Slugs must be lower-case URL-safe identifiers. Successful responses use `Cache-Control: public,
+max-age=30, stale-while-revalidate=90`; invalid slugs return `400`, missing players return `404`, and
+unexpected failures return a detail-free `503`, all with `no-store`.
+
+Both are read-only public endpoints. The current server-rendered Ranking and Player pages use the
+same domain queries directly, so their display contract cannot drift from the JSON projection.

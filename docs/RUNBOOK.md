@@ -9,6 +9,7 @@
 5. Optionally load fictional local sample data with `pnpm db:seed`.
 6. Start the application with `pnpm dev`.
 7. Check `/api/health/live` and `/api/health/ready`.
+8. Open `/` for the public Vote page and `/ranking` for the public ranking.
 
 The fictional seed activates its Edition only when no other Edition is active. Test M3 issuance from
 the browser console with:
@@ -32,7 +33,24 @@ await fetch("/api/v1/ballots/BALLOT_UUID/resolve", {
 ```
 
 Repeating the same choice is an idempotent transport retry; changing the choice returns a conflict.
-The M5 voting page will automate the approved true-refresh-as-Skip workflow.
+The M5 voting page automates the approved true-refresh-as-Skip workflow. To smoke-test it, leave a
+Ballot unresolved, record its displayed daily ordinal, manually reload `/`, and confirm that the new
+ordinal is exactly one higher. Ordinary React rerenders and repeated transport calls must preserve
+the open Ballot. After a normal Vote or Skip, confirm the result remains visible until **Next** is
+clicked.
+
+For the complete browser regression, run `pnpm test:e2e` while PostgreSQL is available. The test
+runner starts or reuses the development server and runs the public journey serially in desktop and
+mobile Chromium to limit local resource use. Install its pinned runtime once with `pnpm exec
+playwright install chromium` if Playwright reports that the browser executable is missing.
+
+Public-data smoke checks:
+
+- `/ranking` shows all seeded players, tied competition ranks, and client-side search.
+- `/player/sample-ace` shows identity, roster, ranking, and deliberate `—`/missing-data states.
+- `/about` explains random pairing and scoring without defining what “better” means.
+- `/privacy` explains the anonymous cookie, non-counting quota/risk states, retention categories,
+  external data, and the pre-launch contact placeholder.
 
 If the default host port `5432` is occupied, set `POSTGRES_PORT` to an available
 port in `.env` and use the same port in `DATABASE_URL`. PostgreSQL continues to

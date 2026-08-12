@@ -12,6 +12,7 @@ import {
 } from "../../db/schema/index.ts";
 import type { AppDatabase, AppTransaction } from "../database.ts";
 import { DomainError, requireDomainValue } from "../error.ts";
+import { getPublicPlayerStats } from "../public/queries.ts";
 import { dateInTimeZone } from "./date.ts";
 import { selectRandomPair, type RandomIndex } from "./random.ts";
 import { withTransactionRetry } from "./retry.ts";
@@ -24,14 +25,14 @@ export interface ActivePoolSource {
 }
 
 export interface BallotPlayerCard {
-  careerRating: null;
+  careerRating: number | null;
   country: string | null;
   nickname: string;
   photoUrl: string | null;
-  recentMaps: null;
-  recentRating: null;
+  recentMaps: number | null;
+  recentRating: number | null;
   slug: string;
-  statsCapturedAt: null;
+  statsCapturedAt: string | null;
   team: string | null;
 }
 
@@ -341,22 +342,25 @@ export class BallotIssuanceService {
   }
 
   private async loadPlayerCard(playerId: bigint): Promise<BallotPlayerCard> {
-    const [player] = await this.database
-      .select({
-        country: players.countryCode,
-        nickname: players.nickname,
-        photoUrl: players.photoPath,
-        slug: players.slug,
-        team: teams.name,
-      })
-      .from(players)
-      .leftJoin(
-        rosterMemberships,
-        and(eq(rosterMemberships.playerId, players.id), isNull(rosterMemberships.endsAt)),
-      )
-      .leftJoin(teams, eq(teams.id, rosterMemberships.teamId))
-      .where(eq(players.id, playerId))
-      .limit(1);
+    const [[player], stats] = await Promise.all([
+      this.database
+        .select({
+          country: players.countryCode,
+          nickname: players.nickname,
+          photoUrl: players.photoPath,
+          slug: players.slug,
+          team: teams.name,
+        })
+        .from(players)
+        .leftJoin(
+          rosterMemberships,
+          and(eq(rosterMemberships.playerId, players.id), isNull(rosterMemberships.endsAt)),
+        )
+        .leftJoin(teams, eq(teams.id, rosterMemberships.teamId))
+        .where(eq(players.id, playerId))
+        .limit(1),
+      getPublicPlayerStats(this.database, playerId),
+    ]);
     const found = requireDomainValue(
       player,
       "BALLOT_PLAYER_NOT_FOUND",
@@ -364,14 +368,14 @@ export class BallotIssuanceService {
     );
 
     return {
-      careerRating: null,
+      careerRating: stats.careerRating,
       country: found.country,
       nickname: found.nickname,
       photoUrl: found.photoUrl,
-      recentMaps: null,
-      recentRating: null,
+      recentMaps: stats.recentMaps,
+      recentRating: stats.recentRating,
       slug: found.slug,
-      statsCapturedAt: null,
+      statsCapturedAt: stats.statsCapturedAt,
       team: found.team,
     };
   }
