@@ -23,7 +23,7 @@ URLs, API tokens, raw IP addresses, visitor cookies, or Admin session values her
 | Readiness/liveness | Both endpoints return expected JSON; DB outage makes readiness 503 only               | Live/ready PASS; controlled DB-outage behavior pending                                                                                                         |
 | Structured logs    | Application start, request summary, and one job result located without sensitive data | `application_start`, `expired: 0`, and zero-count retention result found; request-summary review pending                                                       |
 | Scheduled jobs     | One successful execution for each configured service                                  | PASS for all six services: expire, retention, corrected 396-team VRS snapshot, healthy integrity with no violations, four-row ranking snapshot, and KPI report |
-| Failure alert      | Controlled non-production job failure delivers an owner notification                  | Pending                                                                                                                                                        |
+| Failure alert      | Controlled non-production job failure delivers an owner notification                  | PASS: owner received Railway email for the earlier safe staging VRS failure                                                                                    |
 | Deployment alert   | Failed deployment notification delivered                                              | Pending                                                                                                                                                        |
 | Spend controls     | Usage alert threshold and owner notification verified                                 | Owner configured $10 alert and $25 hard limit; delivery evidence pending                                                                                       |
 | External tracker   | Record `not used for V0.1` or provider/test result                                    | Not used for V0.1                                                                                                                                              |
@@ -52,14 +52,14 @@ For each path record page TTFB, `/next` + `SKIP` p50/p95/failure rate, security 
 client-IP mode. DNS-only and the Railway-generated route must use publicly trusted origin TLS;
 Cloudflare Origin CA alone is insufficient for direct browsers.
 
-| Network/window              | Direct p50/p95/fail | Proxied p50/p95/fail | DNS-only p50/p95/fail | Notes |
-| --------------------------- | ------------------- | -------------------- | --------------------- | ----- |
-| China Telecom, normal       | Pending             | Pending              | Pending               |       |
-| China Unicom, normal        | Pending             | Pending              | Pending               |       |
-| China Mobile, normal        | Pending             | Pending              | Pending               |       |
-| China Telecom, evening peak | Pending             | Pending              | Pending               |       |
-| China Unicom, evening peak  | Pending             | Pending              | Pending               |       |
-| China Mobile, evening peak  | Pending             | Pending              | Pending               |       |
+| Network/window              | Direct p50/p95/fail        | Proxied p50/p95/fail | DNS-only p50/p95/fail | Notes                                                                                                                |
+| --------------------------- | -------------------------- | -------------------- | --------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| China Telecom, normal       | Pending                    | Pending              | Pending               |                                                                                                                      |
+| China Unicom, normal        | Pending                    | Pending              | Pending               |                                                                                                                      |
+| China Mobile, normal        | Reachable; metrics pending | Pending              | Pending               | Owner reached the direct Railway site over 4G; timing/window was not captured, so this is connectivity evidence only |
+| China Telecom, evening peak | Pending                    | Pending              | Pending               |                                                                                                                      |
+| China Unicom, evening peak  | Pending                    | Pending              | Pending               |                                                                                                                      |
+| China Mobile, evening peak  | Pending                    | Pending              | Pending               |                                                                                                                      |
 
 ## Security review
 

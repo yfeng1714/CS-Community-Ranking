@@ -4,8 +4,9 @@
 
 - **Milestone:** 9 — Staging deployment and operational readiness
 - **Status:** Railway direct-host staging is deployed and healthy; fictional bootstrap, all six cron
-  jobs, owner Admin login/logout, and the minimum direct load window pass; recovery, Cloudflare, and
-  Mainland China review remain in progress
+  jobs, owner Admin login/logout, the minimum direct load window, failed-job email delivery, and a
+  China Mobile 4G reachability check pass; recovery, Cloudflare, and formal Mainland China review
+  remain in progress
 - **Review boundary:** The owner-approved Hobby baseline now contains PostgreSQL, Web, and six cron
   services. The Railway-generated environment is still named `production`, but it is being treated
   only as staging for this gate; no real Candidate Pool or closed-beta launch is authorized.
@@ -126,13 +127,20 @@ this verification window.
   MIME-sniffing protection, no-referrer, and restrictive permissions-policy headers.
 - Owner spend controls are configured outside the repository at a $10 notification threshold and a
   $25 hard limit. Sentry is not used for V0.1.
+- The owner received Railway's email for the earlier safe staging VRS failure, confirming the
+  failed-job notification path. This is not evidence for the separate failed-deployment or spend
+  threshold alerts.
+- The owner reached the direct Railway site over China Mobile 4G. This is useful connectivity
+  evidence, but no timestamped normal/evening-peak latency or Ballot timing was captured, so it does
+  not complete the formal network matrix.
 
 ## Remaining M9 work and external inputs
 
-- Supply or choose the owner-controlled staging domain/Cloudflare zone. The Railway-generated HTTPS
-  hostname can be validated first, but proxied versus DNS-only A/B requires a domain.
-- Confirm the owner received a controlled failed-job/deployment notification. The live VRS failure is
-  available as a safe failed-job candidate, but email delivery has not been independently confirmed.
+- Supply or choose an owner-controlled staging domain. The Cloudflare account is ready, but the
+  Railway-generated `*.up.railway.app` hostname belongs to Railway and cannot become the owner's
+  Cloudflare zone; proxied versus DNS-only A/B requires a registered domain the owner controls.
+- Trigger and confirm the separate failed-deployment notification. Failed-job email delivery is now
+  confirmed from the earlier safe staging VRS failure.
 - Decide between a Pro upgrade for platform volume backups/PITR or the Hobby logical-backup-only
   exception. The private restore drill passes; durable owner-controlled backup storage, cadence,
   retention, and resulting operational RPO/RTO still need approval.
@@ -143,6 +151,6 @@ this verification window.
 
 ## Next task
 
-Resolve the staging recovery approach and notification-delivery evidence, then continue Cloudflare
-and three-network testing in `docs/STAGING_GATE_E.md`. Do not begin M10 or create the real 2026
-Candidate Pool until Gate E is complete and explicitly approved by the owner.
+Resolve the staging recovery approach and owner-controlled domain decision, then continue
+Cloudflare and formal three-network testing in `docs/STAGING_GATE_E.md`. Do not begin M10 or create
+the real 2026 Candidate Pool until Gate E is complete and explicitly approved by the owner.
