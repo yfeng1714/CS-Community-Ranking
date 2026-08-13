@@ -93,6 +93,18 @@
 - Logical restore verification refuses the source database and any nonempty target, uses
   `pg_restore --exit-on-error`, and checks exact critical-table counts. Dumps and manifests are
   ignored and must be stored outside the repository.
+- The first retained backup and manifest use owner-only `0600` permissions. A PostgreSQL 18 scratch
+  restore matched all 14 critical-table counts, after which the isolated server and directory were
+  deleted. The dump and manifest are also verified in the private Standard-storage R2 bucket
+  `cs-community-ranking-backups`, whose public access is disabled. R2 provides the provider-managed
+  encryption-at-rest boundary and HTTPS in transit; this is not client-side/passphrase encryption.
+  The temporary bucket-scoped upload token was revoked after the exact remote sizes were checked,
+  and no R2 credential is stored in the repository.
+- Railway's tunnel command prints connection fields for human use. When its first run exposed the
+  password in terminal output, the credential was treated as compromised: the PostgreSQL role and
+  Railway source variable were rotated, every dependent service redeployed successfully, the public
+  smoke suite passed, temporary SSH access was removed, and credential-bearing files were deleted.
+  Future evidence capture must suppress or redact both URL and standalone password fields.
 - The direct, Cloudflare-proxied, and DNS-only paths retain exact single-origin mutation validation.
   Proxy header mode changes with the path; no permanent multi-origin exception is introduced.
 - Railway structured logs and platform alerts are the V0.1 baseline. External error tracking is

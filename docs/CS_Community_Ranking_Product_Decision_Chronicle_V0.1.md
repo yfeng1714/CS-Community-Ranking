@@ -20,7 +20,7 @@
 </tbody>
 </table>
 
-**版本** V0.1.3
+**版本** V0.1.5
 
 **日期** 2026-08-09
 
@@ -29,6 +29,10 @@
 **Owner 流程修订** 2026-08-12（V0.1.2；手动刷新按 Skip 处理并直接进入新 Pair）
 
 **Owner 基础设施修订** 2026-08-13（V0.1.3；Hobby + Logical Backup，初期直连 Railway）
+
+**Owner 灾备落地记录** 2026-08-13（V0.1.4；Private R2 独立第二副本）
+
+**Owner Gate E 批准** 2026-08-14（V0.1.5；Railway Staging 验收完成，进入 M10 边界）
 
 **定位** 产品背景、决策记录与后续 Review Context
 
@@ -53,6 +57,18 @@ Edition/Ballot 生命周期、跨午夜额度、Skip 撤销、隐私留存和 Mu
 Hobby，备份采用已经通过恢复演练的 Logical Backup；初期使用 Railway 生成域名，不为了
 完成 Cloudflare 测试而提前购买域名。Cloudflare 仍是未来可加入的 WAF、DDoS、Edge Rate
 Limit 层，但不是正确性依赖。ADRs 0004、0005 记录操作标准与重新评估触发条件。
+
+同日，首份已验证 Logical Dump 与 Manifest 已保存到关闭公开访问的 Private Cloudflare R2
+Bucket，并核对远端文件大小。上传所用的临时 Bucket-scope Token 随后已删除。这里使用 R2
+仅代表独立灾备存储，不代表网站启用 Cloudflare Proxy/WAF；初期直连 Railway 的决定不变。
+
+2026-08-14 Owner 批准 Gate E。Web 与 PostgreSQL 的 Singapore 部署、真实 Structured Log
+字段、Health、Jobs、Security、Backup/Restore、R2 第二副本、China Mobile 4G/Wi-Fi 与受限
+Load Window 均已取得证据。由于当前只有一个 Active Staging Service，且 Web Pre-deploy 由
+Repository Config 管理，Owner 明确豁免为了制造 Failed Deployment 而引入临时失败代码或
+配置；Railway 的 $10 Usage Alert 也不通过故意产生费用来验证。Failed-job Email 已被实际
+证明，$25 Hard Limit 已设置。电信/联通设备与单独标记的晚高峰窗口作为后续观察项，不阻塞
+M10。该批准只开放 M10 的审查边界，不代表真实 Candidate Pool 已启用或 Closed Beta 已开始。
 
 <table>
 <colgroup>
@@ -746,7 +762,13 @@ Edge Rule 的直连源站；“公开直连作为后备”与“完全隐藏源�
 
 备份同样按最低成本原则执行：Hobby 阶段保留 PostgreSQL Logical Dump，在真实 Vote 开始后
 至少每日执行，并保留独立第二份副本。Owner 本机空间足够，但单一设备不能作为唯一灾备。
-技术恢复演练已通过；首份持久备份、留存和第二副本仍需在 Gate E 留证。
+技术恢复演练已通过。2026-08-13 已创建并保留首份本机 Logical Dump，随后在独立的本机
+PostgreSQL 18 临时实例中完整恢复，14 张关键表计数全部一致。每周 Fictional Staging、重要
+变更前备份，以及真实 Vote 开始后的每日备份和 7 Daily + 4 Weekly 留存已经确定；Private
+Cloudflare R2 独立第二副本已完成：Bucket 关闭公开访问，远端 Dump 与 Manifest 大小
+均与本机一致，临时上传 Token 随后删除。R2 只承担独立灾备存储，不把 Cloudflare Proxy/WAF
+放进网站请求路径。Gate E 已于 2026-08-14 经 Owner 明确批准；下一步进入真实 Candidate
+Pool 的审查与 Closed Beta 准备，但仍需遵守 M10 的逐项 Owner Approval。
 
 ## **20. Implementation Plan 如何吸收这些决定**
 

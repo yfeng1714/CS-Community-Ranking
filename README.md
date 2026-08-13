@@ -5,7 +5,7 @@ simple pairwise votes.
 
 ## Status
 
-Milestones 0–8 are implemented. Milestone 9 operational readiness is in progress: the runtime foundation, full V0.1 database schema, data-driven
+Milestones 0–9 are implemented and Owner Review Gate E was approved on 2026-08-14. The runtime foundation, full V0.1 database schema, data-driven
 Candidate Pool, secure anonymous visitor identity, atomic random Ballot issuance, exactly-once
 Vote/ranking transactions, and the responsive public Vote/Ranking/Player vertical slice are in
 place, together with the authenticated Admin Console, fixture-tested VRS/HLTV adapters, external
@@ -14,8 +14,10 @@ import boundary: no provider result becomes a live Pool change automatically. M8
 privacy-preserving network risk keys, observe/enforce risk collection, first-party analytics/KPIs,
 integrity and retention jobs, bounded public API protection, and site-wide security headers. The
 production image, migration-gated Railway topology, scheduled-service configs, staging smoke/load,
-and backup/restore verification are versioned. Direct Railway staging is live; retained logical
-backup evidence and Owner Review Gate E remain pending.
+and backup/restore verification are versioned. Direct Railway staging is live; the first retained
+local logical backup has passed a full 14-table restore and has a verified independent copy in a
+private Cloudflare R2 bucket. Milestone 10—real Candidate Pool review, closed beta, and launch—is the
+next authorized boundary; no production Pool or real-user beta has started yet.
 
 ## Technology
 

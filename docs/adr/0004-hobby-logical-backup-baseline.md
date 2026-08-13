@@ -63,3 +63,16 @@ importance makes them inadequate.
 - `pnpm backup:verify` restores into a separate empty database and matches all critical-table counts.
 - `docs/STAGING_GATE_E.md` records dump age, size, storage class, restore duration, and retention
   evidence without recording credentials or private data.
+
+## Operational evidence
+
+On 2026-08-13 the first retained owner-local PostgreSQL 18.4 custom dump was created through a
+private Railway SSH tunnel. The 136,706-byte archive and manifest are mode `0600`; the archive has
+271 entries and SHA-256 `f15919054c41a58c306df3d7ecfd1a2d5301e62e794a9b55e5314395d4fcabc8`.
+It restored into a new isolated local PostgreSQL 18 database in 631 ms, with exact counts across all
+14 critical tables. The scratch database was stopped and removed. The local recovery point is
+retained. Its dump and manifest were copied to the private Standard-storage R2 bucket
+`cs-community-ranking-backups` with public access disabled and automatic Asia Pacific placement.
+The remote object listing matched the local sizes exactly (136,706-byte dump and 483-byte manifest),
+and the temporary bucket-scoped upload token was revoked immediately afterward. This R2 use is an
+independent backup destination; it does not enable the deferred Cloudflare website edge layer.

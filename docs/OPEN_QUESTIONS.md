@@ -2,17 +2,19 @@
 
 No unresolved owner decision blocks Milestone 0.
 
-## Milestone 9 staging inputs
+## Milestone 9 accepted follow-ups
 
-- Select the independent second-copy destination for Hobby logical backups and evidence the retained
-  cadence defined by ADR 0004. Owner-local capacity is approved but cannot be the only disaster copy.
-- Complete applicable normal/evening-peak direct-route testing. China Mobile 4G reachability is
-  confirmed; China Telecom/Unicom access and measured windows remain open.
-- Confirm the separate failed-deployment alert and remaining Gate E security/log/readiness rows.
+- China Mobile 4G/Wi-Fi reachability and a measured Wi-Fi window are confirmed. China Telecom/Unicom
+  testers are unavailable and a separately classified China Mobile evening-peak window remains a
+  follow-up when practical; these are missing observations, not observed route failures.
+- A failed-deployment email drill was owner-waived because creating it safely would require a
+  temporary code/config failure against the sole active staging service. The separate failed-job
+  email path is proven. The $10 usage-email delivery will be observed naturally rather than forced.
 
 Railway Hobby/billing, spend thresholds, failed-job email delivery, and the direct generated HTTPS
-route are resolved. ADR 0005 defers a custom domain and Cloudflare until a measured trigger; they are
-not missing M9 inputs.
+route are resolved. The private R2 disaster copy is also complete, and Gate E was approved on
+2026-08-14. ADR 0005 defers a custom domain and Cloudflare edge proxy until a measured trigger; they
+are not missing M9 inputs.
 
 ## Before public launch
 

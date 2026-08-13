@@ -2,16 +2,21 @@
 
 ## Current position
 
-- **Milestone:** 9 — Staging deployment and operational readiness
-- **Status:** Railway direct-host staging is deployed and healthy; fictional bootstrap, all six cron
-  jobs, owner Admin login/logout, the minimum direct load window, failed-job email delivery, and a
-  China Mobile 4G reachability check pass; the owner selected Hobby logical backups and explicitly
-  deferred a custom domain/Cloudflare; retained recovery and formal direct-route Mainland China
-  review remain in progress
-- **Review boundary:** The owner-approved Hobby baseline now contains PostgreSQL, Web, and six cron
+- **Milestone:** 9 — Staging deployment and operational readiness (**complete**)
+- **Status:** Owner Review Gate E was approved on 2026-08-14. Railway direct-host staging is deployed
+  and healthy; fictional bootstrap, all six cron
+  jobs, owner Admin login/logout, the minimum direct load window, failed-job email delivery,
+  Singapore Web/PostgreSQL placement, a current structured request-log review, China Mobile 4G/Wi-Fi
+  reachability, and a measured Wi-Fi load window pass. The owner selected Hobby logical backups and
+  explicitly deferred a custom domain/Cloudflare edge layer; the first retained local dump, its full
+  restore verification, and its independent private R2 copy pass. The owner explicitly waived an
+  artificial failed-deployment drill against the sole active staging service and deliberate spend
+  solely to trigger the $10 alert. M10 is the next authorized boundary.
+- **Review boundary:** The owner-approved Hobby baseline contains PostgreSQL, Web, and six cron
   services. The Railway-generated environment is still named `production`, but it is being treated
-  only as staging for this gate; no real Candidate Pool or closed-beta launch is authorized.
-- **Last updated:** 2026-08-13
+  only as staging until M10 deliberately creates production data. No real Candidate Pool or
+  closed-beta launch has happened yet.
+- **Last updated:** 2026-08-14
 
 ## Completed in the repository
 
@@ -46,20 +51,20 @@
 
 ## Local validation
 
-| Command/check                       | Result  | Notes                                                                                                                                          |
-| ----------------------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| `pnpm lint`                         | PASS    | Zero warnings.                                                                                                                                 |
-| `pnpm format:check`                 | PASS    | Source, JSON configuration, tests, and docs formatted.                                                                                         |
-| `pnpm typecheck`                    | PASS    | Strict TypeScript `6.0.3`.                                                                                                                     |
-| `pnpm test:unit`                    | PASS    | 34 files, 119 tests including Railway, CLI, and backup safety.                                                                                 |
-| `pnpm test:integration`             | PASS    | 9 files, 40 tests against PostgreSQL 18.                                                                                                       |
-| `pnpm db:migrate` / `pnpm db:check` | PASS    | Ordered migrations apply; journal is consistent.                                                                                               |
-| Operational CLI execution           | PASS    | Integrity healthy/zero-sum; expiration and retention ran successfully.                                                                         |
-| Local logical restore drill         | PASS    | PostgreSQL 18 custom dump restored to separate empty DB in 1.27s; all 14 critical table counts matched; scratch DB/dump removed.               |
-| `pnpm build`                        | PASS    | Optimized Next.js `16.3.0` Webpack build and standalone traces.                                                                                |
-| `pnpm test:e2e`                     | PASS    | 6 public/Admin journeys in desktop/mobile Chromium. Harmless dev-server aborted-stream messages remained during browser teardown.              |
-| `git diff --check`                  | PASS    | No whitespace errors.                                                                                                                          |
-| Production Docker rebuild           | BLOCKED | Docker Hub metadata for the pinned Node image timed out twice. No image was produced, so final-image entry points are not claimed as verified. |
+| Command/check                       | Result | Notes                                                                                                                                                                                                                             |
+| ----------------------------------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm lint`                         | PASS   | Zero warnings.                                                                                                                                                                                                                    |
+| `pnpm format:check`                 | PASS   | Source, JSON configuration, tests, and docs formatted.                                                                                                                                                                            |
+| `pnpm typecheck`                    | PASS   | Strict TypeScript `6.0.3`.                                                                                                                                                                                                        |
+| `pnpm test:unit`                    | PASS   | Latest pass: 35 files, 124 tests including Railway, CLI, backup, security, and readiness safety.                                                                                                                                  |
+| `pnpm test:integration`             | PASS   | 9 files, 40 tests against PostgreSQL 18.                                                                                                                                                                                          |
+| `pnpm db:migrate` / `pnpm db:check` | PASS   | Ordered migrations apply; journal is consistent.                                                                                                                                                                                  |
+| Operational CLI execution           | PASS   | Integrity healthy/zero-sum; expiration and retention ran successfully.                                                                                                                                                            |
+| Local logical restore drill         | PASS   | PostgreSQL 18 custom dump restored to separate empty DB in 1.27s; all 14 critical table counts matched; scratch DB/dump removed.                                                                                                  |
+| `pnpm build`                        | PASS   | Optimized Next.js `16.3.0` Webpack build and standalone traces.                                                                                                                                                                   |
+| `pnpm test:e2e`                     | PASS   | 6 public/Admin journeys in desktop/mobile Chromium. Harmless dev-server aborted-stream messages remained during browser teardown.                                                                                                 |
+| `git diff --check`                  | PASS   | No whitespace errors.                                                                                                                                                                                                             |
+| Production Docker rebuild           | PASS   | Pinned Node 24.14.0/pnpm 11.16.0 image built; final 190,565,606-byte image runs as `node`, excludes Vitest/TypeScript, and contains Web, migration, all six cron entry points, migrations, public assets, and Next static output. |
 
 Docker Desktop was restarted once because its Linux engine initially hung. It was used only for
 PostgreSQL/integration/restore work; the project database is stopped and Docker Desktop is quit after
@@ -88,6 +93,35 @@ this verification window.
   application redesign is needed because correctness and anti-abuse truth do not depend on the edge.
   Direct Railway deliberately has less application-layer WAF/DDoS shielding, so request, KPI,
   resource, integrity, and spend evidence remains mandatory.
+- The first retained owner-local backup was created through a private Railway SSH tunnel with
+  PostgreSQL 18.4. The 136,706-byte custom archive has 271 entries, a mode-`0600` dump and manifest,
+  and SHA-256 `f15919054c41a58c306df3d7ecfd1a2d5301e62e794a9b55e5314395d4fcabc8`.
+  A new isolated local PostgreSQL 18 database restored it in 631 ms with exact counts across all 14
+  critical tables; the scratch server and directory were then removed. The retained local dump stays
+  in the ignored `backups/` directory and its dump/manifest pair has a verified independent copy in
+  the private `cs-community-ranking-backups` R2 bucket.
+- The R2 bucket uses Standard storage with automatic Asia Pacific placement and public access
+  disabled. Its remote object listing reports the exact local sizes: 136,706 bytes for the dump and
+  483 bytes for the manifest. The temporary bucket-scoped Object Read & Write upload token was
+  deleted immediately after verification; no R2 access credential is stored in the repository.
+- The previously blocked production Docker validation now passes. The final image was built from the
+  pinned runtime/toolchain, runs as the unprivileged `node` user, uses `node server.js` plus the
+  liveness healthcheck, contains the migration and all six cron entry points, and excludes checked
+  development-only Vitest/TypeScript packages. The project PostgreSQL container and Docker engine/VM
+  were stopped afterward. Three idle Docker helper processes remained at 0.0% CPU after the graceful
+  Desktop stop; no project container remained running.
+- Gate E security closure verified all six required response headers across every current public,
+  informational, Admin-login, health, and public-read route; no route exposed `X-Powered-By`. A
+  live visitor cookie passed Secure/HttpOnly/host-only/Path/SameSite checks, focused Admin-cookie
+  tests pass the stricter SameSite policy, and live public/Admin mutation endpoints rejected
+  missing, wrong-Origin, cross-site, and invalid-content requests without setting cookies. Logger
+  redaction also replaced representative cookies, tokens, password, database URL, and IP fields.
+- During the first Railway CLI tunnel, its human-readable output printed the database password in a
+  separate terminal field. The credential was therefore treated as exposed and rotated immediately:
+  the PostgreSQL role and Railway source variable now use a new random password, all referenced Web
+  and cron services redeployed successfully, and the staging smoke suite passed afterward. Both
+  tunnels were closed, the temporary Railway SSH key was removed, and credential-bearing temp files
+  were deleted.
 - The first live Valve VRS run exposed an upstream-format mismatch: the official heading appends an
   HTML `<br />` after its date. Parser version `valve-vrs-markdown-v2` accepts that official form
   while retaining fail-closed validation. The focused parser test, direct live-source parse, and
@@ -141,25 +175,27 @@ this verification window.
 - The owner received Railway's email for the earlier safe staging VRS failure, confirming the
   failed-job notification path. This is not evidence for the separate failed-deployment or spend
   threshold alerts.
-- The owner reached the direct Railway site over China Mobile 4G. This is useful connectivity
-  evidence, but no timestamped normal/evening-peak latency or Ballot timing was captured, so it does
-  not complete the formal network matrix.
+- The owner reached the direct Railway site over China Mobile 4G and Wi-Fi. On the confirmed China
+  Mobile Wi-Fi connection, a bounded 50-scenario/concurrency-5 SKIP-only window returned 100 HTTP
+  `200` responses with zero failures and scenario p50/p95/p99 of 980/2,022/3,850 ms. The four
+  fictional ranking scores matched exactly before and after. China Telecom/Unicom are recorded as
+  tester-unavailable, not failed routes; this window is not claimed as evening-peak evidence.
 
-## Remaining M9 work and external inputs
+## M9 accepted follow-ups
 
-- Create the first retained logical dump, establish the ADR 0004 cadence/retention, and select a
-  second independent protected copy. Local capacity is approved; local-only is not yet durable
-  disaster recovery.
-- Trigger and confirm the separate failed-deployment notification. Failed-job email delivery is now
-  confirmed from the earlier safe staging VRS failure.
-- Complete the remaining direct-route security/log/readiness checks and formal normal/evening-peak
-  tests from China Telecom, Unicom, and Mobile where available. Cloudflare-only paths are no longer
-  M9 blockers under ADR 0005.
-- Retry the production Docker build when Docker Hub is reachable, then inspect the final image's web,
-  migration, and cron entry points.
+- The owner waived the separate failed-deployment notification drill. Failed-job email delivery is
+  already proven, and no temporary failure-only code/config change will be introduced solely to fail
+  a deployment against the only active staging service.
+- Spend-alert delivery will be observed naturally if Railway sends the configured $10 alert; the
+  $25 hard limit is configured and will not be deliberately approached for testing.
+- China Telecom/Unicom and a separately classified China Mobile evening-peak window remain follow-up
+  evidence when devices/timing are available, not current route failures. Cloudflare-only paths are
+  no longer M9 blockers under ADR 0005. Singapore Web/PostgreSQL placement and the current
+  provider-log request-summary review now pass.
 
 ## Next task
 
-Retain the first Hobby logical backup, finish the applicable direct-route operational/security
-evidence in `docs/STAGING_GATE_E.md`, and obtain explicit Gate E approval. Do not begin M10 or create
-the real 2026 Candidate Pool before that approval.
+Begin M10 planning from `docs/IMPLEMENTATION_PLAN_V0.1.md`: generate a fresh review-only 2026 Pool
+draft, collect the remaining owner inputs and asset/attribution evidence, and present conflicts and
+proposed entries for approval. Do not activate the real Edition, enable production Pool entries, or
+start closed beta without the M10 approvals required by the plan.
