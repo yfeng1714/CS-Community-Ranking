@@ -7,6 +7,7 @@ import * as schema from "../src/db/schema/index.ts";
 import { DomainError } from "../src/domain/error.ts";
 import { ActivePoolCache } from "../src/domain/pool/active-pool-cache.ts";
 import { CandidatePoolService } from "../src/domain/pool/service.ts";
+import { cliArgs } from "./cli-args.ts";
 
 export function createPoolCliContext() {
   const connectionString = process.env.DATABASE_URL;
@@ -36,7 +37,7 @@ export function createPoolCliContext() {
 export function parseRequiredOptions<const T extends Record<string, { type: "string" }>>(
   options: T,
 ): { [K in keyof T]: string } {
-  const parsed = parseArgs({ options, strict: true }).values as Record<
+  const parsed = parseArgs({ args: cliArgs(), options, strict: true }).values as Record<
     string,
     boolean | string | undefined
   >;

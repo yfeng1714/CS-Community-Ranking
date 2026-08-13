@@ -7,6 +7,7 @@ import { Pool } from "pg";
 import * as schema from "../src/db/schema/index.ts";
 import { DomainError, requireDomainValue } from "../src/domain/error.ts";
 import { checkScoreIntegrity } from "../src/domain/votes/integrity.ts";
+import { cliArgs } from "./cli-args.ts";
 
 const databaseUrl = process.env.DATABASE_URL;
 if (!databaseUrl) {
@@ -14,6 +15,7 @@ if (!databaseUrl) {
 }
 
 const editionCode = parseArgs({
+  args: cliArgs(),
   options: { edition: { type: "string" } },
   strict: true,
 }).values.edition?.trim();

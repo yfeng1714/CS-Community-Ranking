@@ -202,5 +202,126 @@ and investigate transaction/audit history before attempting any manual repair.
 - `BALLOT_RESOLUTION_UNAVAILABLE`: correlate the request ID with safe structured logs. Do not expose
   database error text or visitor identity.
 
-Railway deployment, migrations, backup/restore, scheduled jobs, alerts, and incident procedures are
-completed and tested in Milestone 9. This file must be expanded before staging approval.
+## Railway staging release
+
+Create one Railway project with a `staging` environment, PostgreSQL, the web service, and the six
+one-shot services listed in `railway/README.md`. Set each service's Config-as-code path to its
+matching committed JSON file. Keep Web and PostgreSQL in Singapore and reference the PostgreSQL
+private `DATABASE_URL`; do not give normal web/job traffic `DATABASE_PUBLIC_URL`.
+
+Set production-mode application values in Railway variables. Generate independent random values of
+at least 32 characters for `VISITOR_TOKEN_HASH_PEPPER`, `IP_HMAC_SECRET`, and
+`ADMIN_SESSION_SECRET`; never copy local placeholders. For the initial direct Railway path:
+
+```text
+NODE_ENV=production
+APP_ORIGIN=https://<exact-staging-host>
+CLIENT_IP_MODE=railway
+TRUST_PROXY_HEADERS=true
+RISK_ENFORCEMENT_MODE=observe
+```
+
+The web config runs committed migrations as a pre-deploy command from the newly built image. A
+nonzero migration exit blocks the release. Confirm this once with a temporary staging-only branch
+whose pre-deploy command deliberately exits nonzero, record the failed deployment notification,
+then redeploy the reviewed commit. Never test migration failure against production and never seed as
+part of deployment.
+
+After deploy, run read-only smoke checks, then one SKIP-only mutation:
+
+```bash
+pnpm ops:smoke -- --origin https://<exact-staging-host>
+pnpm ops:smoke -- --origin https://<exact-staging-host> --skip-vote --confirm-staging
+```
+
+Create the staging Admin through a trusted Railway shell/one-shot invocation; do not expose the
+database publicly for this. Confirm liveness, readiness, Admin login/logout, Pool audit, and one
+revoked test Vote using fictional staging data only.
+
+## Schedules and alert matrix
+
+Railway cron uses UTC. The committed schedules translate to Shanghai time and are staggered:
+
+- expire Ballots every 10 minutes;
+- integrity 02:30 daily, retention 02:50, snapshot 03:10, KPI 03:30;
+- Valve VRS Monday 04:00; review the resulting snapshot in Admin;
+- HLTV remains a manual trusted command until its URL/date window and low-frequency cadence are
+  approved. Keep `HLTV_SYNC_ENABLED=false` otherwise.
+
+Trigger each job once in staging and record its deployment ID, exit status, and safe JSON result in
+`docs/STAGING_GATE_E.md`. Configure Railway project notifications for failed deploys and crashed or
+failed cron runs, then prove delivery using one controlled staging failure. Configure an owner usage
+alert below the monthly comfort budget and Railway's wider hard limit separately; record threshold
+and delivery without committing billing details.
+
+V0.1 uses Railway JSON logs and platform notifications. Sentry remains optional and blank by
+default; the app must operate unchanged when no external tracker is configured. Inspect logs for
+`application_start`, public API summaries, one Admin action, one sync, and every scheduled result.
+Search for accidental cookies, tokens, raw IPs, passwords, provider bodies, and database URLs before
+Gate E.
+
+## Backup and restore drill
+
+Enable Railway daily and weekly PostgreSQL volume backup schedules. Separately produce a portable
+custom-format logical dump through a Railway tunnel or short-lived public TCP proxy. Install
+`pg_dump`/`pg_restore` with the same major version as the Railway PostgreSQL service; an older client
+cannot safely dump a newer server:
+
+```bash
+DATABASE_URL=<staging-tunnel-url> pnpm backup:create -- --output backups/staging.dump
+```
+
+The ignored `backups/` directory contains the dump and a non-secret manifest of critical-table row
+counts. Move the dump to owner-controlled encrypted/offsite storage; never commit it. Create a new,
+empty scratch database and verify the complete restore:
+
+```bash
+DATABASE_URL=<source-url> RESTORE_DATABASE_URL=<empty-scratch-url> \
+  pnpm backup:verify -- --dump backups/staging.dump
+```
+
+The command refuses the source database and a nonempty target, runs `pg_restore --exit-on-error`,
+and compares exact row counts for ranking, Vote, Pool, visitor, and audit tables. Run integrity and
+public smoke checks against the restored DB, record dump age and restore duration as measured RPO/RTO,
+then delete the scratch service through the Railway dashboard after review. Remove any temporary
+public database exposure/tunnel.
+
+## Cloudflare and Mainland China A/B
+
+Keep the direct Railway HTTPS hostname working throughout. Test Cloudflare-proxied and DNS-only
+custom-host windows sequentially (or with separately configured staging deployments) because
+mutation security permits one exact `APP_ORIGIN`. Use `CLIENT_IP_MODE=cloudflare` only for proxied
+traffic and `railway` for direct/DNS-only traffic; both require trusted proxy headers only when the
+origin cannot be reached outside the selected trusted path.
+
+Run the smoke command and then the bounded, SKIP-only load scenario per path:
+
+```bash
+pnpm ops:load -- --origin https://<current-host> --requests 50 --concurrency 5 --confirm-staging
+```
+
+The tool caps requests at 500 and concurrency at 20. Watch web CPU/memory, PostgreSQL connections,
+logs, and failures. Test China Telecom, Unicom, and Mobile during normal and evening-peak windows;
+record TTFB and `/next` + `/resolve` p50/p95/failure rate in `docs/STAGING_GATE_E.md`. Cloudflare
+Origin CA is not sufficient for the direct/DNS-only route; retain publicly trusted Railway TLS.
+
+## Incident procedures
+
+- Web unavailable: check deployment health/logs and `/live`; rollback the application deployment if
+  the previous schema remains compatible. Do not roll back a forward migration by rewriting files.
+- Readiness unavailable: stop mutation testing, check PostgreSQL metrics/private DNS, and preserve
+  errors. Liveness may remain healthy while DB readiness returns 503.
+- Integrity job failure: freeze Admin mutations and external approvals, preserve the report, run
+  `score:check`, and investigate audit/transaction history. Never auto-repair.
+- Bad deploy/migration: traffic must remain on the last healthy deployment. Diagnose on a restored
+  copy, create a reviewed forward migration, and redeploy.
+- Data loss/corruption: stop writes, choose the newest safe volume/PITR/logical recovery point,
+  restore to a sibling database, run integrity/smoke checks, then explicitly switch `DATABASE_URL`.
+- Cloudflare degradation: set the custom host DNS-only or use the direct Railway hostname, change
+  `APP_ORIGIN` and `CLIENT_IP_MODE` for that window, redeploy, and repeat smoke. Ranking correctness
+  and daily quota do not change.
+- Cost spike: pause external sync and nonessential cron services first, inspect request/job logs and
+  database load, then apply infrastructure limits. Never change score/quota truth to reduce cost.
+
+Use `docs/STAGING_GATE_E.md` as the required evidence and owner sign-off record. M9 is not complete
+until real deployment, alerts, restore, direct/proxy A/B, and Mainland China checks are documented.

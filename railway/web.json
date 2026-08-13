@@ -1,0 +1,19 @@
+{
+  "$schema": "https://railway.com/railway.schema.json",
+  "build": {
+    "dockerfilePath": "Dockerfile"
+  },
+  "deploy": {
+    "healthcheckPath": "/api/health/ready",
+    "healthcheckTimeout": 120,
+    "multiRegionConfig": {
+      "asia-southeast1-eqsg3a": {
+        "numReplicas": 1
+      }
+    },
+    "preDeployCommand": ["node --import ./scripts/register-path-aliases.mjs scripts/migrate.ts"],
+    "restartPolicyMaxRetries": 5,
+    "restartPolicyType": "ON_FAILURE",
+    "startCommand": "node server.js"
+  }
+}

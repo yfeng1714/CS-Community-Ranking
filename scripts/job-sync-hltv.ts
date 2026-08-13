@@ -3,6 +3,7 @@ import { parseArgs } from "node:util";
 import { getEnv } from "../src/config/env.ts";
 import { DomainError } from "../src/domain/error.ts";
 import { syncHltvPlayerStats, syncHltvRanking } from "../src/domain/external-data/jobs.ts";
+import { cliArgs } from "./cli-args.ts";
 import { createJobContext, printJobResult } from "./job-support.ts";
 
 const env = getEnv();
@@ -12,6 +13,7 @@ if (!env.HLTV_SYNC_ENABLED || !env.HLTV_USER_AGENT)
     "Enable HLTV sync and configure HLTV_USER_AGENT first",
   );
 const args = parseArgs({
+  args: cliArgs(),
   options: {
     end: { type: "string" },
     published: { type: "string" },

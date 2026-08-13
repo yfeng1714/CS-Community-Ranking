@@ -2,9 +2,11 @@ import { parseArgs } from "node:util";
 
 import { DomainError } from "../src/domain/error.ts";
 import { snapshotDailyRanking } from "../src/domain/external-data/daily-ranking.ts";
+import { cliArgs } from "./cli-args.ts";
 import { createJobContext, printJobResult } from "./job-support.ts";
 
 const args = parseArgs({
+  args: cliArgs(),
   options: { date: { type: "string" }, edition: { type: "string" } },
   strict: true,
 }).values;

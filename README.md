@@ -5,14 +5,16 @@ simple pairwise votes.
 
 ## Status
 
-Milestones 0–8 are implemented: the runtime foundation, full V0.1 database schema, data-driven
+Milestones 0–8 are implemented. Milestone 9 operational automation is in progress: the runtime foundation, full V0.1 database schema, data-driven
 Candidate Pool, secure anonymous visitor identity, atomic random Ballot issuance, exactly-once
 Vote/ranking transactions, and the responsive public Vote/Ranking/Player vertical slice are in
 place, together with the authenticated Admin Console, fixture-tested VRS/HLTV adapters, external
 snapshot approval, freshness, and review-only Candidate Pool drafts. Gate D remains the governing
 import boundary: no provider result becomes a live Pool change automatically. M8 adds daily
 privacy-preserving network risk keys, observe/enforce risk collection, first-party analytics/KPIs,
-integrity and retention jobs, bounded public API protection, and site-wide security headers.
+integrity and retention jobs, bounded public API protection, and site-wide security headers. The
+production image, migration-gated Railway topology, scheduled-service configs, staging smoke/load,
+and backup/restore verification are versioned; real staging and Owner Review Gate E remain pending.
 
 ## Technology
 
@@ -88,6 +90,10 @@ If port `5432` is already occupied, set `POSTGRES_PORT` to another host port in
 | `pnpm job:integrity-check -- --edition <code>` | Check ranking, Pool, Vote, aggregate, and risk-key integrity |
 | `pnpm job:expire-ballots [-- --batch <count>]` | Batch-expire overdue open Ballots |
 | `pnpm job:retention-cleanup` | Apply configured analytics and IP-risk-key retention |
+| `pnpm ops:smoke -- --origin <https-origin>` | Verify staging health, public routes, payloads, and security headers |
+| `pnpm ops:load -- --origin <https-origin> --confirm-staging` | Run a bounded, SKIP-only staging concurrency scenario |
+| `pnpm backup:create -- --output <file.dump>` | Create a portable PostgreSQL dump plus row-count manifest |
+| `pnpm backup:verify -- --dump <file.dump>` | Restore into a separate empty DB and verify critical-table counts |
 
 ## Documentation
 
@@ -104,6 +110,7 @@ If port `5432` is already occupied, set `POSTGRES_PORT` to another host port in
 - [`docs/PUBLIC_UI.md`](docs/PUBLIC_UI.md) — public pages, display rules, reload orchestration, and accessibility
 - [`docs/ADMIN_CONSOLE.md`](docs/ADMIN_CONSOLE.md) — Admin sessions, mutation/audit workflows, and pending-review safety
 - [`docs/SECURITY.md`](docs/SECURITY.md) — security baseline
+- [`docs/STAGING_GATE_E.md`](docs/STAGING_GATE_E.md) — staging evidence checklist and Owner Review Gate E
 
 When documents disagree about product intent, use the Product Decision Chronicle
 as the primary reference and record important changes.

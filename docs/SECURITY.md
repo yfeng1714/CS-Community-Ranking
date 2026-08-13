@@ -81,9 +81,25 @@
   integrity job checks zero-sum ranking, Vote/aggregate agreement, uniqueness, Pool coverage, and
   pseudonymous-key shape and exits non-zero when unhealthy.
 
-## Deferred controls
+## Milestone 9 operational controls
 
-Staging proxy/header validation, alert delivery, backup/restore, and external error-tracker choice
-remain Milestone 9 deployment work.
+- The production image contains reviewed migrations and trusted one-shot commands. Railway web
+  pre-deploy runs migrations before traffic switches; any nonzero exit blocks the release.
+- Railway service configuration fixes Web to one Singapore replica with readiness-based deployment
+  health. Cron services are isolated, short-lived, never run a web server, and cannot overlap by
+  becoming long-running processes.
+- Staging smoke/load writes require `--confirm-staging`; load creates a fresh visitor per scenario
+  and resolves only `SKIP`, preserving ranking scores. Bounds prevent accidental stress traffic.
+- Logical restore verification refuses the source database and any nonempty target, uses
+  `pg_restore --exit-on-error`, and checks exact critical-table counts. Dumps and manifests are
+  ignored and must be stored outside the repository.
+- The direct, Cloudflare-proxied, and DNS-only paths retain exact single-origin mutation validation.
+  Proxy header mode changes with the path; no permanent multi-origin exception is introduced.
+- Railway structured logs and platform alerts are the V0.1 baseline. External error tracking is
+  optional and must never become a request-path or Mainland China dependency.
+
+Real proxy-header behavior, notification delivery, volume-backup schedules, logical restore,
+load evidence, and three-network Mainland China access remain unverified until their evidence rows
+are completed in `docs/STAGING_GATE_E.md`.
 
 Never add a raw IP, visitor cookie, Admin token, password, or complete provider HTML body to logs.

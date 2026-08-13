@@ -1,0 +1,9 @@
+{
+  "$schema": "https://railway.com/railway.schema.json",
+  "build": { "dockerfilePath": "Dockerfile" },
+  "deploy": {
+    "cronSchedule": "0 20 * * 1",
+    "restartPolicyType": "NEVER",
+    "startCommand": "node --import ./scripts/register-path-aliases.mjs scripts/job-sync-vrs.ts"
+  }
+}

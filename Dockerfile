@@ -1,5 +1,3 @@
-# syntax=docker/dockerfile:1
-
 FROM node:24.14.0-bookworm-slim AS base
 
 ENV PNPM_HOME=/pnpm
@@ -22,6 +20,10 @@ COPY . .
 
 RUN pnpm build
 
+FROM dependencies AS production-dependencies
+
+RUN pnpm prune --prod
+
 FROM node:24.14.0-bookworm-slim AS runner
 
 ENV NODE_ENV=production
@@ -34,6 +36,10 @@ WORKDIR /app
 COPY --from=builder --chown=node:node /app/public ./public
 COPY --from=builder --chown=node:node /app/.next/standalone ./
 COPY --from=builder --chown=node:node /app/.next/static ./.next/static
+COPY --from=production-dependencies --chown=node:node /app/node_modules ./node_modules
+COPY --from=builder --chown=node:node /app/drizzle ./drizzle
+COPY --from=builder --chown=node:node /app/scripts ./scripts
+COPY --from=builder --chown=node:node /app/src ./src
 
 USER node
 

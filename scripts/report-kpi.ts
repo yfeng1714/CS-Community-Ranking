@@ -5,9 +5,11 @@ import { generateDailyKpiReport } from "../src/domain/analytics/kpi.ts";
 import { dateInTimeZone } from "../src/domain/ballots/date.ts";
 import { DomainError } from "../src/domain/error.ts";
 import { requireIsoDate } from "../src/domain/date.ts";
+import { cliArgs } from "./cli-args.ts";
 import { createJobContext, printJobResult } from "./job-support.ts";
 
 const args = parseArgs({
+  args: cliArgs(),
   options: { date: { type: "string" }, edition: { type: "string" } },
   strict: true,
 }).values;

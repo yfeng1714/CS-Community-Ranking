@@ -2,93 +2,99 @@
 
 ## Current position
 
-- **Milestone:** 8 — Anti-abuse, analytics, and integrity hardening
-- **Status:** Implemented and verified; ready for owner review before Milestone 9
-- **Review boundary:** Privacy-preserving daily IP HMAC risk signals, observe/enforce controls,
-  bounded public API protection, first-party analytics/KPIs, integrity/retention/expiration jobs,
-  request metrics/logging, and site-wide security headers are complete. No deployment occurred.
-- **Last updated:** 2026-08-12
+- **Milestone:** 9 — Staging deployment and operational readiness
+- **Status:** Repository automation implemented and locally verified; real Railway/Cloudflare staging
+  and Owner Review Gate E remain in progress
+- **Review boundary:** Production operations image design, migration-gated Railway configuration,
+  cron topology, staging smoke/load tools, logical backup/restore verification, incident runbook,
+  security checklist, and Gate E evidence template are complete. No cloud resources were created.
+- **Last updated:** 2026-08-13
 
-## Completed
+## Completed in the repository
 
-- Trusted Railway/Cloudflare client IP input is normalized in memory only. IPv4 is canonicalized,
-  IPv6 is aggregated to `/64`, and PostgreSQL stores only a 32-byte daily HMAC keyed by the
-  Shanghai-local date. Proxy headers are ignored by default; an unattributed bounded bucket still
-  protects availability without inventing an IP identity.
-- The risk monitor records configurable new-visitor churn, extreme velocity, invalid Ballot
-  ownership, replay mismatch, and impossible-flow reasons. Observe mode persists reasons without
-  changing an otherwise-valid Vote; enforce mode persists `SUSPICIOUS` Ballot eligibility. Risk is
-  never exposed before resolution and never replaces the per-visitor PostgreSQL quota.
-- `/next`, `/resolve`, public JSON reads, and the first-party event endpoint use a bounded
-  process-local public limiter. Visitor-specific limiters remain separate. Cloudflare is optional
-  and ranking correctness remains database-only.
-- `POST /api/v1/events` accepts only six event types and bounded page/player metadata. It rejects
-  Vote choice/arbitrary metadata and degrades to `202` on analytics failure. Anonymous page views do
-  not race Ballot issuance to create visitor identity.
-- `report:kpi` generates a Shanghai-local daily report from first-party rows: Ballots/decisions per
-  visitor, resolution/skip/throttle rates, per-player skip rate, repeat visitors, result-to-Next and
-  post-vote ranking navigation, provider freshness, and public voting API latency/errors.
-- One-shot jobs now provide full cross-table integrity checks, bounded open-Ballot expiration, and
-  configured retention cleanup. Old Ballot/Vote IP HMACs are nulled while Votes/rankings remain;
-  expired analytics and transient risk observations are purged.
-- The site emits restrictive CSP, anti-framing, MIME-sniffing, referrer, and permissions headers.
-  HSTS is production-and-HTTPS only. Admin keeps stricter no-referrer/noindex behavior. Structured
-  public API summaries include request ID, route, status, latency, and safe error code only.
-- Ordered migrations `0001_m8_integrity_hardening.sql` and
-  `0002_m8_risk_key_constraints.sql` add risk observations, API metrics, Ballot risk reasons, and
-  database-enforced SHA-256 key shape. No existing migration was rewritten and no production
-  `db push` was used.
-- Milestones 0–7 remain implemented, including the independently audited Gate D import boundary,
-  authenticated Admin Console, fixture-tested external adapters, review-only Pool drafts, and
-  daily ranking snapshots.
+- `railway/web.json` fixes Web to one Singapore replica, checks database readiness, and runs only
+  committed migrations in Railway's pre-deploy phase. A nonzero migration exit blocks traffic from
+  switching. Six separate config files define bounded, short-lived schedules for Ballot expiration,
+  integrity, retention, daily ranking snapshots, KPI reports, and weekly Valve VRS sync.
+- The production Docker stage now includes only production dependencies plus the reviewed source,
+  migrations, and trusted one-shot commands needed by Web and cron services. The unnecessary remote
+  Dockerfile-frontend directive was removed after it caused an avoidable registry dependency.
+- Node 24's module hooks provide a small runtime resolver for the existing `@/` TypeScript aliases.
+  This corrected a pre-existing flaw: trusted CLI commands that reached aliased domain modules were
+  not executable under plain Node even though their domain logic was tested.
+- A shared CLI argument normalizer supports both direct `--option` invocation and the documented
+  pnpm `-- --option` form. This corrected a second pre-existing flaw where pnpm 11 forwarded the
+  separator and strict `parseArgs` rejected otherwise valid commands.
+- `ops:smoke` checks HTTPS liveness/readiness, public routes, ranking JSON, HSTS/CSP/security headers,
+  and optional one-Ballot SKIP mutation. `ops:load` runs a bounded fresh-visitor SKIP-only scenario,
+  reports p50/p95/p99 and status counts, and caps requests/concurrency. Remote writes require
+  `--confirm-staging`; ranking scores never change.
+- `backup:create` produces a PostgreSQL custom-format dump and manifest with exact critical-table
+  counts without putting credentials in process arguments. It refuses overwrite. `backup:verify`
+  refuses the source database and nonempty targets, restores with `--exit-on-error`, and compares 14
+  ranking/Vote/Pool/visitor/Admin-audit table counts. Backup files are ignored.
+- The runbook now covers environment and private networking, release/migration failure, cron
+  schedules, platform logs/notifications, spend controls, backup/restore, Cloudflare fallback,
+  Mainland China A/B, load testing, and incident response. `docs/STAGING_GATE_E.md` makes every real
+  acceptance item require evidence and explicit owner approval before M10.
+- Railway structured JSON logs and platform alerts are the V0.1 observability baseline. Sentry stays
+  optional and blank; it cannot become a request-path or Mainland China dependency. HLTV remains a
+  manual operator job until a URL/date window and low-frequency schedule are deliberately approved.
 
-## Validation
+## Local validation
 
-| Command/check                   | Result | Notes                                                                    |
-| ------------------------------- | ------ | ------------------------------------------------------------------------ |
-| `pnpm lint`                     | PASS   | Zero warnings.                                                           |
-| `pnpm format:check`             | PASS   | Source, tests, configuration, migration metadata, and docs formatted.    |
-| `pnpm typecheck`                | PASS   | Strict TypeScript `6.0.3`.                                               |
-| `pnpm test:unit`                | PASS   | 31 files, 106 tests: IP/HMAC, analytics, CSP, guards, and domain logic.  |
-| `pnpm test:integration`         | PASS   | 9 files, 40 tests against PostgreSQL 18 and ordered fresh migrations.    |
-| M8 verbose PostgreSQL scenarios | PASS   | KPI, cookie-churn signal, observe/enforce, expiry, retention, integrity. |
-| `pnpm test:e2e`                 | PASS   | 6 public/Admin journeys in desktop and mobile Chromium.                  |
-| `pnpm build`                    | PASS   | Optimized Next.js `16.3.0` Webpack build.                                |
-| `pnpm db:check`                 | PASS   | Drizzle schema and migration journal consistent.                         |
-| `git diff --check`              | PASS   | No whitespace errors.                                                    |
+| Command/check                       | Result  | Notes                                                                                                                                          |
+| ----------------------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm lint`                         | PASS    | Zero warnings.                                                                                                                                 |
+| `pnpm format:check`                 | PASS    | Source, JSON configuration, tests, and docs formatted.                                                                                         |
+| `pnpm typecheck`                    | PASS    | Strict TypeScript `6.0.3`.                                                                                                                     |
+| `pnpm test:unit`                    | PASS    | 34 files, 119 tests including Railway, CLI, and backup safety.                                                                                 |
+| `pnpm test:integration`             | PASS    | 9 files, 40 tests against PostgreSQL 18.                                                                                                       |
+| `pnpm db:migrate` / `pnpm db:check` | PASS    | Ordered migrations apply; journal is consistent.                                                                                               |
+| Operational CLI execution           | PASS    | Integrity healthy/zero-sum; expiration and retention ran successfully.                                                                         |
+| Local logical restore drill         | PASS    | PostgreSQL 18 custom dump restored to separate empty DB in 1.27s; all 14 critical table counts matched; scratch DB/dump removed.               |
+| `pnpm build`                        | PASS    | Optimized Next.js `16.3.0` Webpack build and standalone traces.                                                                                |
+| `pnpm test:e2e`                     | PASS    | 6 public/Admin journeys in desktop/mobile Chromium. Harmless dev-server aborted-stream messages remained during browser teardown.              |
+| `git diff --check`                  | PASS    | No whitespace errors.                                                                                                                          |
+| Production Docker rebuild           | BLOCKED | Docker Hub metadata for the pinned Node image timed out twice. No image was produced, so final-image entry points are not claimed as verified. |
 
-Docker was kept off during ordinary work, used only for PostgreSQL/browser verification, then the
-project container was stopped and Docker Desktop was quit to release the local VM resources.
+Docker Desktop was restarted once because its Linux engine initially hung. It was used only for
+PostgreSQL/integration/restore work; the project database is stopped and Docker Desktop is quit after
+this verification window.
 
 ## Material corrections and decisions
 
-- M8 required a forward schema change because pre-resolution risk reasons and failed abuse signals
-  could not be audited in the reserved M1 fields alone. This extends the existing privacy model; it
-  does not change product meaning.
-- Shared-network safety is explicit: no low per-IP Vote cap exists, all risk thresholds are
-  configuration, initial mode remains `observe`, and Cloudflare cannot grant extra ranking power.
-- First page-view analytics may be anonymous. This avoids competing visitor-cookie creation while
-  retaining later linked result/Next/ranking metrics once voting identity exists.
-- CSP allows `unsafe-eval` only during local Next.js development; production does not. HSTS is not
-  emitted locally and still requires real HTTPS/proxy validation in staging.
+- M9 found that passing unit/integration tests did not prove the trusted CLI entry points could
+  execute. Runtime alias resolution and pnpm separator normalization are now explicit, shared, and
+  tested. All documented earlier CLI commands benefit from the correction.
+- Portable backups are owner-side/tunnel operations using PostgreSQL client tools matching the
+  Railway server major version. The application image intentionally does not carry a possibly older
+  Debian `pg_dump` or store backup artifacts.
+- Railway cron is UTC. Schedules are translated to Shanghai time and staggered after midnight to
+  avoid a simultaneous database spike. HLTV is not automatically scheduled; weekly VRS creates only
+  an approval-pending snapshot and cannot mutate the Candidate Pool.
+- Exact single-origin mutation validation remains intact during Cloudflare testing. Proxy-on and
+  DNS-only/direct mutation checks use sequential configuration windows or separate deployments;
+  accepting two permanent production origins is not an approved shortcut.
 
-## Known limitations
+## Remaining M9 work and external inputs
 
-- The limiter and risk-velocity map are intentionally per process for the initial single web
-  instance; process restart resets them. PostgreSQL quota and exactly-once Vote correctness do not.
-- IP HMAC monitoring requires correctly configured trusted proxy headers in staging. With trust off,
-  there is no network correlation, only bounded unattributed availability protection.
-- Risk thresholds are safe starting defaults, not production-tuned truth. Closed-beta traffic from
-  shared networks must be reviewed before enforcement remains enabled.
-- API timing metrics currently cover `/next` and `/resolve`; infrastructure-level saturation before
-  the process must come from M9 platform monitoring.
-- Scheduled-service cadence, alert delivery, Railway/Cloudflare configuration, external error
-  tracking, backup/restore, and China-network validation remain Milestone 9.
-- No production provider sync, real Candidate Pool draft, or production data was created.
+- Authenticate a Railway account, confirm billing, create the staging project/environment, and
+  deploy PostgreSQL/Web/job services in Singapore. This creates paid external resources and was not
+  attempted without owner account authorization.
+- Supply or choose the owner-controlled staging domain/Cloudflare zone. The Railway-generated HTTPS
+  hostname can be validated first, but proxied versus DNS-only A/B requires a domain.
+- Choose the owner notification destination and Railway monthly comfort alert/hard limit; trigger
+  controlled deployment/job failures to prove delivery.
+- Enable volume backups, run the same logical restore drill against staging, record measured RPO/RTO,
+  and remove the temporary scratch service/public DB access.
+- Complete direct, Cloudflare-proxied, and DNS-only smoke/load windows and validate proxy-header
+  behavior. Run normal/evening-peak tests from China Telecom, Unicom, and Mobile.
+- Retry the production Docker build when Docker Hub is reachable, then inspect the final image's web,
+  migration, and cron entry points.
 
 ## Next task
 
-Wait for owner review and explicit instruction before Milestone 9. Then deploy Web/PostgreSQL/jobs
-to Railway Singapore staging, apply migrations through the release path, configure schedules,
-backups, alerts/logs, run a restore drill, compare Cloudflare proxy-on/DNS-only paths, and validate
-Mainland China access before Owner Review Gate E.
+Obtain the four owner-controlled staging inputs above, deploy Railway staging from the committed
+config paths, and fill `docs/STAGING_GATE_E.md` with real evidence. Do not begin M10 or create the
+real 2026 Candidate Pool until Gate E is complete and explicitly approved by the owner.

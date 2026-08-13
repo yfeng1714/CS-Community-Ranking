@@ -1,0 +1,9 @@
+{
+  "$schema": "https://railway.com/railway.schema.json",
+  "build": { "dockerfilePath": "Dockerfile" },
+  "deploy": {
+    "cronSchedule": "30 18 * * *",
+    "restartPolicyType": "NEVER",
+    "startCommand": "node --import ./scripts/register-path-aliases.mjs scripts/job-integrity-check.ts --edition 2026"
+  }
+}

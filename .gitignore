@@ -20,6 +20,7 @@ next-env.d.ts
 
 # Logs
 logs/
+backups/
 *.log
 npm-debug.log*
 pnpm-debug.log*

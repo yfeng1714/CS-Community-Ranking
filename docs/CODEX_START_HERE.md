@@ -15,13 +15,14 @@ You are implementing **CS Community Ranking / CS 野榜 V0.1**.
 
 ## Current handoff
 
-Milestones 0–8 are implemented. The complete repository received an independent Gate D audit on
+Milestones 0–8 are implemented and Milestone 9 has been explicitly authorized. The complete repository received an independent Gate D audit on
 2026-08-12, followed by fixture-tested Valve VRS/HLTV adapters, scheduled sync commands, explicit
 source-snapshot approval, freshness/stale fallback, review-only Pool draft generation, daily ranking
 snapshots, local asset attribution, privacy-preserving risk keys, observe/enforce abuse
-classification, first-party KPIs, integrity/retention jobs, and security hardening. Do not begin
-Milestone 9 until the owner explicitly requests it. See `docs/IMPLEMENTATION_REVIEW_2026-08-12.md`
-for Gate D and `docs/PROGRESS.md` for the latest M8 verification.
+classification, first-party KPIs, integrity/retention jobs, and security hardening. M9 repository
+automation is in progress; real Railway/Cloudflare deployment evidence and Owner Review Gate E are
+not yet complete. See `docs/IMPLEMENTATION_REVIEW_2026-08-12.md` for Gate D,
+`docs/STAGING_GATE_E.md` for the M9 evidence boundary, and `docs/PROGRESS.md` for current status.
 
 Always trust the latest `docs/PROGRESS.md` over this summary if they ever differ.
 
