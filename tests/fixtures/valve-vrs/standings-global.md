@@ -1,4 +1,4 @@
-### Standings as of 2026_08_03
+### Standings as of 2026_08_03<br />
 
 | Standing | Points | Team Name      | Roster                        |
 | -------- | ------ | -------------- | ----------------------------- |

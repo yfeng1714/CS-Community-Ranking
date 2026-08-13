@@ -1,7 +1,7 @@
 import { DomainError } from "../../error.ts";
 import { normalizedRankingSnapshotSchema, type NormalizedRankingSnapshot } from "../types.ts";
 
-export const VALVE_VRS_PARSER_VERSION = "valve-vrs-markdown-v1";
+export const VALVE_VRS_PARSER_VERSION = "valve-vrs-markdown-v2";
 const OFFICIAL_REPOSITORY = "ValveSoftware/counter-strike_regional_standings";
 
 export function assertOfficialValveVrsUrl(value: string): URL {
@@ -22,7 +22,9 @@ export function assertOfficialValveVrsUrl(value: string): URL {
 
 export function parseValveVrsMarkdown(body: string, sourceUrl: string): NormalizedRankingSnapshot {
   assertOfficialValveVrsUrl(sourceUrl);
-  const dateMatch = /^### Standings as of (\d{4})_(\d{2})_(\d{2})\s*$/m.exec(body);
+  const dateMatch = /^### Standings as of (\d{4})_(\d{2})_(\d{2})(?:\s*<br\s*\/?>)?\s*$/im.exec(
+    body,
+  );
   if (!dateMatch) {
     throw new DomainError("VRS_PUBLISHED_DATE_MISSING", "VRS standings date was not found");
   }

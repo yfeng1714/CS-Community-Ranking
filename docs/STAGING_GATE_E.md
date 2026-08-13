@@ -6,36 +6,36 @@ URLs, API tokens, raw IP addresses, visitor cookies, or Admin session values her
 
 ## Deployment record
 
-| Item                        | Required evidence                                                                         | Result  |
-| --------------------------- | ----------------------------------------------------------------------------------------- | ------- |
-| Railway project/environment | Project and `staging` environment names                                                   | Pending |
-| Region                      | Web and PostgreSQL in Singapore                                                           | Pending |
-| Release                     | Git commit and deployment ID                                                              | Pending |
-| Migration gate              | Successful migration log plus deliberately failed safe test deployment                    | Pending |
-| Private database            | Web/job `DATABASE_URL` uses Railway private reference; DB public URL absent from services | Pending |
-| Direct route                | Railway-generated HTTPS hostname passes `pnpm ops:smoke`                                  | Pending |
-| Custom domain               | HTTPS certificate active and `APP_ORIGIN` exact                                           | Pending |
+| Item                        | Required evidence                                                                         | Result                                                                                                                              |
+| --------------------------- | ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| Railway project/environment | Project and `staging` environment names                                                   | `observant-empathy`; Railway label `production` is owner-approved for staging-only use                                              |
+| Region                      | Web and PostgreSQL in Singapore                                                           | Web verified Singapore; PostgreSQL placement still needs explicit evidence                                                          |
+| Release                     | Git commit and deployment ID                                                              | Commit `205f4c2`; Web deployment `e08a8dda-95a2-468e-9018-cab2fdeea6b7`                                                             |
+| Migration gate              | Successful migration log plus deliberately failed safe test deployment                    | Config-managed migration release succeeded; deliberate safe failure pending                                                         |
+| Private database            | Web/job `DATABASE_URL` uses Railway private reference; DB public URL absent from services | Configured with `${{Postgres.DATABASE_URL}}`; public DB URL not added to app/job services                                           |
+| Direct route                | Railway-generated HTTPS hostname passes `pnpm ops:smoke`                                  | PASS, read-only smoke on `https://cs-community-ranking-production.up.railway.app`; 0 players expected before staging Pool bootstrap |
+| Custom domain               | HTTPS certificate active and `APP_ORIGIN` exact                                           | Pending                                                                                                                             |
 
 ## Jobs, health, logs, and alerts
 
-| Item               | Required evidence                                                                     | Result  |
-| ------------------ | ------------------------------------------------------------------------------------- | ------- |
-| Readiness/liveness | Both endpoints return expected JSON; DB outage makes readiness 503 only               | Pending |
-| Structured logs    | Application start, request summary, and one job result located without sensitive data | Pending |
-| Scheduled jobs     | One successful execution for each configured service                                  | Pending |
-| Failure alert      | Controlled non-production job failure delivers an owner notification                  | Pending |
-| Deployment alert   | Failed deployment notification delivered                                              | Pending |
-| Spend controls     | Usage alert threshold and owner notification verified                                 | Pending |
-| External tracker   | Record `not used for V0.1` or provider/test result                                    | Pending |
+| Item               | Required evidence                                                                     | Result                                                                                                                                                               |
+| ------------------ | ------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Readiness/liveness | Both endpoints return expected JSON; DB outage makes readiness 503 only               | Live/ready PASS; controlled DB-outage behavior pending                                                                                                               |
+| Structured logs    | Application start, request summary, and one job result located without sensitive data | `application_start`, `expired: 0`, and zero-count retention result found; request-summary review pending                                                             |
+| Scheduled jobs     | One successful execution for each configured service                                  | Six services configured. Expire + retention PASS; VRS failed closed on upstream `<br />` drift and fix awaits redeploy; integrity/snapshot/KPI await staging Edition |
+| Failure alert      | Controlled non-production job failure delivers an owner notification                  | Pending                                                                                                                                                              |
+| Deployment alert   | Failed deployment notification delivered                                              | Pending                                                                                                                                                              |
+| Spend controls     | Usage alert threshold and owner notification verified                                 | Owner configured $10 alert and $25 hard limit; delivery evidence pending                                                                                             |
+| External tracker   | Record `not used for V0.1` or provider/test result                                    | Not used for V0.1                                                                                                                                                    |
 
 ## Backup and recovery
 
-| Item             | Required evidence                                                                 | Result  |
-| ---------------- | --------------------------------------------------------------------------------- | ------- |
-| Volume backups   | Daily and weekly schedules visible on staging PostgreSQL                          | Pending |
-| Logical dump     | Matching client/server major; timestamp, age, size, and secure storage            | Pending |
-| Restore drill    | Separate empty DB, `backup:verify` success, duration, exact critical-table counts | Pending |
-| Recovery targets | Measured RPO and RTO recorded after drill                                         | Pending |
+| Item             | Required evidence                                                                 | Result                                                                                                              |
+| ---------------- | --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| Volume backups   | Daily and weekly schedules visible on staging PostgreSQL                          | BLOCKED on Railway Hobby; dashboard requires Pro. Owner decision needed: upgrade or approved logical-only exception |
+| Logical dump     | Matching client/server major; timestamp, age, size, and secure storage            | Pending                                                                                                             |
+| Restore drill    | Separate empty DB, `backup:verify` success, duration, exact critical-table counts | Pending                                                                                                             |
+| Recovery targets | Measured RPO and RTO recorded after drill                                         | Pending                                                                                                             |
 
 ## Proxy and network A/B
 
@@ -63,7 +63,7 @@ Cloudflare Origin CA alone is insufficient for direct browsers.
 
 ## Security review
 
-- [ ] Production placeholders rejected; secrets are distinct and stored only in Railway variables.
+- [x] Production placeholders rejected; secrets are distinct and stored only in Railway variables.
 - [ ] Admin and visitor cookies are Secure, HttpOnly, host-only, and have expected SameSite policy.
 - [ ] CSP, HSTS, anti-framing, MIME, referrer, and permissions headers pass over every route.
 - [ ] Railway mode ignores `CF-Connecting-IP`; Cloudflare mode uses the edge-provided header.

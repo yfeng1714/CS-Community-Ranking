@@ -3,11 +3,11 @@
 ## Current position
 
 - **Milestone:** 9 — Staging deployment and operational readiness
-- **Status:** Repository automation implemented and locally verified; real Railway/Cloudflare staging
-  and Owner Review Gate E remain in progress
-- **Review boundary:** Production operations image design, migration-gated Railway configuration,
-  cron topology, staging smoke/load tools, logical backup/restore verification, incident runbook,
-  security checklist, and Gate E evidence template are complete. No cloud resources were created.
+- **Status:** Railway direct-host staging is deployed and healthy; operational evidence, recovery,
+  Admin bootstrap, Cloudflare, and Mainland China review remain in progress
+- **Review boundary:** The owner-approved Hobby baseline now contains PostgreSQL, Web, and six cron
+  services. The Railway-generated environment is still named `production`, but it is being treated
+  only as staging for this gate; no real Candidate Pool or closed-beta launch is authorized.
 - **Last updated:** 2026-08-13
 
 ## Completed in the repository
@@ -76,18 +76,43 @@ this verification window.
 - Exact single-origin mutation validation remains intact during Cloudflare testing. Proxy-on and
   DNS-only/direct mutation checks use sequential configuration windows or separate deployments;
   accepting two permanent production origins is not an approved shortcut.
+- The first live Valve VRS run exposed an upstream-format mismatch: the official heading appends an
+  HTML `<br />` after its date. Parser version `valve-vrs-markdown-v2` accepts that official form
+  while retaining fail-closed validation. The focused parser test and a direct parse of the live
+  source pass with 396 teams; the Railway job must be redeployed and rerun before Gate E records it
+  as successful.
+
+## Railway staging evidence to date
+
+- Project `observant-empathy`, environment label `production` (owner-approved staging-label
+  exception), commit `205f4c2`, and Railway host
+  `https://cs-community-ranking-production.up.railway.app` are active.
+- Web uses `/railway/web.json`, a private `${{Postgres.DATABASE_URL}}` reference, one Singapore
+  replica, pre-deploy migrations, and readiness health checks. The read-only staging smoke command
+  passed liveness, readiness, homepage/ranking, ranking JSON, and all six required security headers;
+  the empty staging database correctly reported zero ranking players.
+- All six unexposed cron services use their committed config paths. `expire-ballots` completed with
+  `expired: 0`; `retention-cleanup` completed with zero safe cleanup counts. The first VRS run failed
+  closed on the parser drift described above. Integrity, snapshot, and KPI success evidence still
+  depends on bootstrapping the staging Edition.
+- Railway Hobby does not expose volume backups or PITR; its dashboard requires Pro. No plan upgrade
+  was made. The lower-cost recovery path is a matching-version `pg_dump`/`pg_restore` logical dump
+  and separate scratch restore, but those client tools are not installed on the owner Mac yet.
+- Owner spend controls are configured outside the repository at a $10 notification threshold and a
+  $25 hard limit. Sentry is not used for V0.1.
 
 ## Remaining M9 work and external inputs
 
-- Authenticate a Railway account, confirm billing, create the staging project/environment, and
-  deploy PostgreSQL/Web/job services in Singapore. This creates paid external resources and was not
-  attempted without owner account authorization.
+- Redeploy and rerun the fixed VRS adapter, then bootstrap the `owner` Admin and a fictional staging
+  Edition/Pool through trusted Admin/operator paths so integrity, snapshot, KPI, SKIP, moderation,
+  and Admin login/logout evidence can be collected.
 - Supply or choose the owner-controlled staging domain/Cloudflare zone. The Railway-generated HTTPS
   hostname can be validated first, but proxied versus DNS-only A/B requires a domain.
-- Choose the owner notification destination and Railway monthly comfort alert/hard limit; trigger
-  controlled deployment/job failures to prove delivery.
-- Enable volume backups, run the same logical restore drill against staging, record measured RPO/RTO,
-  and remove the temporary scratch service/public DB access.
+- Confirm the owner received a controlled failed-job/deployment notification. The live VRS failure is
+  available as a safe failed-job candidate, but email delivery has not been independently confirmed.
+- Decide between a Pro upgrade for platform volume backups/PITR or the Hobby logical-backup-only
+  exception. Install a matching PostgreSQL client, run the logical restore drill, record measured
+  RPO/RTO, and remove the temporary scratch service/public DB access.
 - Complete direct, Cloudflare-proxied, and DNS-only smoke/load windows and validate proxy-header
   behavior. Run normal/evening-peak tests from China Telecom, Unicom, and Mobile.
 - Retry the production Docker build when Docker Hub is reachable, then inspect the final image's web,
@@ -95,6 +120,6 @@ this verification window.
 
 ## Next task
 
-Obtain the four owner-controlled staging inputs above, deploy Railway staging from the committed
-config paths, and fill `docs/STAGING_GATE_E.md` with real evidence. Do not begin M10 or create the
-real 2026 Candidate Pool until Gate E is complete and explicitly approved by the owner.
+Deploy and verify the VRS parser correction, complete the owner-only Admin bootstrap, then continue
+the direct-host job/load/recovery evidence in `docs/STAGING_GATE_E.md`. Do not begin M10 or create
+the real 2026 Candidate Pool until Gate E is complete and explicitly approved by the owner.
