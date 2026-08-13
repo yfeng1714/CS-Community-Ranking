@@ -60,15 +60,15 @@ if (args["skip-vote"]) {
     method: "POST",
   });
   if (!next.ok) throw new Error(`/next returned ${next.status}: ${await next.text()}`);
-  const ballot = (await next.json()) as { ballot?: { publicId?: unknown } };
-  if (typeof ballot.ballot?.publicId !== "string") throw new Error("/next returned no Ballot UUID");
+  const ballot = (await next.json()) as { ballot?: { id?: unknown } };
+  if (typeof ballot.ballot?.id !== "string") throw new Error("/next returned no Ballot UUID");
   const cookie = next.headers
     .getSetCookie()
     .map((value) => value.split(";", 1)[0])
     .join("; ");
   if (!cookie) throw new Error("/next did not set a visitor cookie");
   const resolve = await fetch(
-    `${origin}/api/v1/ballots/${encodeURIComponent(ballot.ballot.publicId)}/resolve`,
+    `${origin}/api/v1/ballots/${encodeURIComponent(ballot.ballot.id)}/resolve`,
     {
       body: JSON.stringify({ choice: "SKIP" }),
       headers: { "content-type": "application/json", cookie, origin },

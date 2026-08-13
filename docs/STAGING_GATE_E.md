@@ -6,27 +6,27 @@ URLs, API tokens, raw IP addresses, visitor cookies, or Admin session values her
 
 ## Deployment record
 
-| Item                        | Required evidence                                                                         | Result                                                                                                                              |
-| --------------------------- | ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| Railway project/environment | Project and `staging` environment names                                                   | `observant-empathy`; Railway label `production` is owner-approved for staging-only use                                              |
-| Region                      | Web and PostgreSQL in Singapore                                                           | Web verified Singapore; PostgreSQL placement still needs explicit evidence                                                          |
-| Release                     | Git commit and deployment ID                                                              | Commit `205f4c2`; Web deployment `e08a8dda-95a2-468e-9018-cab2fdeea6b7`                                                             |
-| Migration gate              | Successful migration log plus deliberately failed safe test deployment                    | Config-managed migration release succeeded; deliberate safe failure pending                                                         |
-| Private database            | Web/job `DATABASE_URL` uses Railway private reference; DB public URL absent from services | Configured with `${{Postgres.DATABASE_URL}}`; public DB URL not added to app/job services                                           |
-| Direct route                | Railway-generated HTTPS hostname passes `pnpm ops:smoke`                                  | PASS, read-only smoke on `https://cs-community-ranking-production.up.railway.app`; 0 players expected before staging Pool bootstrap |
-| Custom domain               | HTTPS certificate active and `APP_ORIGIN` exact                                           | Pending                                                                                                                             |
+| Item                        | Required evidence                                                                         | Result                                                                                                                                                                   |
+| --------------------------- | ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Railway project/environment | Project and `staging` environment names                                                   | `observant-empathy`; Railway label `production` is owner-approved for staging-only use                                                                                   |
+| Region                      | Web and PostgreSQL in Singapore                                                           | Web verified Singapore; PostgreSQL placement still needs explicit evidence                                                                                               |
+| Release                     | Git commit and deployment ID                                                              | Initial staging release commit `205f4c2`; later corrective commits through `977860f` are active; initial Web deployment `e08a8dda-95a2-468e-9018-cab2fdeea6b7`           |
+| Migration gate              | Successful migration log plus deliberately failed safe test deployment                    | Config-managed migration release succeeded; deliberate safe failure pending                                                                                              |
+| Private database            | Web/job `DATABASE_URL` uses Railway private reference; DB public URL absent from services | Configured with `${{Postgres.DATABASE_URL}}`; public DB URL not added to app/job services                                                                                |
+| Direct route                | Railway-generated HTTPS hostname passes `pnpm ops:smoke`                                  | PASS on `https://cs-community-ranking-production.up.railway.app`; live/ready, homepage, four-player ranking, six security headers, and one isolated SKIP mutation passed |
+| Custom domain               | HTTPS certificate active and `APP_ORIGIN` exact                                           | Pending                                                                                                                                                                  |
 
 ## Jobs, health, logs, and alerts
 
-| Item               | Required evidence                                                                     | Result                                                                                                                                                |
-| ------------------ | ------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Readiness/liveness | Both endpoints return expected JSON; DB outage makes readiness 503 only               | Live/ready PASS; controlled DB-outage behavior pending                                                                                                |
-| Structured logs    | Application start, request summary, and one job result located without sensitive data | `application_start`, `expired: 0`, and zero-count retention result found; request-summary review pending                                              |
-| Scheduled jobs     | One successful execution for each configured service                                  | Six services configured. Expire + retention PASS; corrected VRS PASS with snapshot ID `1` and 396 teams; integrity/snapshot/KPI await staging Edition |
-| Failure alert      | Controlled non-production job failure delivers an owner notification                  | Pending                                                                                                                                               |
-| Deployment alert   | Failed deployment notification delivered                                              | Pending                                                                                                                                               |
-| Spend controls     | Usage alert threshold and owner notification verified                                 | Owner configured $10 alert and $25 hard limit; delivery evidence pending                                                                              |
-| External tracker   | Record `not used for V0.1` or provider/test result                                    | Not used for V0.1                                                                                                                                     |
+| Item               | Required evidence                                                                     | Result                                                                                                                                                         |
+| ------------------ | ------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Readiness/liveness | Both endpoints return expected JSON; DB outage makes readiness 503 only               | Live/ready PASS; controlled DB-outage behavior pending                                                                                                         |
+| Structured logs    | Application start, request summary, and one job result located without sensitive data | `application_start`, `expired: 0`, and zero-count retention result found; request-summary review pending                                                       |
+| Scheduled jobs     | One successful execution for each configured service                                  | PASS for all six services: expire, retention, corrected 396-team VRS snapshot, healthy integrity with no violations, four-row ranking snapshot, and KPI report |
+| Failure alert      | Controlled non-production job failure delivers an owner notification                  | Pending                                                                                                                                                        |
+| Deployment alert   | Failed deployment notification delivered                                              | Pending                                                                                                                                                        |
+| Spend controls     | Usage alert threshold and owner notification verified                                 | Owner configured $10 alert and $25 hard limit; delivery evidence pending                                                                                       |
+| External tracker   | Record `not used for V0.1` or provider/test result                                    | Not used for V0.1                                                                                                                                              |
 
 ## Backup and recovery
 
@@ -64,6 +64,8 @@ Cloudflare Origin CA alone is insufficient for direct browsers.
 ## Security review
 
 - [x] Production placeholders rejected; secrets are distinct and stored only in Railway variables.
+- [x] Direct-host smoke found all six required response-security headers and completed one isolated
+      Ballot SKIP without changing ranking scores.
 - [ ] Admin and visitor cookies are Secure, HttpOnly, host-only, and have expected SameSite policy.
 - [ ] CSP, HSTS, anti-framing, MIME, referrer, and permissions headers pass over every route.
 - [ ] Railway mode ignores `CF-Connecting-IP`; Cloudflare mode uses the edge-provided header.
@@ -88,3 +90,12 @@ connections, response p50/p95/p99, non-2xx statuses, and whether limits—not in
 
 M10 cannot create the real production Pool or begin closed beta until every required row is filled,
 blocking findings are resolved, and the owner explicitly approves this gate.
+
+## Staging bootstrap and mutation note
+
+The guarded bootstrap created Edition `2026`, two fictional teams, and four fictional players only
+after confirming the Railway staging identifiers and an empty product dataset. The first mutation
+smoke attempt issued a Ballot but its harness expected the identifier under the wrong JSON property,
+so that Ballot remained open and will be closed by the normal expiration job. The corrected harness
+used the documented public `ballot.id`, issued a fresh isolated Ballot, and immediately resolved it
+as `SKIP`. No counted pair decision was created. Integrity remained healthy with no violations.

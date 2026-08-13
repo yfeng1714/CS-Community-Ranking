@@ -3,8 +3,9 @@
 ## Current position
 
 - **Milestone:** 9 — Staging deployment and operational readiness
-- **Status:** Railway direct-host staging is deployed and healthy; operational evidence, recovery,
-  Admin bootstrap, Cloudflare, and Mainland China review remain in progress
+- **Status:** Railway direct-host staging is deployed and healthy; fictional data bootstrap and all
+  six cron executions pass; recovery, owner Admin bootstrap, Cloudflare, and Mainland China review
+  remain in progress
 - **Review boundary:** The owner-approved Hobby baseline now contains PostgreSQL, Web, and six cron
   services. The Railway-generated environment is still named `production`, but it is being treated
   only as staging for this gate; no real Candidate Pool or closed-beta launch is authorized.
@@ -80,6 +81,11 @@ this verification window.
   HTML `<br />` after its date. Parser version `valve-vrs-markdown-v2` accepts that official form
   while retaining fail-closed validation. The focused parser test, direct live-source parse, and
   corrected Railway run all pass with 396 teams; Railway stored review-only snapshot ID `1`.
+- The first mutation smoke exposed a harness/API-shape mismatch: the public Ballot UUID is
+  `ballot.id`, while the script expected `ballot.publicId`. The harness now follows the public API
+  shape. A corrected run issued one isolated Ballot and immediately resolved it as `SKIP`; the
+  earlier open diagnostic Ballot is left for the normal expiration job and never became a counted
+  decision.
 
 ## Railway staging evidence to date
 
@@ -87,13 +93,17 @@ this verification window.
   exception), commit `205f4c2`, and Railway host
   `https://cs-community-ranking-production.up.railway.app` are active.
 - Web uses `/railway/web.json`, a private `${{Postgres.DATABASE_URL}}` reference, one Singapore
-  replica, pre-deploy migrations, and readiness health checks. The read-only staging smoke command
-  passed liveness, readiness, homepage/ranking, ranking JSON, and all six required security headers;
-  the empty staging database correctly reported zero ranking players.
+  replica, pre-deploy migrations, and readiness health checks. The final direct-host smoke passed
+  liveness, readiness, homepage/ranking, four-player ranking JSON, all six required security
+  headers, and one isolated SKIP mutation.
 - All six unexposed cron services use their committed config paths. `expire-ballots` completed with
   `expired: 0`; `retention-cleanup` completed with zero safe cleanup counts; corrected `sync-vrs`
-  stored one 396-team review-only snapshot. Integrity, snapshot, and KPI success evidence still
-  depends on bootstrapping the staging Edition.
+  stored one 396-team review-only snapshot. After the guarded fictional bootstrap,
+  `integrity-check` reported healthy with no violations, `snapshot-ranking` wrote four rows, and
+  `report-kpi` completed with successful VRS freshness provenance.
+- The guarded bootstrap created Edition `2026`, two fictional teams, and four fictional players
+  after verifying the exact Railway staging identity and an otherwise empty product dataset. It is
+  fail-closed and cannot be rerun now that product data exists.
 - Railway Hobby does not expose volume backups or PITR; its dashboard requires Pro. No plan upgrade
   was made. The lower-cost recovery path is a matching-version `pg_dump`/`pg_restore` logical dump
   and separate scratch restore, but those client tools are not installed on the owner Mac yet.
@@ -102,9 +112,8 @@ this verification window.
 
 ## Remaining M9 work and external inputs
 
-- Bootstrap the `owner` Admin and a fictional staging Edition/Pool through trusted Admin/operator
-  paths so integrity, snapshot, KPI, SKIP, moderation, and Admin login/logout evidence can be
-  collected.
+- Bootstrap the `owner` Admin through the trusted operator path, then collect Admin login/logout and
+  moderation evidence. The fictional Edition/Pool, integrity, snapshot, KPI, and SKIP checks pass.
 - Supply or choose the owner-controlled staging domain/Cloudflare zone. The Railway-generated HTTPS
   hostname can be validated first, but proxied versus DNS-only A/B requires a domain.
 - Confirm the owner received a controlled failed-job/deployment notification. The live VRS failure is
@@ -119,6 +128,6 @@ this verification window.
 
 ## Next task
 
-Complete the owner-only Admin bootstrap, then continue the direct-host job/load/recovery evidence in
+Complete the owner-only Admin bootstrap, then continue the direct-host load/recovery evidence in
 `docs/STAGING_GATE_E.md`. Do not begin M10 or create the real 2026 Candidate Pool until Gate E is
 complete and explicitly approved by the owner.
