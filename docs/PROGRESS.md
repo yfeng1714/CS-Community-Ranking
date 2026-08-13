@@ -78,9 +78,8 @@ this verification window.
   accepting two permanent production origins is not an approved shortcut.
 - The first live Valve VRS run exposed an upstream-format mismatch: the official heading appends an
   HTML `<br />` after its date. Parser version `valve-vrs-markdown-v2` accepts that official form
-  while retaining fail-closed validation. The focused parser test and a direct parse of the live
-  source pass with 396 teams; the Railway job must be redeployed and rerun before Gate E records it
-  as successful.
+  while retaining fail-closed validation. The focused parser test, direct live-source parse, and
+  corrected Railway run all pass with 396 teams; Railway stored review-only snapshot ID `1`.
 
 ## Railway staging evidence to date
 
@@ -92,8 +91,8 @@ this verification window.
   passed liveness, readiness, homepage/ranking, ranking JSON, and all six required security headers;
   the empty staging database correctly reported zero ranking players.
 - All six unexposed cron services use their committed config paths. `expire-ballots` completed with
-  `expired: 0`; `retention-cleanup` completed with zero safe cleanup counts. The first VRS run failed
-  closed on the parser drift described above. Integrity, snapshot, and KPI success evidence still
+  `expired: 0`; `retention-cleanup` completed with zero safe cleanup counts; corrected `sync-vrs`
+  stored one 396-team review-only snapshot. Integrity, snapshot, and KPI success evidence still
   depends on bootstrapping the staging Edition.
 - Railway Hobby does not expose volume backups or PITR; its dashboard requires Pro. No plan upgrade
   was made. The lower-cost recovery path is a matching-version `pg_dump`/`pg_restore` logical dump
@@ -103,9 +102,9 @@ this verification window.
 
 ## Remaining M9 work and external inputs
 
-- Redeploy and rerun the fixed VRS adapter, then bootstrap the `owner` Admin and a fictional staging
-  Edition/Pool through trusted Admin/operator paths so integrity, snapshot, KPI, SKIP, moderation,
-  and Admin login/logout evidence can be collected.
+- Bootstrap the `owner` Admin and a fictional staging Edition/Pool through trusted Admin/operator
+  paths so integrity, snapshot, KPI, SKIP, moderation, and Admin login/logout evidence can be
+  collected.
 - Supply or choose the owner-controlled staging domain/Cloudflare zone. The Railway-generated HTTPS
   hostname can be validated first, but proxied versus DNS-only A/B requires a domain.
 - Confirm the owner received a controlled failed-job/deployment notification. The live VRS failure is
@@ -120,6 +119,6 @@ this verification window.
 
 ## Next task
 
-Deploy and verify the VRS parser correction, complete the owner-only Admin bootstrap, then continue
-the direct-host job/load/recovery evidence in `docs/STAGING_GATE_E.md`. Do not begin M10 or create
-the real 2026 Candidate Pool until Gate E is complete and explicitly approved by the owner.
+Complete the owner-only Admin bootstrap, then continue the direct-host job/load/recovery evidence in
+`docs/STAGING_GATE_E.md`. Do not begin M10 or create the real 2026 Candidate Pool until Gate E is
+complete and explicitly approved by the owner.
