@@ -48,14 +48,14 @@ async function skipOne(): Promise<void> {
   });
   statuses.set(next.status, (statuses.get(next.status) ?? 0) + 1);
   if (!next.ok) return;
-  const ballot = (await next.json()) as { ballot?: { publicId?: unknown } };
-  if (typeof ballot.ballot?.publicId !== "string") throw new Error("/next returned no Ballot UUID");
+  const ballot = (await next.json()) as { ballot?: { id?: unknown } };
+  if (typeof ballot.ballot?.id !== "string") throw new Error("/next returned no Ballot UUID");
   const cookie = next.headers
     .getSetCookie()
     .map((value) => value.split(";", 1)[0])
     .join("; ");
   const resolve = await fetch(
-    `${origin}/api/v1/ballots/${encodeURIComponent(ballot.ballot.publicId)}/resolve`,
+    `${origin}/api/v1/ballots/${encodeURIComponent(ballot.ballot.id)}/resolve`,
     {
       body: JSON.stringify({ choice: "SKIP" }),
       headers: { "content-type": "application/json", cookie, origin },

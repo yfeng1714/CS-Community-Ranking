@@ -3,9 +3,9 @@
 ## Current position
 
 - **Milestone:** 9 — Staging deployment and operational readiness
-- **Status:** Railway direct-host staging is deployed and healthy; fictional data bootstrap and all
-  six cron executions pass; recovery, owner Admin bootstrap, Cloudflare, and Mainland China review
-  remain in progress
+- **Status:** Railway direct-host staging is deployed and healthy; fictional bootstrap, all six cron
+  jobs, owner Admin login/logout, and the minimum direct load window pass; recovery, Cloudflare, and
+  Mainland China review remain in progress
 - **Review boundary:** The owner-approved Hobby baseline now contains PostgreSQL, Web, and six cron
   services. The Railway-generated environment is still named `production`, but it is being treated
   only as staging for this gate; no real Candidate Pool or closed-beta launch is authorized.
@@ -86,6 +86,9 @@ this verification window.
   shape. A corrected run issued one isolated Ballot and immediately resolved it as `SKIP`; the
   earlier open diagnostic Ballot is left for the normal expiration job and never became a counted
   decision.
+- The load tool carried the same stale `ballot.publicId` assumption. It was corrected before the
+  first load run, preventing unresolved load Ballots. Type checking and formatting pass with both
+  staging tools using `ballot.id`.
 
 ## Railway staging evidence to date
 
@@ -104,23 +107,35 @@ this verification window.
 - The guarded bootstrap created Edition `2026`, two fictional teams, and four fictional players
   after verifying the exact Railway staging identity and an otherwise empty product dataset. It is
   fail-closed and cannot be rerun now that product data exists.
+- Active Admin `owner` was created through the trusted hidden-password prompt. Real login showed the
+  correct Edition, Pool, healthy integrity, VRS snapshot, Vote moderation read view, and attributed
+  `ADMIN_LOGIN` audit entry. Logout redirected to login and a fresh `/admin` request remained
+  protected; no product mutation or Vote revocation was performed.
+- The minimum direct load window completed 50 fresh-visitor SKIP scenarios at concurrency 5 with
+  100 HTTP `200` responses and zero failures. Scenario latency was p50 950 ms, p95 1,539 ms, and p99
+  1,977 ms. Post-load integrity remained healthy with 51 valid SKIPs total, zero decisions, and zero
+  score sum. Railway charts near the window showed about 0.03 vCPU and 140 MB; a post-window
+  read-only query found one active database connection, so these are observations rather than peak
+  measurements.
 - Railway Hobby does not expose volume backups or PITR; its dashboard requires Pro. No plan upgrade
-  was made. The lower-cost recovery path is a matching-version `pg_dump`/`pg_restore` logical dump
-  and separate scratch restore, but those client tools are not installed on the owner Mac yet.
+  was made. The lower-cost path was exercised privately inside Railway with matching PostgreSQL
+  18.4 tools: a 135,385-byte custom dump completed in 0.191s, an empty scratch database was created
+  in 0.326s, and restore completed in 0.704s. All 14 critical-table counts matched. The scratch
+  database and dump were removed; no public DB exposure, Mac install, or extra service was used.
+- The real Admin login page returned `no-store`, noindex/nofollow, HSTS, CSP, anti-framing,
+  MIME-sniffing protection, no-referrer, and restrictive permissions-policy headers.
 - Owner spend controls are configured outside the repository at a $10 notification threshold and a
   $25 hard limit. Sentry is not used for V0.1.
 
 ## Remaining M9 work and external inputs
 
-- Bootstrap the `owner` Admin through the trusted operator path, then collect Admin login/logout and
-  moderation evidence. The fictional Edition/Pool, integrity, snapshot, KPI, and SKIP checks pass.
 - Supply or choose the owner-controlled staging domain/Cloudflare zone. The Railway-generated HTTPS
   hostname can be validated first, but proxied versus DNS-only A/B requires a domain.
 - Confirm the owner received a controlled failed-job/deployment notification. The live VRS failure is
   available as a safe failed-job candidate, but email delivery has not been independently confirmed.
 - Decide between a Pro upgrade for platform volume backups/PITR or the Hobby logical-backup-only
-  exception. Install a matching PostgreSQL client, run the logical restore drill, record measured
-  RPO/RTO, and remove the temporary scratch service/public DB access.
+  exception. The private restore drill passes; durable owner-controlled backup storage, cadence,
+  retention, and resulting operational RPO/RTO still need approval.
 - Complete direct, Cloudflare-proxied, and DNS-only smoke/load windows and validate proxy-header
   behavior. Run normal/evening-peak tests from China Telecom, Unicom, and Mobile.
 - Retry the production Docker build when Docker Hub is reachable, then inspect the final image's web,
@@ -128,6 +143,6 @@ this verification window.
 
 ## Next task
 
-Complete the owner-only Admin bootstrap, then continue the direct-host load/recovery evidence in
-`docs/STAGING_GATE_E.md`. Do not begin M10 or create the real 2026 Candidate Pool until Gate E is
-complete and explicitly approved by the owner.
+Resolve the staging recovery approach and notification-delivery evidence, then continue Cloudflare
+and three-network testing in `docs/STAGING_GATE_E.md`. Do not begin M10 or create the real 2026
+Candidate Pool until Gate E is complete and explicitly approved by the owner.
