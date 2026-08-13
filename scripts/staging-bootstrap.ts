@@ -34,11 +34,11 @@ try {
     votes: string;
   }>(`
     select
-      (select count(*) from admin_users where active = true)::text as active_admins,
-      (select count(*) from editions)::text as editions,
-      (select count(*) from players)::text as players,
-      (select count(*) from teams)::text as teams,
-      (select count(*) from votes)::text as votes
+      (select count(*) from admin_user where active = true)::text as active_admins,
+      (select count(*) from edition)::text as editions,
+      (select count(*) from player)::text as players,
+      (select count(*) from team)::text as teams,
+      (select count(*) from vote)::text as votes
   `);
   const counts = existing.rows[0];
   if (!counts || Object.values(counts).some((count) => count !== "0")) {
