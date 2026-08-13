@@ -274,18 +274,29 @@ Gate E.
 
 ## Backup and restore drill
 
-Enable Railway daily and weekly PostgreSQL volume backup schedules. Separately produce a portable
-custom-format logical dump through a Railway tunnel or short-lived public TCP proxy. Install
-`pg_dump`/`pg_restore` with the same major version as the Railway PostgreSQL service; an older client
-cannot safely dump a newer server:
+ADR 0004 selects Railway Hobby plus portable logical backups for the early product. The lack of
+platform volume backups/PITR is an accepted cost tradeoff, not permission to run without a retained
+backup. Use `pg_dump`/`pg_restore` with the same major version as the Railway PostgreSQL service; an
+older client cannot safely dump a newer server.
+
+Prefer a Railway CLI SSH tunnel so PostgreSQL remains private. `railway connect --ssh --tunnel-only`
+prints a temporary local connection URL and holds the tunnel open; use that URL from a second trusted
+terminal:
 
 ```bash
 DATABASE_URL=<staging-tunnel-url> pnpm backup:create -- --output backups/staging.dump
 ```
 
-The ignored `backups/` directory contains the dump and a non-secret manifest of critical-table row
-counts. Move the dump to owner-controlled encrypted/offsite storage; never commit it. Create a new,
-empty scratch database and verify the complete restore:
+The ignored local `backups/` directory contains the dump and a non-secret manifest of critical-table
+row counts. Never commit either file. While data is fictional/rebuildable, back up at least weekly
+and before consequential migrations/imports. Starting with meaningful closed-beta Votes, run daily,
+retain seven daily and four weekly recovery points, and keep a second independent protected copy.
+Local capacity is approved, but the laptop alone is not a disaster-recovery boundary. A private
+object store or an existing encrypted owner backup destination is acceptable; it must not become a
+public application dependency.
+
+Create a new, empty scratch database and verify the complete restore at least monthly and after a
+material schema change:
 
 ```bash
 DATABASE_URL=<source-url> RESTORE_DATABASE_URL=<empty-scratch-url> \
@@ -296,15 +307,30 @@ The command refuses the source database and a nonempty target, runs `pg_restore 
 and compares exact row counts for ranking, Vote, Pool, visitor, and audit tables. Run integrity and
 public smoke checks against the restored DB, record dump age and restore duration as measured RPO/RTO,
 then delete the scratch service through the Railway dashboard after review. Remove any temporary
-public database exposure/tunnel.
+public database exposure/tunnel. The early-product target after real voting starts is RPO 24 hours
+and operator-driven RTO 4 hours; upgrade the process or Railway plan when those are insufficient.
 
 ## Cloudflare and Mainland China A/B
 
-Keep the direct Railway HTTPS hostname working throughout. Test Cloudflare-proxied and DNS-only
-custom-host windows sequentially (or with separately configured staging deployments) because
-mutation security permits one exact `APP_ORIGIN`. Use `CLIENT_IP_MODE=cloudflare` only for proxied
-traffic and `railway` for direct/DNS-only traffic; both require trusted proxy headers only when the
-origin cannot be reached outside the selected trusted path.
+ADR 0005 selects the Railway-generated HTTPS hostname for staging and the initial small closed beta.
+No custom domain or Cloudflare proxy is required for the current Gate E. Continue direct-route
+smoke/load/security checks and record Mainland China Telecom, Unicom, and Mobile behavior where
+testers are available. Cloudflare columns may be marked owner-deferred rather than left ambiguously
+pending.
+
+Railway provides network-layer protection but no application-layer WAF. The application therefore
+keeps exact Origin/Fetch-Metadata guards, strict cookies, bounded in-process rate limits, PostgreSQL
+quota/risk truth, integrity checks, request/KPI logs, spend controls, and incident procedures active
+on the direct route. Reopen ADR 0005 when bot traffic, an application-layer incident, resource/cost
+anomalies, multi-replica scale, branding, or route measurements justify it. Do not respond to
+hypothetical scale by adding Turnstile or distributed infrastructure now.
+
+If Cloudflare later enters scope, keep the direct Railway HTTPS hostname working during the test
+window. Test Cloudflare-proxied and DNS-only custom-host windows sequentially (or with separately
+configured staging deployments) because mutation security permits one exact `APP_ORIGIN`. Use
+`CLIENT_IP_MODE=cloudflare` only for proxied traffic and `railway` for direct/DNS-only traffic; both
+require trusted proxy headers only when the origin cannot be reached outside the selected trusted
+path.
 
 Run the smoke command and then the bounded, SKIP-only load scenario per path:
 
@@ -336,4 +362,5 @@ Origin CA is not sufficient for the direct/DNS-only route; retain publicly trust
   database load, then apply infrastructure limits. Never change score/quota truth to reduce cost.
 
 Use `docs/STAGING_GATE_E.md` as the required evidence and owner sign-off record. M9 is not complete
-until real deployment, alerts, restore, direct/proxy A/B, and Mainland China checks are documented.
+until real deployment, alerts, retained recovery, the owner-selected route, and applicable Mainland
+China checks are documented. Cloudflare A/B becomes required only if Cloudflare enters scope.

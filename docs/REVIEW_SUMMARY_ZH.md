@@ -336,10 +336,12 @@ Cron Jobs
 - Web 与 DB 通过私网连接。
 - Docker 部署。
 - Migration 失败则阻止发布。
-- Cloudflare 只是可选 Edge Layer。
-- 上线前用 Proxy ON 和 DNS-only 两个测试域名，对大陆电信/联通/移动实测。
-- Cloudflare 表现差时，关橙云即可，业务代码不改。
-- 启用数据库定时备份，并至少完成一次真实 Restore Drill。
+- V0.1.3 初期使用 Railway 生成域名直连；Cloudflare 只是按真实流量、攻击、成本、品牌或
+  线路指标触发的可选 Edge Layer。
+- 一旦 Cloudflare 进入范围，再用 Proxy ON 和 DNS-only 测试域名对大陆三网实测；表现差时
+  可关闭橙云，业务正确性不变。
+- Hobby 阶段使用定时 Logical Backup：本机可保存工作副本，真实公开上线前必须有独立第二
+  副本，并至少完成一次真实 Restore Drill。
 
 ---
 
@@ -391,7 +393,7 @@ IP HMAC、Rate Limit、Observe Mode、第一方指标、快照和 Integrity Job�
 
 ## Milestone 9 — Railway Staging
 
-部署、Migration、Backup/Restore、Cloudflare A/B、大陆线路测试、Runbook。
+部署、Migration、Backup/Restore、选定线路与大陆测试、Runbook；Cloudflare 仅在启用时 A/B。
 
 **Owner Review Gate E**
 
@@ -438,6 +440,6 @@ Codex 每个 Milestone 都必须：
 - 2026 已结束赛事的完整白名单；
 - Closed Beta 后最终的每日有效额度；
 - 选手图片授权方案；
-- Cloudflare 最终是否保持代理。
+- ADR 0005 触发后是否引入 Cloudflare，以及是否保持代理。
 
 完整工程规范、API JSON、表字段、测试矩阵和每个 Milestone 的 Acceptance Criteria 均在主计划中。

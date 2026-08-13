@@ -20,13 +20,15 @@
 </tbody>
 </table>
 
-**版本** V0.1
+**版本** V0.1.3
 
 **日期** 2026-08-09
 
 **施工规范复核** 2026-08-10（V0.1.1；未改变冻结的产品决定）
 
 **Owner 流程修订** 2026-08-12（V0.1.2；手动刷新按 Skip 处理并直接进入新 Pair）
+
+**Owner 基础设施修订** 2026-08-13（V0.1.3；Hobby + Logical Backup，初期直连 Railway）
 
 **定位** 产品背景、决策记录与后续 Review Context
 
@@ -46,6 +48,11 @@ Edition/Ballot 生命周期、跨午夜额度、Skip 撤销、隐私留存和 Mu
 因此当前 OPEN Ballot 必须以 `SKIP` 解决，再自动取得新 Pair。普通 `/next` 网络重试仍返回
 同一 Ballot，服务器不能把重复请求猜测成刷新；刷新识别与编排由 M5 UI 完成，幂等 Skip
 由 M4 Resolve API 保证。这样既符合用户对“随机刷新”的预期，也不允许免费 fishing。
+
+2026-08-13 Owner 确认首发阶段继续遵循“复杂度必须由真实使用量赢得”：Railway 保持
+Hobby，备份采用已经通过恢复演练的 Logical Backup；初期使用 Railway 生成域名，不为了
+完成 Cloudflare 测试而提前购买域名。Cloudflare 仍是未来可加入的 WAF、DDoS、Edge Rate
+Limit 层，但不是正确性依赖。ADRs 0004、0005 记录操作标准与重新评估触发条件。
 
 <table>
 <colgroup>
@@ -724,6 +731,23 @@ Turnstile 最终没有纳入 V0.1。原因不是验证码无效，而是 Cloudfl
 </tbody>
 </table>
 
+### **19.1 V0.1.3 初期直连决定**
+
+新产品尚无流量基线，因此 Owner 决定先使用 Railway 生成的 HTTPS 地址，不购买域名，
+也不在 M9 强行引入 Cloudflare。这个决定不需要重做应用安全：Origin / Fetch Metadata、
+Secure Cookie、Admin 鉴权、Schema Validation、Ballot 幂等、PostgreSQL 日额度、风险观察和
+进程内 Rate Limit 都在源站完成。
+
+被推迟的是 Edge 层的应用级 DDoS、WAF、Bot 与分布式 Rate Limit。Railway 直连仍有网络层
+保护，但不能假装等价于 Cloudflare 的应用层防护。若 Bot/爬虫使 CPU、Egress、错误率或费用
+异常，触发 Spend Alert，发生应用层可用性事故，需要正式品牌域名，或用户量要求多实例，
+就重新评估域名与 Cloudflare。若未来为了安全启用 Cloudflare，还必须决定是否关闭可绕过
+Edge Rule 的直连源站；“公开直连作为后备”与“完全隐藏源站”是需要明确取舍的目标。
+
+备份同样按最低成本原则执行：Hobby 阶段保留 PostgreSQL Logical Dump，在真实 Vote 开始后
+至少每日执行，并保留独立第二份副本。Owner 本机空间足够，但单一设备不能作为唯一灾备。
+技术恢复演练已通过；首份持久备份、留存和第二副本仍需在 Gate E 留证。
+
 ## **20. Implementation Plan 如何吸收这些决定**
 
 完整 Implementation Plan 把讨论结果拆成 10 个 Milestone，并在基础设施、数据库、核心投票事务、Admin 和 Staging 五处设置 Owner Review Gate。Codex 必须在 Gate 停止，提交测试、Migration、偏差和进度报告，不能一路自动“优化”到上线。
@@ -734,7 +758,7 @@ Turnstile 最终没有纳入 V0.1。原因不是验证码无效，而是 Cloudfl
 | **Gate B** | 完整 Schema、Migration、数据库约束。                      | 一旦核心表和约束错了，后续返工成本最高。      |
 | **Gate C** | Ballot Issuance、Resolve、Ranking、Revoke 与并发测试。    | 这是产品正确性核心，必须由 Owner 亲自审。     |
 | **Gate D** | Admin、Pool Change、Pending Import 与审计。               | 避免自动数据同步偷偷变成候选池决策者。        |
-| **Gate E** | Railway Staging、备份恢复、Cloudflare A/B、大陆线路测试。 | 在正式名单和 Closed Beta 前验证真实运行环境。 |
+| **Gate E** | Railway Staging、备份恢复、选定线路与大陆测试；Cloudflare 仅在启用时 A/B。 | 在正式名单和 Closed Beta 前验证真实运行环境。 |
 
 **PART VI**
 
@@ -760,7 +784,7 @@ Turnstile 最终没有纳入 V0.1。原因不是验证码无效，而是 Cloudfl
 | **额度**           | 按新 Ballot Opportunity 计；超额继续玩但不计榜。 | 保留随机防刷与用户体验。                 | 冻结     |
 | **Vote 历史**      | Raw Vote 永不物理删除；异常票 Revoke。           | 审计、恢复和未来分析。                   | 冻结     |
 | **数据运行时**     | 用户请求只读本站 DB，不实时抓外部站点。          | 外部数据故障不影响核心投票。             | 冻结     |
-| **部署**           | Docker 单体 + PostgreSQL；Cloudflare 可拔掉。    | 低运维、可迁移、适合大陆 A/B。           | 冻结     |
+| **部署**           | Docker 单体 + PostgreSQL；初期直连 Railway，Cloudflare 可拔掉。 | 低运维、可迁移，复杂度由真实流量触发。 | 冻结     |
 
 ## **22. 明确后置的功能与触发条件**
 
@@ -824,7 +848,7 @@ Turnstile 最终没有纳入 V0.1。原因不是验证码无效，而是 Cloudfl
 | **首批 T1 Event Whitelist 完整历史**     | 先覆盖影响 Candidate Pool 的赛事；可持续补录。                |
 | **每日 Full-weight Ballot 配额**         | 默认 50，Closed Beta 根据分布调整。                           |
 | **Ballot TTL**                           | 默认 30 分钟，观察用户回访与 fishing 风险。                   |
-| **Cloudflare 最终保持代理还是 DNS-only** | 必须通过大陆三网真实 A/B 测试决定。                           |
+| **Cloudflare 最终保持代理还是 DNS-only** | 初期直连 Railway；达到 ADR 0005 触发条件后再做大陆三网 A/B。 |
 | **选手头像和队标授权方案**               | 上线前完成来源记录；无法确认时使用占位图。                    |
 | **Career Rating 是否默认展示**           | 取决于定义稳定性和数据可得性。                                |
 | **Ranking Tie 的视觉表达**               | Implementation Plan 使用 RANK()；UI 仍可在 Closed Beta 微调。 |
@@ -902,6 +926,7 @@ Turnstile 最终没有纳入 V0.1。原因不是验证码无效，而是 Cloudfl
 | **阶段 10** | 架构与部署冻结             | TypeScript 单体、PostgreSQL、Railway Singapore、Cloudflare 可拔掉。 |
 | **阶段 11** | Implementation Plan V0.1   | 将产品决定转化为 Schema、API、测试、Milestone 与 Owner Gates。      |
 | **阶段 12** | Owner 修订刷新语义         | 手动 reload 记为 Skip 并直接取得新 Pair；普通 API 重试继续幂等。     |
+| **阶段 13** | Owner 冻结初期成本基线     | Hobby + Logical Backup；Railway 生成域名直连，Cloudflare 按指标后置。 |
 
 ## **30. 术语表**
 

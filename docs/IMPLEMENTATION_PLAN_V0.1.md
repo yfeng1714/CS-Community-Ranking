@@ -1,7 +1,7 @@
 # CS Community Ranking / CS 野榜
 ## Implementation Plan V0.1
 
-**Status:** Implementation-ready after V0.1.2 Owner refresh-flow revision
+**Status:** Implementation-ready after V0.1.3 Owner low-cost infrastructure revision
 
 **Date:** 2026-08-12
 **Primary audience:** Codex / Claude Code / Cursor and the human project owner  
@@ -22,6 +22,11 @@ ranking, pairing, guest-first, and Candidate Pool decisions are unchanged.
 V0.1.2 records the Owner's 2026-08-12 interaction change: a true manual refresh of the voting page
 resolves the reused open Ballot as Skip and immediately obtains a new pair. Ordinary API retries
 remain idempotent. ADR 0003 defines the M4/M5 implementation boundary.
+
+V0.1.3 records the Owner's 2026-08-13 early-operations decision: keep Railway Hobby, use verified
+logical backups instead of upgrading solely for platform backups, launch initially on the
+Railway-generated hostname, and defer a custom domain/Cloudflare until demand or measured abuse
+justifies them. ADRs 0004 and 0005 define the recovery, security, and review-gate consequences.
 
 An implementation agent must:
 
@@ -2129,7 +2134,7 @@ Local development uses `docker-compose.yml` for PostgreSQL; running the web app 
 
 Cloudflare is an optional edge enhancement, not an application dependency.
 
-Initial launch process:
+When the owner selects a custom domain and a Cloudflare experiment, use this process:
 
 1. Deploy Railway Singapore.
 2. Create two pre-launch test hostnames:
@@ -2140,6 +2145,11 @@ Initial launch process:
 5. Keep proxy enabled only if it helps or is neutral.
 
 The application must work with Cloudflare completely disabled.
+
+The Owner's V0.1.3 low-cost path may launch the initial small closed beta directly on Railway's
+generated HTTPS hostname. In that mode, record Cloudflare/custom-domain testing as deliberately
+deferred, continue direct-route security/load/Mainland China checks, and reopen the A/B decision
+when ADR 0005's traffic, abuse, cost, branding, or routing trigger occurs.
 
 Because production mutation security allows one `APP_ORIGIN`, proxy-on and direct
 mutation tests run as two separately configured staging deployments or as
@@ -2152,8 +2162,11 @@ Do not use Turnstile in V0.1.
 
 Before launch:
 
-- Enable scheduled Railway volume/PostgreSQL backups.
-- Create an independent `pg_dump` procedure.
+- Keep at least one retained, tested backup strategy appropriate to the active Railway plan.
+- On Hobby under ADR 0004, create scheduled portable `pg_dump` backups, keep a second independent
+  protected copy before real public launch, and document the accepted RPO/RTO.
+- When platform volume backups/PITR are available and justified, enable them in addition to—not as a
+  replacement for—the portable logical procedure.
 - Perform and document at least one restore drill into a separate database.
 - Record recovery steps in `docs/RUNBOOK.md`.
 - Backups are not considered verified until a restore succeeds.
@@ -2436,8 +2449,10 @@ Tasks:
 - Deploy Web/Postgres/Cron to Railway Singapore.
 - Configure private DB networking.
 - Apply migrations through release process.
-- Configure custom staging domain.
-- Configure optional Cloudflare and direct A/B hostnames.
+- Configure a custom staging domain only if the owner selects one; otherwise record the approved
+  Railway-generated-host exception.
+- Configure optional Cloudflare/direct A/B hostnames only when an owner-controlled domain is in
+  scope; otherwise validate the direct path and record the deferral.
 - Configure backups, spending alerts, logs, and error tracking.
 - Run restore drill.
 - Complete `docs/RUNBOOK.md` and `docs/SECURITY.md`.
@@ -2445,7 +2460,8 @@ Tasks:
 
 Acceptance:
 
-- Cloudflare proxy can be disabled without code change.
+- Cloudflare is either disabled without code change or, if enabled, can be removed without code
+  change.
 - Direct Railway route remains functional.
 - Backup restore succeeds.
 - Migration failure blocks release.
@@ -2475,7 +2491,8 @@ Acceptance:
 - Production Pool is fully auditable.
 - No unresolved identity/roster conflicts.
 - Vote correctness tests pass against production-like staging data.
-- Mainland China proxy-on/off test has a documented decision.
+- The Mainland China launch route has a documented decision; if Cloudflare enters scope, its
+  proxy-on/off comparison is documented before relying on it.
 - Launch checklist is signed off.
 
 ---
@@ -2536,7 +2553,7 @@ The project is not V0.1 complete until all are true.
 - [ ] Integrity job scheduled.
 - [ ] Daily snapshot scheduled.
 - [ ] Railway spending alerts configured.
-- [ ] China network A/B test documented.
+- [ ] China network launch-route test documented; Cloudflare A/B is required only when selected.
 - [ ] Runbook complete.
 
 ---
@@ -2578,7 +2595,8 @@ These do not block Milestones 0–5:
 - final list of T1 events already completed in 2026;
 - final full-weight quota after closed beta;
 - final player-photo licensing/source choices;
-- whether Cloudflare remains proxied after China-network testing.
+- whether Cloudflare is introduced after ADR 0005's trigger and, if so, remains proxied after
+  China-network testing.
 
 ---
 

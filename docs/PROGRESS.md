@@ -5,8 +5,9 @@
 - **Milestone:** 9 — Staging deployment and operational readiness
 - **Status:** Railway direct-host staging is deployed and healthy; fictional bootstrap, all six cron
   jobs, owner Admin login/logout, the minimum direct load window, failed-job email delivery, and a
-  China Mobile 4G reachability check pass; recovery, Cloudflare, and formal Mainland China review
-  remain in progress
+  China Mobile 4G reachability check pass; the owner selected Hobby logical backups and explicitly
+  deferred a custom domain/Cloudflare; retained recovery and formal direct-route Mainland China
+  review remain in progress
 - **Review boundary:** The owner-approved Hobby baseline now contains PostgreSQL, Web, and six cron
   services. The Railway-generated environment is still named `production`, but it is being treated
   only as staging for this gate; no real Candidate Pool or closed-beta launch is authorized.
@@ -78,6 +79,15 @@ this verification window.
 - Exact single-origin mutation validation remains intact during Cloudflare testing. Proxy-on and
   DNS-only/direct mutation checks use sequential configuration windows or separate deployments;
   accepting two permanent production origins is not an approved shortcut.
+- ADR 0004 records the owner-approved low-cost recovery baseline: Railway Hobby plus retained
+  logical backups, with local capacity allowed and an independent second copy required before real
+  public launch. The first retained dump/cadence is not complete merely because the restore drill
+  passed.
+- ADR 0005 records the owner-approved direct Railway baseline. The custom domain and Cloudflare A/B
+  are deferred until traffic, abuse, cost, branding, scale, or route evidence justifies them. No
+  application redesign is needed because correctness and anti-abuse truth do not depend on the edge.
+  Direct Railway deliberately has less application-layer WAF/DDoS shielding, so request, KPI,
+  resource, integrity, and spend evidence remains mandatory.
 - The first live Valve VRS run exposed an upstream-format mismatch: the official heading appends an
   HTML `<br />` after its date. Parser version `valve-vrs-markdown-v2` accepts that official form
   while retaining fail-closed validation. The focused parser test, direct live-source parse, and
@@ -119,8 +129,9 @@ this verification window.
   read-only query found one active database connection, so these are observations rather than peak
   measurements.
 - Railway Hobby does not expose volume backups or PITR; its dashboard requires Pro. No plan upgrade
-  was made. The lower-cost path was exercised privately inside Railway with matching PostgreSQL
-  18.4 tools: a 135,385-byte custom dump completed in 0.191s, an empty scratch database was created
+  was made, and ADR 0004 now approves that exception. The lower-cost path was exercised privately
+  inside Railway using matching PostgreSQL 18.4 tools: a 135,385-byte custom dump completed in
+  0.191s, an empty scratch database was created
   in 0.326s, and restore completed in 0.704s. All 14 critical-table counts matched. The scratch
   database and dump were removed; no public DB exposure, Mac install, or extra service was used.
 - The real Admin login page returned `no-store`, noindex/nofollow, HSTS, CSP, anti-framing,
@@ -136,21 +147,19 @@ this verification window.
 
 ## Remaining M9 work and external inputs
 
-- Supply or choose an owner-controlled staging domain. The Cloudflare account is ready, but the
-  Railway-generated `*.up.railway.app` hostname belongs to Railway and cannot become the owner's
-  Cloudflare zone; proxied versus DNS-only A/B requires a registered domain the owner controls.
+- Create the first retained logical dump, establish the ADR 0004 cadence/retention, and select a
+  second independent protected copy. Local capacity is approved; local-only is not yet durable
+  disaster recovery.
 - Trigger and confirm the separate failed-deployment notification. Failed-job email delivery is now
   confirmed from the earlier safe staging VRS failure.
-- Decide between a Pro upgrade for platform volume backups/PITR or the Hobby logical-backup-only
-  exception. The private restore drill passes; durable owner-controlled backup storage, cadence,
-  retention, and resulting operational RPO/RTO still need approval.
-- Complete direct, Cloudflare-proxied, and DNS-only smoke/load windows and validate proxy-header
-  behavior. Run normal/evening-peak tests from China Telecom, Unicom, and Mobile.
+- Complete the remaining direct-route security/log/readiness checks and formal normal/evening-peak
+  tests from China Telecom, Unicom, and Mobile where available. Cloudflare-only paths are no longer
+  M9 blockers under ADR 0005.
 - Retry the production Docker build when Docker Hub is reachable, then inspect the final image's web,
   migration, and cron entry points.
 
 ## Next task
 
-Resolve the staging recovery approach and owner-controlled domain decision, then continue
-Cloudflare and formal three-network testing in `docs/STAGING_GATE_E.md`. Do not begin M10 or create
-the real 2026 Candidate Pool until Gate E is complete and explicitly approved by the owner.
+Retain the first Hobby logical backup, finish the applicable direct-route operational/security
+evidence in `docs/STAGING_GATE_E.md`, and obtain explicit Gate E approval. Do not begin M10 or create
+the real 2026 Candidate Pool before that approval.

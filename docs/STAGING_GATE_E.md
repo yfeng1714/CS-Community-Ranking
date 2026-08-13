@@ -14,7 +14,7 @@ URLs, API tokens, raw IP addresses, visitor cookies, or Admin session values her
 | Migration gate              | Successful migration log plus deliberately failed safe test deployment                    | Config-managed migration release succeeded; deliberate safe failure pending                                                                                              |
 | Private database            | Web/job `DATABASE_URL` uses Railway private reference; DB public URL absent from services | Configured with `${{Postgres.DATABASE_URL}}`; public DB URL not added to app/job services                                                                                |
 | Direct route                | Railway-generated HTTPS hostname passes `pnpm ops:smoke`                                  | PASS on `https://cs-community-ranking-production.up.railway.app`; live/ready, homepage, four-player ranking, six security headers, and one isolated SKIP mutation passed |
-| Custom domain               | HTTPS certificate active and `APP_ORIGIN` exact                                           | Pending                                                                                                                                                                  |
+| Custom domain               | HTTPS certificate active and `APP_ORIGIN` exact, when selected                            | OWNER-DEFERRED under ADR 0005; initial small closed beta uses the exact Railway-generated HTTPS origin                                                                   |
 
 ## Jobs, health, logs, and alerts
 
@@ -30,23 +30,23 @@ URLs, API tokens, raw IP addresses, visitor cookies, or Admin session values her
 
 ## Backup and recovery
 
-| Item             | Required evidence                                                                 | Result                                                                                                                                                                               |
-| ---------------- | --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Volume backups   | Daily and weekly schedules visible on staging PostgreSQL                          | BLOCKED on Railway Hobby; dashboard requires Pro. Owner decision needed: upgrade or approved logical-only exception                                                                  |
-| Logical dump     | Matching client/server major; timestamp, age, size, and secure storage            | PARTIAL: private PostgreSQL 18.4 custom dump created in 0.191s at 135,385 bytes; deleted after drill. Durable owner-controlled storage and cadence remain pending.                   |
-| Restore drill    | Separate empty DB, `backup:verify` success, duration, exact critical-table counts | PASS: empty scratch DB created in 0.326s and restored in 0.704s; all 14 critical-table counts matched; scratch DB and dump removed. No public DB exposure or extra service was used. |
-| Recovery targets | Measured RPO and RTO recorded after drill                                         | PARTIAL: technical create+restore was 1.030s for this small staging dataset. Operational RPO/RTO depend on the still-pending durable backup cadence and storage choice.              |
+| Item             | Required evidence                                                                 | Result                                                                                                                                                                                             |
+| ---------------- | --------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Volume backups   | Platform schedule or explicitly approved plan exception                           | ACCEPTED EXCEPTION under ADR 0004: remain on Railway Hobby and use retained logical backups; reconsider Pro/PITR when recovery targets or real usage justify it                                    |
+| Logical dump     | Matching client/server major; timestamp, age, size, and secure storage            | PARTIAL: private PostgreSQL 18.4 custom dump created in 0.191s at 135,385 bytes; deleted after drill. Owner approved local capacity; first retained dump, cadence, and second copy remain pending. |
+| Restore drill    | Separate empty DB, `backup:verify` success, duration, exact critical-table counts | PASS: empty scratch DB created in 0.326s and restored in 0.704s; all 14 critical-table counts matched; scratch DB and dump removed. No public DB exposure or extra service was used.               |
+| Recovery targets | Measured RPO and RTO recorded after drill                                         | PARTIAL: technical create+restore was 1.030s for this small staging dataset. Operational RPO/RTO depend on the still-pending durable backup cadence and storage choice.                            |
 
 ## Proxy and network A/B
 
 Mutation tests use sequential windows or separately configured deployments because one process has
 one exact `APP_ORIGIN`. Do not weaken Origin validation to accept both test hosts indefinitely.
 
-| Path                | Host                                             | `APP_ORIGIN`               | `CLIENT_IP_MODE` | `TRUST_PROXY_HEADERS` | Smoke   | Load                                |
-| ------------------- | ------------------------------------------------ | -------------------------- | ---------------- | --------------------- | ------- | ----------------------------------- |
-| Railway/direct      | `cs-community-ranking-production.up.railway.app` | Exact Railway HTTPS origin | `railway`        | `true`                | PASS    | PASS, 50 scenarios at concurrency 5 |
-| Cloudflare proxied  | Pending                                          | Pending                    | `cloudflare`     | `true`                | Pending | Pending                             |
-| Cloudflare DNS-only | Pending                                          | Pending                    | `railway`        | `true`                | Pending | Pending                             |
+| Path                | Host                                             | `APP_ORIGIN`               | `CLIENT_IP_MODE` | `TRUST_PROXY_HEADERS` | Smoke    | Load                                |
+| ------------------- | ------------------------------------------------ | -------------------------- | ---------------- | --------------------- | -------- | ----------------------------------- |
+| Railway/direct      | `cs-community-ranking-production.up.railway.app` | Exact Railway HTTPS origin | `railway`        | `true`                | PASS     | PASS, 50 scenarios at concurrency 5 |
+| Cloudflare proxied  | Owner-deferred under ADR 0005                    | Not current launch path    | `cloudflare`     | `true`                | Deferred | Deferred                            |
+| Cloudflare DNS-only | Owner-deferred under ADR 0005                    | Not current launch path    | `railway`        | `true`                | Deferred | Deferred                            |
 
 For each path record page TTFB, `/next` + `SKIP` p50/p95/failure rate, security headers, and observed
 client-IP mode. DNS-only and the Railway-generated route must use publicly trusted origin TLS;
@@ -54,12 +54,12 @@ Cloudflare Origin CA alone is insufficient for direct browsers.
 
 | Network/window              | Direct p50/p95/fail        | Proxied p50/p95/fail | DNS-only p50/p95/fail | Notes                                                                                                                |
 | --------------------------- | -------------------------- | -------------------- | --------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| China Telecom, normal       | Pending                    | Pending              | Pending               |                                                                                                                      |
-| China Unicom, normal        | Pending                    | Pending              | Pending               |                                                                                                                      |
-| China Mobile, normal        | Reachable; metrics pending | Pending              | Pending               | Owner reached the direct Railway site over 4G; timing/window was not captured, so this is connectivity evidence only |
-| China Telecom, evening peak | Pending                    | Pending              | Pending               |                                                                                                                      |
-| China Unicom, evening peak  | Pending                    | Pending              | Pending               |                                                                                                                      |
-| China Mobile, evening peak  | Pending                    | Pending              | Pending               |                                                                                                                      |
+| China Telecom, normal       | Pending                    | Deferred             | Deferred              |                                                                                                                      |
+| China Unicom, normal        | Pending                    | Deferred             | Deferred              |                                                                                                                      |
+| China Mobile, normal        | Reachable; metrics pending | Deferred             | Deferred              | Owner reached the direct Railway site over 4G; timing/window was not captured, so this is connectivity evidence only |
+| China Telecom, evening peak | Pending                    | Deferred             | Deferred              |                                                                                                                      |
+| China Unicom, evening peak  | Pending                    | Deferred             | Deferred              |                                                                                                                      |
+| China Mobile, evening peak  | Pending                    | Deferred             | Deferred              |                                                                                                                      |
 
 ## Security review
 
@@ -73,10 +73,12 @@ Cloudflare Origin CA alone is insufficient for direct browsers.
       no-referrer, and denied camera/geolocation/microphone permissions.
 - [ ] Admin and visitor cookies are Secure, HttpOnly, host-only, and have expected SameSite policy.
 - [ ] CSP, HSTS, anti-framing, MIME, referrer, and permissions headers pass over every route.
-- [ ] Railway mode ignores `CF-Connecting-IP`; Cloudflare mode uses the edge-provided header.
+- [ ] Railway mode ignores `CF-Connecting-IP`; Cloudflare header behavior is deferred until ADR 0005
+      is reopened.
 - [ ] No raw IP, cookie, token, password, provider body, or database URL appears in logs/errors.
 - [ ] `RISK_ENFORCEMENT_MODE=observe`; no false-positive tuning is claimed before closed beta.
-- [ ] Cloudflare can be disabled without code or database changes.
+- [x] Cloudflare is disabled without code or database changes; direct Railway smoke/load and Vote
+      integrity pass.
 - [ ] Admin mutation Origin validation succeeds only for the currently configured host.
 - [ ] Direct database public exposure is temporary/tunnel-only for the restore drill, then removed.
 
@@ -93,12 +95,14 @@ connections, response p50/p95/p99, non-2xx statuses, and whether limits—not in
 ## Owner decision
 
 - Gate E status: **Pending**
-- Cloudflare launch mode: **Pending real three-network A/B**
+- Backup mode: **Railway Hobby + retained logical backups under ADR 0004**
+- Cloudflare launch mode: **Owner-deferred under ADR 0005; direct Railway selected**
 - Blocking findings: **Pending**
 - Owner approval/date: **Pending**
 
-M10 cannot create the real production Pool or begin closed beta until every required row is filled,
-blocking findings are resolved, and the owner explicitly approves this gate.
+M10 cannot create the real production Pool or begin closed beta until every applicable row is filled,
+owner-deferred rows are recorded as decisions, blocking findings are resolved, and the owner
+explicitly approves this gate.
 
 ## Staging bootstrap and mutation note
 

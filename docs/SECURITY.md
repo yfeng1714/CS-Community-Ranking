@@ -97,9 +97,18 @@
   Proxy header mode changes with the path; no permanent multi-origin exception is introduced.
 - Railway structured logs and platform alerts are the V0.1 baseline. External error tracking is
   optional and must never become a request-path or Mainland China dependency.
+- ADR 0005 selects direct Railway for the initial small closed beta. This does not remove application
+  controls: CSRF/mutation guards, strict cookies, Admin authorization, exact schemas, process-local
+  availability limits, PostgreSQL quota/risk state, integrity jobs, and spend monitoring remain
+  active. Railway documents network-layer DDoS mitigation but not application-layer protection, so
+  direct hosting deliberately accepts less WAF/bot/Layer-7 shielding until measured traffic, abuse,
+  cost, branding, or scale reopens the Cloudflare decision.
+- If Cloudflare is later introduced as a security control, a still-public Railway origin can bypass
+  its edge rules. Origin restriction versus keeping a public emergency fallback requires an explicit
+  review; neither posture may be implied by configuration alone.
 
-Real proxy-header behavior, notification delivery, volume-backup schedules, logical restore,
-load evidence, and three-network Mainland China access remain unverified until their evidence rows
-are completed in `docs/STAGING_GATE_E.md`.
+Remaining real proxy-header behavior, notification delivery, retained logical-backup cadence,
+route/load evidence, and Mainland China access stay bounded by the applicable rows in
+`docs/STAGING_GATE_E.md`. Cloudflare-only rows are owner-deferred under ADR 0005 until its trigger.
 
 Never add a raw IP, visitor cookie, Admin token, password, or complete provider HTML body to logs.
