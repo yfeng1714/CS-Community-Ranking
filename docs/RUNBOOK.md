@@ -234,6 +234,18 @@ pnpm ops:smoke -- --origin https://<exact-staging-host>
 pnpm ops:smoke -- --origin https://<exact-staging-host> --skip-vote --confirm-staging
 ```
 
+Before the first mutation check, bootstrap the empty direct-Railway staging database once from the
+trusted Web console. This command is intentionally separate from deployment, requires Railway's
+runtime identity plus the generated HTTPS hostname, and refuses any database that already contains
+an active Admin, Edition, Team, Player, or Vote:
+
+```bash
+pnpm db:seed:staging -- --confirm-staging
+```
+
+It inserts only the explicitly fictional development Edition/Pool. Never run it after real product
+data exists, against a custom domain, or as a recurring/deploy command.
+
 Create the staging Admin through a trusted Railway shell/one-shot invocation; do not expose the
 database publicly for this. Confirm liveness, readiness, Admin login/logout, Pool audit, and one
 revoked test Vote using fictional staging data only.

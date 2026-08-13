@@ -25,6 +25,7 @@
     "db:generate": "node --env-file=.env node_modules/drizzle-kit/bin.cjs generate",
     "db:migrate": "node --env-file-if-exists=.env --import ./scripts/register-path-aliases.mjs scripts/migrate.ts",
     "db:seed": "node --env-file-if-exists=.env --import ./scripts/register-path-aliases.mjs scripts/seed.ts",
+    "db:seed:staging": "node --env-file-if-exists=.env --import ./scripts/register-path-aliases.mjs scripts/staging-bootstrap.ts",
     "db:check": "node --env-file=.env node_modules/drizzle-kit/bin.cjs check",
     "admin:create": "node --env-file-if-exists=.env --import ./scripts/register-path-aliases.mjs scripts/admin-create.ts",
     "pool:add-player": "node --env-file-if-exists=.env --import ./scripts/register-path-aliases.mjs scripts/pool-add-player.ts",
