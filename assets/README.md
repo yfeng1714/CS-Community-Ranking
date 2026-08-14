@@ -19,3 +19,7 @@ replacement workflow.
 
 Run `pnpm assets:check` locally before committing asset changes. It fails unless the local detailed
 records, tracked registry, and files under `public/images` agree exactly.
+
+For a reviewed HLTV browser capture, `pnpm assets:import-hltv-portraits -- --capture <file>
+--bundles <dir,...>` validates all 70 Player IDs, profile slugs, Team assignments, nicknames, source
+URLs, bundle membership, and WebP content types before copying or updating any manifest.

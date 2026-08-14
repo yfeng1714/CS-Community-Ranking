@@ -11,7 +11,7 @@ canonical manifest, and Gate F evidence checklist are in place. An isolated loca
 applied that manifest and admitted the Owner-approved, conflict-free 14-Team/70-Player Core Pool
 from approved August 3 VRS and August 10 HLTV evidence. Its pre-asset DRAFT launch-readiness report
 passes with only placeholder-image and optional-stat warnings. The repository now also contains the
-14 locally served, attributed Team logos; the complete 70-portrait set remains on neutral monograms.
+complete locally served and attributed 14-Team-logo/70-Player-portrait set.
 A separate local-only clone is ACTIVE for UI
 preview; the canonical rehearsal remains DRAFT and zeroed. No Railway reset, production Pool,
 production Edition activation, or closed beta has started. ADR 0006 selects a one-time
@@ -113,6 +113,7 @@ If port `5432` is already occupied, set `POSTGRES_PORT` to another host port in
 | `pnpm report:kpi -- --edition <code> [--date YYYY-MM-DD]` | Generate the first-party daily KPI report |
 | `pnpm launch:check -- --edition <code>` | Produce the fail-closed, read-only pre-activation readiness report |
 | `pnpm canonical:bootstrap [-- ...]` | Validate the DRAFT canonical manifest; explicit approved flags are required to apply it to an empty DB |
+| `pnpm assets:import-hltv-portraits -- --capture <file> --bundles <dir,...>` | Identity-check and import reviewed local HLTV portrait bundles |
 | `pnpm source:approve-ranking -- --snapshot <id> [...]` | Review an immutable ranking snapshot; explicit actor, reason, apply, and confirmation inputs are required to approve it |
 | `pnpm source:import-reviewed-hltv [-- ...]` | Validate the checksum-locked reviewed HLTV top-12 fallback; guarded apply records and approves it when live retrieval is blocked |
 | `pnpm job:build-pool-draft -- --edition <code>` | Build review-only Pool proposals from the latest approved HLTV/VRS snapshots |

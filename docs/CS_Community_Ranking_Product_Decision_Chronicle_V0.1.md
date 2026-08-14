@@ -20,7 +20,7 @@
 </tbody>
 </table>
 
-**版本** V0.1.15
+**版本** V0.1.16
 
 **日期** 2026-08-14
 
@@ -53,6 +53,8 @@
 **Owner M10 图片首轮** 2026-08-14（V0.1.14；14 Team Logo 完成，70 Player 统一保留 Monogram）
 
 **Owner M10 图片记录收敛** 2026-08-14（V0.1.15；详细 Source Record 改为 Git/Docker 忽略的本地证据）
+
+**Owner M10 完整 Portrait Pass** 2026-08-14（V0.1.16；HLTV Lazy-load 分批导出，70 Player 全量完成）
 
 **定位** 产品背景、决策记录与后续 Review Context
 
@@ -179,11 +181,19 @@ Owner 随后批准执行图片 Pass。工程从官方 8 月 10 日 HLTV Ranking 
 资源中取得全部 14 个 Team Logo，保存为本地真实格式，为每个文件在忽略的本地记录中写入精确
 Source URL，同时在跟踪的最小 Registry 中写入 `OWNER_ACCEPTED_PENDING_RIGHTS`，并使 Vote、Ranking、Player 的公共 Projection/UI 真正消费
 数据库中的 `logoPath`。深浅 Logo 统一置于中性深色容器，Source/Notes 仍只属于 Dev/Ops，未进入
-Public API 或 Admin UI。页面 DOM 同时包含 70 个 Player Image URL，但 Accordion Lazy Load、CDN
-403 与浏览器导出行为无法可靠得到完整 70 个文件；已加载的 5 个 Falcons Portrait 没有被单独
-发布，以免形成一队真实照片、十三队占位的失衡界面。当前所有 Player 继续使用一致的 Monogram，
-直到能够取得、核验并一次性上线完整 Portrait Set。原本地 Rehearsal DB 早于本轮 Asset Pass，
+Public API 或 Admin UI。初次检查时页面只有默认展开的 Falcons 五张 Portrait 进入 Asset Inventory，
+其余 Accordion 虽有 URL 却未加载；为避免一队真实照片、十三队占位的失衡界面，这五张没有被单独
+发布，所有 Player 暂时继续使用一致的 Monogram。原本地 Rehearsal DB 早于本轮 Asset Pass，
 因此其历史 Launch Report 不被冒充为新 Manifest 的数据库验证证据。
+
+Owner 要求重新验证 HLTV 并在必要时寻找其他完整来源。新检查逐队展开 Canonical Team Accordion，
+确认 14 队各 5 张、共 70 张 HLTV Body Shot 全部正常加载；问题并不是资源缺失或只允许 Falcons，
+而是 Lazy-load 与单次 Asset Inventory 仅保留部分已观察 Response。工程因而按 30 + 20 + 20 三批
+导出，每批零失败，再以 Player ID、Profile Slug、Team、Nickname、Source URL 与 Bundle Manifest
+六层精确对应导入，拒绝 Filename 推断。最终 70 个 WebP、70 个 `photoPath`、70 个 Registry Entry
+与 70 个忽略的本地 Source Record 完整对应；加上 Logo 共 84 个 Asset，`assets:check` 全部通过。
+HLTV 提供的是一致的原生 200×200 Transform，工程没有为满足名义尺寸而人工放大。每队代表 Crop
+已做视觉检查，Monogram 仍作为未来清空/争议图片时的弹性 Fallback。
 
 <table>
 <colgroup>

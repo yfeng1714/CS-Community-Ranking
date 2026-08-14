@@ -67,9 +67,8 @@ identities, and not silently admitted.
 
 - The August 3 VRS and August 10 HLTV rankings are both within the configured 14-day maximum on
   August 14. Refresh both sources again if production activation occurs after this review date.
-- Real images are preferred. The separate asset pass imported all 14 Team logos as local copies with
-  exact source/right-status records. All 70 Player `photoPath` values remain null so the product uses
-  one consistent neutral-monogram fallback rather than an incomplete portrait set.
+- Real images are preferred. The separate asset passes imported all 14 Team logos and all 70 Player
+  portraits as local copies with exact ignored source records plus tracked path/right-status entries.
 - Owner-accepted provisional community-beta use is allowed as an explicit warning while the Owner
   handles external rights questions. Run `pnpm assets:check` and visually review every public crop;
   runtime hotlinking remains prohibited.

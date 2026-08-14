@@ -49,9 +49,11 @@ into the logo.
 4. Use a compatible Wikimedia Commons image when it is current and clearly identifies the Player.
 5. Keep the neutral monogram only when no current, recognizable image can be obtained.
 
-Target output: 800×1000 WebP portrait at `/images/players/{player-slug}.webp`. Keep the face and upper
-body within the central safe area; apply the same crop ratio and background treatment across teams.
-Do not upscale a visibly low-resolution source merely to meet the nominal dimensions.
+Preferred target output is an 800×1000 WebP portrait at `/images/players/{player-slug}.webp`. Keep
+the face and upper body within the central safe area; apply the same crop ratio and background
+treatment across teams. Do not upscale a visibly low-resolution source merely to meet the nominal
+dimensions. The current complete HLTV set is the provider's consistent native 200×200 body-shot
+transform and is retained at that size rather than artificially enlarged.
 
 ## Source and rights record
 
@@ -104,13 +106,19 @@ public Vote, Ranking, and Player projections render the logo when the database c
 Four SVG sources were rendered locally to transparent PNG; the remaining signed raster responses
 are stored as their actual WebP format.
 
-All 70 Player `photoPath` values remain null. The official ranking page exposes exact Player image
-URLs in its DOM, but its accordion loading plus CDN/browser export behavior did not provide a
-reliable complete-set import. Five already loaded Falcons files were deliberately not published:
-shipping one photographed Team and 13 placeholder Teams would be visually inconsistent. The
-neutral monogram therefore remains the honest complete-set fallback until all 70 portraits can be
-imported and reviewed together.
+The 70-portrait pass is complete. A fresh browser verification proved that HLTV lazy-loads five
+portraits only after each Team accordion is opened; the original Falcons-only result reflected the
+default open accordion, not missing assets. Opening every canonical Team loaded 70/70 images. The
+browser exporter retained only a bounded subset per inventory, so the images were exported as three
+identity-verified batches of 30, 20, and 20, each with zero failures.
 
-The preserved local rehearsal databases were bootstrapped before the logo pass and still contain
-null logo paths. A fresh canonical bootstrap/reset will receive the configured paths; do not describe
-the old rehearsal report as evidence that the post-asset database was tested.
+`assets:import-hltv-portraits` joined the browser capture to the canonical manifest by exact HLTV
+Player ID, profile slug, Team, and nickname, then joined exact source URL to each bundle manifest.
+It imported 70 WebP files, configured all 70 `photoPath` values, added 70 minimal tracked registry
+entries, and added 70 detailed records only to the ignored local attribution file. Filesystem,
+canonical, registry, and local-source counts agree at 70 portraits / 14 logos / 84 total assets;
+representative crops from every Team were visually reviewed.
+
+The preserved local rehearsal databases were bootstrapped before both asset passes and still contain
+null image paths. A fresh canonical bootstrap/reset will receive all 84 configured paths; do not
+describe the old rehearsal report as evidence that the post-asset database was tested.

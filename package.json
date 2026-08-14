@@ -49,7 +49,8 @@
     "ops:load": "node scripts/staging-load.ts",
     "backup:create": "node --env-file-if-exists=.env scripts/backup-create.ts",
     "backup:verify": "node --env-file-if-exists=.env scripts/backup-verify.ts",
-    "assets:check": "node scripts/assets-check.ts"
+    "assets:check": "node scripts/assets-check.ts",
+    "assets:import-hltv-portraits": "node scripts/import-hltv-portrait-bundles.ts"
   },
   "dependencies": {
     "argon2": "0.45.1",

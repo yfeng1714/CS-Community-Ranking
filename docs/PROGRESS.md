@@ -18,8 +18,8 @@
   applied the approved canonical manifest, approved the official August 3 VRS plus audited reviewed
   August 10 HLTV evidence, and admitted the Owner-approved 14-Team/70-Player Core Pool through Gate
   D. Its pre-asset local readiness report passes with only optional asset/stat warnings. The
-  repository's later asset pass now provides all 14 attributed local Team logos while keeping a
-  consistent 70-Player neutral-monogram fallback. The canonical rehearsal remains
+  repository's later asset passes now provide all 14 attributed local Team logos and all 70
+  identity-verified local Player portraits. The canonical rehearsal remains
   DRAFT and zeroed; a separate clone is ACTIVE only for local UI inspection. Railway was not
   mutated. Production Edition activation, database reset, and closed beta have not started.
 - **Review boundary:** The owner-approved Hobby baseline contains PostgreSQL, Web, and six cron
@@ -62,8 +62,8 @@
 - The Owner removed the personal email and dedicated `/privacy` route for the small community beta;
   existing data-minimizing controls remain. The HLTV User-Agent identifies the deployed project URL.
   Real images may use the honest `OWNER_ACCEPTED_PENDING_RIGHTS` status while the Owner handles
-  external rights later. The asset pass now configures all 14 Team logos, keeps all 70 Player photos
-  null as a consistent technical fallback, and passes `assets:check`. Exact source URLs and notes
+  external rights later. The asset passes now configure all 14 Team logos and all 70 Player
+  portraits, and `assets:check` validates 84/84. Exact source URLs and notes
   now remain in a Git/Docker-ignored local file; the tracked registry exposes only path and review
   state to launch readiness. Neither source detail nor notes are rendered by public or Admin UI.
 - Public Ballot, Ranking, and Player projections now carry nullable `teamLogoUrl` and render the
@@ -267,10 +267,8 @@ this verification window.
 
 ## Next task
 
-Owner-review the local-only ACTIVE preview UI while the canonical rehearsal stays DRAFT and zeroed.
-Decide whether the consistent 70-player monogram fallback is acceptable for closed beta or revisit
-the complete portrait import through a source that can be downloaded and reviewed reliably; do not
-publish a partial Team set. Once the real-data UI is accepted, prepare the
+Owner-review the complete local asset set in a fresh canonical UI preview while the preserved
+rehearsal stays DRAFT and zeroed. Once the real-data UI is accepted, prepare the
 approved in-place Railway cutover by collecting final backup/restore/R2 evidence and explicit reset
 approval, pausing services, rebuilding the existing database from migrations, and repeating with
 fresh sources. Do not reset the cloud database, activate a production Edition, enable production
