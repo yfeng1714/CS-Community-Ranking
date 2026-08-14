@@ -19,7 +19,9 @@
   August 10 HLTV evidence, and admitted the Owner-approved 14-Team/70-Player Core Pool through Gate
   D. Its pre-asset local readiness report passes with only optional asset/stat warnings. The
   repository's later asset passes now provide all 14 attributed local Team logos and all 70
-  identity-verified local Player portraits. The canonical rehearsal remains
+  identity-verified local Player portraits. M10 now also exposes the governed Pool-update next step
+  in Admin, accepts explicitly labeled reviewed HLTV top-20 evidence, and has rehearsed an exact
+  70-identity stats bundle without filling unavailable values. The canonical rehearsal remains
   DRAFT and zeroed; a separate clone is ACTIVE only for local UI inspection. Railway was not
   mutated. Production Edition activation, database reset, and closed beta have not started.
 - **Review boundary:** The owner-approved Hobby baseline contains PostgreSQL, Web, and six cron
@@ -63,7 +65,21 @@
   synthetic labels no longer represent the live structure. A guarded reviewed-stats JSON importer
   now validates checksum, dates, exact official URLs, complete configured-identity coverage, ID/slug
   matches, explicit missing metrics, duplicate capture time, and Admin confirmation before one
-  atomic metric/audit write. No real 70-Player stats bundle has been imported yet.
+  atomic metric/audit write. A generated exact 70-identity local bundle then passed dry run and
+  atomic import in an isolated clone: only the one browser-observed recent karrigan metric was
+  stored, while 69 recent and all 70 career values remained honestly missing. Railway was not
+  changed.
+- The reviewed HLTV ranking boundary now distinguishes exact top-12 Core coverage from exact top-20
+  Review Auto coverage, with separate parser labels and fail-closed URL/date/rank/identity/roster
+  validation. Exact August 10 ranks 13–20 were not reliably extractable through the permitted
+  paths, so the current fallback remains top 12 and is not overstated as complete Review Auto
+  evidence.
+- The Admin overview now includes a read-only Pool update workflow card. It summarizes the latest
+  HLTV/VRS approval state, Pool-draft state, pending/conflicted Pool proposals, and names one exact
+  next action without scheduling, approving, or admitting anything.
+- `docs/M10_CANDIDATE_POOL_REVIEW_2026-08-15.md` records the 14-Team Core rehearsal, the completed
+  IEM Cologne Major Top 8 (all already Core), the open top-20/T1/manual/special decisions, and the
+  clean-room transport failure separately from product evidence.
 - Pool drafting now applies the Owner-approved roster rule exactly: an HLTV roster mismatch blocks;
   a VRS mismatch is retained as an `HLTV_ROSTER_AUTHORITY_APPLIED` warning. Unmatched rank-13–20 VRS
   rows without qualifying Event evidence are warnings rather than false missing-Core blockers.
@@ -131,20 +147,20 @@
 
 ## Local validation
 
-| Command/check                       | Result | Notes                                                                                                                                                                                                                                                                      |
-| ----------------------------------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `pnpm lint`                         | PASS   | Zero warnings.                                                                                                                                                                                                                                                             |
-| `pnpm format:check`                 | PASS   | Source, JSON configuration, tests, and docs formatted.                                                                                                                                                                                                                     |
-| `pnpm typecheck`                    | PASS   | Strict TypeScript `6.0.3`, including the M10 report/CLI/test.                                                                                                                                                                                                              |
-| `pnpm test:unit`                    | PASS   | Latest pass: 38 files, 137 tests including Railway, CLI, backup, security, Admin activation safety, HLTV profile-URL normalization, canonical-manifest review guards, reviewed-HLTV fallback validation, roster-authority policy, and provisional asset-source validation. |
-| `pnpm test:integration`             | PASS   | Full pass: 11 files, 44 tests against PostgreSQL 18, including external-source warning policy, the launch-readiness gate, nullable HLTV profile-URL migration/constraint, and atomic 14-Team/70-Player canonical bootstrap with 239 audit rows.                            |
-| `pnpm db:migrate` / `pnpm db:check` | PASS   | Ordered migrations apply; journal is consistent.                                                                                                                                                                                                                           |
-| Operational CLI execution           | PASS   | Integrity healthy/zero-sum; expiration and retention ran successfully.                                                                                                                                                                                                     |
-| Local logical restore drill         | PASS   | PostgreSQL 18 custom dump restored to separate empty DB in 1.27s; all 14 critical table counts matched; scratch DB/dump removed.                                                                                                                                           |
-| `pnpm build`                        | PASS   | Optimized Next.js `16.3.0` Webpack build and standalone traces.                                                                                                                                                                                                            |
-| `pnpm test:e2e`                     | PASS   | 6 public/Admin journeys in desktop/mobile Chromium. Harmless dev-server aborted-stream messages remained during browser teardown.                                                                                                                                          |
-| `git diff --check`                  | PASS   | No whitespace errors.                                                                                                                                                                                                                                                      |
-| Production Docker rebuild           | PASS   | Pinned Node 24.14.0/pnpm 11.16.0 image built; final 190,565,606-byte image runs as `node`, excludes Vitest/TypeScript, and contains Web, migration, all six cron entry points, migrations, public assets, and Next static output.                                          |
+| Command/check                       | Result | Notes                                                                                                                                                                                                                                                           |
+| ----------------------------------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm lint`                         | PASS   | Zero warnings.                                                                                                                                                                                                                                                  |
+| `pnpm format:check`                 | PASS   | Source, JSON configuration, tests, and docs formatted.                                                                                                                                                                                                          |
+| `pnpm typecheck`                    | PASS   | Strict TypeScript `6.0.3`, including the M10 report/CLI/test.                                                                                                                                                                                                   |
+| `pnpm test:unit`                    | PASS   | Latest pass: 40 files, 149 tests including Admin Pool-workflow sequencing, exact reviewed-HLTV top-12/top-20 validation, null-first stats templates, Railway, CLI, backup, security, launch safety, roster-authority policy, and asset-source validation.       |
+| `pnpm test:integration`             | PASS   | Full pass: 12 files, 46 tests against PostgreSQL 18, including external-source warning policy, the launch-readiness gate, nullable HLTV profile-URL migration/constraint, reviewed stats, and atomic 14-Team/70-Player canonical bootstrap with 239 audit rows. |
+| `pnpm db:migrate` / `pnpm db:check` | PASS   | Ordered migrations apply; journal is consistent.                                                                                                                                                                                                                |
+| Operational CLI execution           | PASS   | Integrity healthy/zero-sum; expiration and retention ran successfully.                                                                                                                                                                                          |
+| Local logical restore drill         | PASS   | PostgreSQL 18 custom dump restored to separate empty DB in 1.27s; all 14 critical table counts matched; scratch DB/dump removed.                                                                                                                                |
+| `pnpm build`                        | PASS   | Optimized Next.js `16.3.0` Webpack build and standalone traces.                                                                                                                                                                                                 |
+| `pnpm test:e2e`                     | PASS   | 6 public/Admin journeys in desktop/mobile Chromium from a cold start. Setup now applies committed migrations and uses pinned pnpm through Corepack; harmless dev-server aborted-stream messages remained during browser teardown.                               |
+| `git diff --check`                  | PASS   | No whitespace errors.                                                                                                                                                                                                                                           |
+| Production Docker rebuild           | PASS   | Pinned Node 24.14.0/pnpm 11.16.0 image built; final 190,565,606-byte image runs as `node`, excludes Vitest/TypeScript, and contains Web, migration, all six cron entry points, migrations, public assets, and Next static output.                               |
 
 Docker Desktop was restarted once because its Linux engine initially hung. It was used only for
 PostgreSQL/integration/restore work; the project database is stopped and Docker Desktop is quit after
@@ -275,10 +291,11 @@ this verification window.
 
 ## Next task
 
-Prepare and review the complete ignored 70-Player stats bundle through the new dry-run boundary,
-rehearse its atomic import only in the isolated stats clone, and preserve missing career data
-honestly. Then prepare the approved in-place Railway cutover by collecting final
-backup/restore/R2 evidence and explicit reset approval, pausing services, rebuilding the existing
-database from migrations, and repeating with fresh sources. Do not reset the cloud database,
-activate a production Edition, enable production Pool entries, or start closed beta without the
-explicit Gate F approvals.
+Owner reviews the candidate packet, supplies or approves exact permitted HLTV ranks 13–20 evidence,
+and decides the completed-2026 T1 whitelist plus any Manual/Special entries. Optional Player stats
+can be completed gradually from the generated exact-identity template; missing values do not block
+voting. Once the proposed Pool is final, prepare the approved in-place Railway cutover by collecting
+final backup/restore/R2 evidence and explicit reset approval, pausing services, rebuilding the
+existing database from migrations, and repeating with fresh sources. Do not reset the cloud
+database, activate a production Edition, enable production Pool entries, or start closed beta
+without the explicit Gate F approvals.

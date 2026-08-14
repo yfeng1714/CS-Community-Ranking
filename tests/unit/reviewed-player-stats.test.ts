@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
+import canonicalManifest from "../../data/canonical/2026-beta.json";
 
-import { validateReviewedHltvPlayerStats } from "@/domain/external-data/reviewed-player-stats";
+import { canonicalManifestSchema } from "@/domain/canonical/manifest";
+import {
+  createReviewedHltvPlayerStatsTemplate,
+  validateReviewedHltvPlayerStats,
+} from "@/domain/external-data/reviewed-player-stats";
 
 interface TestBundle {
   capturedAt: string;
@@ -38,6 +43,37 @@ const validBundle = (): TestBundle => ({
 });
 
 describe("reviewed HLTV Player stats", () => {
+  it("creates an exact 70-identity empty review template from the canonical manifest", () => {
+    const template = createReviewedHltvPlayerStatsTemplate(
+      canonicalManifestSchema.parse(canonicalManifest),
+      {
+        capturedAt: "2026-08-15T00:00:00.000Z",
+        periodEnd: "2026-08-14",
+        periodStart: "2026-05-15",
+      },
+    );
+
+    expect(template.records).toHaveLength(70);
+    expect(new Set(template.records.map((record) => record.externalId)).size).toBe(70);
+    expect(template.records[0]).toMatchObject({
+      externalId: "429",
+      externalSlug: "karrigan",
+      recent: null,
+      recentSourceUrl:
+        "https://www.hltv.org/stats/players/429/karrigan?startDate=2026-05-15&endDate=2026-08-14",
+    });
+  });
+
+  it("rejects invalid template dates before writing operational evidence", () => {
+    expect(() =>
+      createReviewedHltvPlayerStatsTemplate(canonicalManifestSchema.parse(canonicalManifest), {
+        capturedAt: "not-a-timestamp",
+        periodEnd: "2026-05-15",
+        periodStart: "2026-08-14",
+      }),
+    ).toThrow();
+  });
+
   it("accepts exact official recent and career evidence", () => {
     expect(validateReviewedHltvPlayerStats(validBundle()).records).toHaveLength(1);
   });

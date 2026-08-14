@@ -17,7 +17,7 @@ export default defineConfig({
     { name: "mobile-chromium", use: { ...devices["Pixel 7"] } },
   ],
   webServer: {
-    command: "node --env-file=.env scripts/e2e-setup.ts && pnpm dev",
+    command: "node --env-file=.env scripts/e2e-setup.ts && corepack pnpm dev",
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
     url: "http://localhost:3000/api/health/live",

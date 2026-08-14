@@ -54,12 +54,14 @@ top 12 used by the approved canonical sheet.
 
 `pnpm source:import-reviewed-hltv` validates that file and prints its SHA-256 without connecting to
 the database. Apply requires an active Admin, reason, `--apply`, and
-`--confirm-reviewed-source`. It requires the official dated HLTV ranking URL, every rank 1–12
-exactly once, unique Team IDs, and exactly five starters per Team; the resulting immutable snapshot
-is labeled `hltv-reviewed-top12-json-v1` and receives ordinary approval audit evidence. It is an
-explicit manual fallback, not proof that automated HLTV retrieval worked, not a full top-20 feed,
-and not Player-stat evidence. Retry the low-frequency live adapter near Railway cutover; if it is
-still blocked, Owner review of a fresh checksum-locked fallback is required again.
+`--confirm-reviewed-source`. A reviewed input must use an exact official dated HLTV ranking URL,
+match its publication date, and contain either every rank 1–12 or every rank 1–20 exactly once,
+with unique Team IDs and exactly five unique starters per Team. The immutable snapshot is labeled
+`hltv-reviewed-top12-json-v1` or `hltv-reviewed-top20-json-v1` so downstream review cannot confuse
+Core-only coverage with Review Auto coverage. The current checked-in August 10 input is still only
+top 12. It is an explicit manual fallback, not proof that automated HLTV retrieval worked, not
+top-20 evidence, and not Player-stat evidence. Retry the low-frequency live adapter near Railway
+cutover; if it is still blocked, Owner review of a fresh checksum-locked fallback is required again.
 
 The same access boundary applies independently to Player stats. On August 15, an identified direct
 request to the official three-month Player-stats URL returned HTTP 403, while the ordinary browser
@@ -75,6 +77,13 @@ requires exact coverage of every configured HLTV Player identity, rejects ID/slu
 capture timestamps, writes only the metrics actually observed, and records one Admin audit. Recent
 and career evidence are separate: missing career data remains `—` rather than being inferred from a
 three-month page. This fallback does not make the browser export automatic or bypass HLTV controls.
+
+Start a review pass without hand-copying 70 identities or URLs by running
+`pnpm source:create-reviewed-hltv-stats-template -- --captured <ISO-time> --start YYYY-MM-DD --end
+YYYY-MM-DD --output <ignored-json>`. It creates one exact record for every canonical HLTV identity,
+with all metrics explicitly `null` and the exact period-specific official URL. It refuses to
+overwrite an existing file. Fill only values actually observed, retain `null` for unavailable data,
+then use the guarded importer above. The template is convenience, not evidence by itself.
 
 ## Canonical bootstrap boundary
 

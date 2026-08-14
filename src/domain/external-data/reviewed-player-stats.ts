@@ -5,6 +5,7 @@ import { playerExternalIdentities, playerStatSnapshots } from "../../db/schema/i
 import { writeAdminAudit } from "../audit.ts";
 import type { AppDatabase } from "../database.ts";
 import { DomainError, requireNonBlank } from "../error.ts";
+import type { CanonicalManifest } from "../canonical/manifest.ts";
 
 export const REVIEWED_HLTV_PLAYER_STATS_VERSION = "hltv-reviewed-player-stats-json-v1";
 
@@ -49,6 +50,32 @@ const reviewedPlayerStatsSchema = z.strictObject({
 
 export type ReviewedHltvPlayerStats = z.infer<typeof reviewedPlayerStatsSchema>;
 
+export function createReviewedHltvPlayerStatsTemplate(
+  manifest: CanonicalManifest,
+  input: { capturedAt: string; periodEnd: string; periodStart: string },
+): ReviewedHltvPlayerStats {
+  return validateReviewedHltvPlayerStatsBundle(
+    {
+      capturedAt: input.capturedAt,
+      periodEnd: input.periodEnd,
+      periodStart: input.periodStart,
+      provider: "HLTV",
+      records: manifest.teams.flatMap((team) =>
+        team.players.map((player) => ({
+          career: null,
+          careerSourceUrl: null,
+          externalId: player.hltvIdentity.externalId,
+          externalSlug: player.hltvIdentity.externalSlug,
+          recent: null,
+          recentSourceUrl: `https://www.hltv.org/stats/players/${player.hltvIdentity.externalId}/${player.hltvIdentity.externalSlug}?startDate=${input.periodStart}&endDate=${input.periodEnd}`,
+        })),
+      ),
+      version: 1,
+    },
+    false,
+  );
+}
+
 function requireOfficialStatsUrl(input: {
   externalId: string;
   externalSlug: string;
@@ -87,7 +114,10 @@ function requireOfficialStatsUrl(input: {
   }
 }
 
-export function validateReviewedHltvPlayerStats(input: unknown): ReviewedHltvPlayerStats {
+function validateReviewedHltvPlayerStatsBundle(
+  input: unknown,
+  requireAvailableMetric: boolean,
+): ReviewedHltvPlayerStats {
   const bundle = reviewedPlayerStatsSchema.parse(input);
   if (bundle.periodEnd < bundle.periodStart) {
     throw new DomainError(
@@ -136,13 +166,17 @@ export function validateReviewedHltvPlayerStats(input: unknown): ReviewedHltvPla
     if (record.career) availableMetrics += 1;
   }
 
-  if (availableMetrics === 0) {
+  if (requireAvailableMetric && availableMetrics === 0) {
     throw new DomainError(
       "REVIEWED_HLTV_STATS_EMPTY",
       "Reviewed HLTV stats bundle contains no available metric",
     );
   }
   return bundle;
+}
+
+export function validateReviewedHltvPlayerStats(input: unknown): ReviewedHltvPlayerStats {
+  return validateReviewedHltvPlayerStatsBundle(input, true);
 }
 
 export async function importReviewedHltvPlayerStats(

@@ -42,6 +42,26 @@ Local rehearsal evidence as of 2026-08-14 (not production sign-off):
       `csr_m10_ui_preview_20260814`, for public-UI inspection so preview activity cannot pollute the
       canonical rehearsal.
 
+Additional independent evidence on 2026-08-15 (still not production sign-off):
+
+- [x] A generated exact 70-identity reviewed-stats bundle passed dry run and atomic application in
+      isolated DB `csr_m10_stats_rehearsal_20260815`. It stored only the one browser-observed recent
+      karrigan metric (46 maps, Rating 3.0 value 0.73); 69 recent and all 70 career metrics remained
+      explicitly missing. The resulting launch report remained nonblocking.
+- [x] Empty DB `csr_m10_gatef_20260815` independently passed migrations, local Admin creation,
+      canonical bootstrap, reviewed HLTV top-12 import/approval, and the exact-identity reviewed
+      stats import. The official Valve fetch and one direct download retry both timed out with zero
+      bytes, so no VRS snapshot or partial draft was inserted and the clean-room rehearsal stopped
+      at the required input boundary. The preserved August 14 rehearsal remains the full VRS →
+      Pool-approval proof.
+- [x] The reviewed HLTV importer now supports separately labeled exact top-12 and exact top-20
+      inputs. Exact permitted August 10 ranks 13–20 were not obtained, so the current source remains
+      accurately labeled Core-only coverage. The completed IEM Cologne Major Top 8 was verified;
+      all eight Teams are already Core. See `docs/M10_CANDIDATE_POOL_REVIEW_2026-08-15.md`.
+- [x] Admin now reports source/draft/proposal state and one exact next action in a read-only Pool
+      update workflow card. It does not replace source approval, draft execution, proposal review,
+      or Owner decisions.
+
 The current Railway environment is named `production`, but its database contains the explicitly
 fictional M9 staging Edition `2026`, test players, SKIPs, and audit history. It remains staging. Do
 not rename those records into production data or bootstrap the reset database with

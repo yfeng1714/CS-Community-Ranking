@@ -25,12 +25,19 @@ pairing probability, initial score, or later scoring behavior.
 | `REVIEW_MANUAL` | Explicit human approval with a nonblank public reason                           |
 | `SPECIAL`       | Explicit individual approval, a nonblank public reason, and `ACTIVE` pro status |
 
-Automatic evaluation is deterministic and provider-independent. Milestone 7 will supply it with
+Automatic evaluation is deterministic and provider-independent. Milestone 7 supplies it with
 approved, freshness-checked ranking snapshots and event evidence; the evaluator itself performs no
 network requests and never applies a change automatically. Evidence must name the same year as the
 persisted Edition code. A result range qualifies only when the complete range is inside the stated
 threshold (`placementTo <= 4` for T1 Top 4 and `placementTo <= 8` for Major Top 8); an overlapping
 range such as `3–6` is not a Top 4 result.
+
+In operations, "automatic" means the Pool-draft job evaluates the rule consistently after its
+inputs have been approved. It does not mean autonomous admission. Valve VRS is fetched by the
+weekly Monday schedule; HLTV evidence and the Pool draft remain deliberate operator actions in
+V0.1. The Admin dashboard points to the exact next step, and generated proposals appear in Admin for
+separate approval or rejection. Review Manual Teams and Special Players originate only from
+explicit Admin decisions with public reasons; the importer never invents them.
 
 ## Team and individual admission
 

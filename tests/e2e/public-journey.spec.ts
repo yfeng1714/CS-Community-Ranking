@@ -52,10 +52,10 @@ test("supports ranking search, player details, informational pages, and persiste
 
   await page.getByRole("link", { name: "关于" }).click();
   await expect(page.getByRole("heading", { name: "数据看专业榜，争论留给社区。" })).toBeVisible();
-  await page.getByRole("link", { name: "隐私", exact: true }).click();
-  await expect(
-    page.getByRole("heading", { name: "不要求登录，也不保存你的原始 IP。" }),
-  ).toBeVisible();
+  await expect(page.getByRole("link", { name: "隐私", exact: true })).toHaveCount(0);
+  const privacyResponse = await page.goto("/privacy");
+  expect(privacyResponse?.status()).toBe(404);
+  await page.goto("/about");
 
   await page.evaluate(() => window.localStorage.removeItem("csr-theme"));
   await page.reload();

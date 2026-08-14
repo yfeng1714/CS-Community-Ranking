@@ -51,9 +51,11 @@ ordinal is exactly one higher. Ordinary React rerenders and repeated transport c
 the open Ballot. After a normal Vote or Skip, confirm the result remains visible until **Next** is
 clicked.
 
-For the complete browser regression, run `pnpm test:e2e` while PostgreSQL is available. The test
-runner starts or reuses the development server and runs the public journey serially in desktop and
-mobile Chromium to limit local resource use. Install its pinned runtime once with `pnpm exec
+For the complete browser regression, run `pnpm test:e2e` while PostgreSQL is available. Its fixture
+setup applies committed migrations before creating/updating the test Admin, preventing a stale local
+schema from producing page-render failures. The test runner starts or reuses the development server
+and runs the public journey serially in desktop and mobile Chromium to limit local resource use.
+Install its pinned runtime once with `pnpm exec
 playwright install chromium` if Playwright reports that the browser executable is missing.
 
 Public-data smoke checks:
@@ -103,6 +105,7 @@ commands and never run inside the web request path.
 pnpm job:sync-vrs
 pnpm job:sync-hltv -- --rankingUrl <official-ranking-url> --published <ISO-timestamp>
 pnpm job:sync-hltv -- --start YYYY-MM-DD --end YYYY-MM-DD
+pnpm source:create-reviewed-hltv-stats-template -- --captured <ISO-time> --start YYYY-MM-DD --end YYYY-MM-DD --output <ignored-reviewed-json>
 pnpm source:import-reviewed-hltv-stats -- --file <ignored-reviewed-json>
 pnpm job:build-pool-draft -- --edition 2026
 pnpm job:snapshot-ranking -- --edition 2026 --date YYYY-MM-DD
@@ -118,7 +121,16 @@ been reviewed. Never respond to blocking by bypassing access controls. A failed 
 Admin under **Sync runs / parser failures** and leaves stale snapshots intact.
 
 If the bounded Player-stat adapter is blocked or its saved fixture no longer matches the live page,
-prepare a local reviewed JSON bundle from ordinary browser-visible official pages. Validate it first:
+create an exact 70-identity template before reviewing ordinary browser-visible official pages:
+
+```bash
+pnpm source:create-reviewed-hltv-stats-template -- \
+  --captured 2026-08-15T01:05:00+08:00 --start 2026-05-15 --end 2026-08-14 \
+  --output data/reviewed-sources/hltv-player-stats-local.json
+```
+
+The command refuses overwrite and leaves every metric `null`. Fill only observed values, then
+validate the bundle first:
 
 ```bash
 pnpm source:import-reviewed-hltv-stats -- --file data/reviewed-sources/hltv-player-stats-local.json
@@ -141,6 +153,12 @@ accepted metric with its exact official source URL and capture timestamp.
 The safe operating order is: sync → inspect and approve each source snapshot → generate Pool draft
 → inspect conflicts/freshness/JSON → approve or reject individual proposals. The generator reports
 possible removals but deliberately cannot remove live Pool entries.
+
+The Admin dashboard's **Pool update workflow** card summarizes that same state and names the exact
+next action. It does not schedule work or approve anything. Valve VRS is scheduled weekly on Monday
+at 04:00 Shanghai time and produces an unapproved snapshot. HLTV ranking/stats remain deliberate
+manual jobs. Pool drafting is also manual after both source snapshots are approved; every resulting
+proposal still requires separate Admin review.
 
 ## M10 launch-readiness gate
 

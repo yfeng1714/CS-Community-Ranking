@@ -61,7 +61,11 @@ before/after state. Failed transactions leave neither product changes nor succes
 The Audit screen shows the three logs separately with inspectable before/after state, plus sync-run
 status, record counts, error summaries, and parser metadata. The dashboard shows the active Edition,
 Team/Player pool counts, the full score-integrity report, an untruncated pending proposal count, and
-last sync state.
+last sync state. Its **Pool update workflow** card resolves the current evidence into one exact next
+action: sync a missing provider, approve a source, run/review the draft, review exact Pool proposals,
+or confirm the workflow is current. It displays latest HLTV/VRS source approval and record counts,
+the latest Pool-draft run, and pending/conflicted Pool proposal counts. It is read-only guidance;
+source approval, draft execution, and proposal admission remain explicit separate operations.
 
 ## Pending imported-change safety
 

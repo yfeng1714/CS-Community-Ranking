@@ -24,6 +24,7 @@ import {
 } from "../../db/schema/index.ts";
 import type { AppDatabase } from "../database.ts";
 import { checkScoreIntegrity } from "../votes/integrity.ts";
+import { summarizePoolUpdateStatus } from "./pool-update-status.ts";
 
 const iso = (value: Date | null) => value?.toISOString() ?? null;
 
@@ -103,6 +104,42 @@ export async function getAdminConsoleData(
   const adminNames = new Map(adminRows.map((row) => [row.id, row.username]));
   const activeEdition = editionRows.find((row) => row.status === "ACTIVE") ?? null;
   const integrity = activeEdition ? await checkScoreIntegrity(database, activeEdition.id) : null;
+  const poolUpdateStatus = summarizePoolUpdateStatus({
+    draftRuns: syncRows
+      .filter((row) => row.jobName === "build-pool-draft" && row.provider === "INTERNAL")
+      .map((row) => ({
+        finishedAt: row.finishedAt,
+        id: row.id,
+        startedAt: row.startedAt,
+        status: row.status,
+      })),
+    proposals: pendingRows.map((row) => ({
+      changeType: row.changeType,
+      conflictCodes: row.conflictCodes,
+      status: row.status,
+    })),
+    sources: rankingSnapshotRows.flatMap((row) => {
+      if (row.provider !== "HLTV" && row.provider !== "VALVE_VRS") return [];
+      const normalizedData = row.normalizedData;
+      return [
+        {
+          approvedAt: row.approvedAt,
+          capturedAt: row.capturedAt,
+          id: row.id,
+          parserVersion: row.parserVersion,
+          provider: row.provider,
+          publishedAt: row.publishedAt,
+          recordCount:
+            typeof normalizedData === "object" &&
+            normalizedData !== null &&
+            "teams" in normalizedData &&
+            Array.isArray(normalizedData.teams)
+              ? normalizedData.teams.length
+              : null,
+        },
+      ];
+    }),
+  });
 
   return {
     dashboard: {
@@ -124,6 +161,30 @@ export async function getAdminConsoleData(
       poolTeams: activeEdition
         ? poolTeamRows.filter((row) => row.editionId === activeEdition.id).length
         : 0,
+      poolUpdate: {
+        ...poolUpdateStatus,
+        latestDraft: poolUpdateStatus.latestDraft
+          ? {
+              finishedAt: iso(poolUpdateStatus.latestDraft.finishedAt),
+              id: poolUpdateStatus.latestDraft.id.toString(),
+              startedAt: poolUpdateStatus.latestDraft.startedAt.toISOString(),
+              status: poolUpdateStatus.latestDraft.status,
+            }
+          : null,
+        latestSources: poolUpdateStatus.latestSources.map((source) =>
+          source
+            ? {
+                approvedAt: iso(source.approvedAt),
+                capturedAt: source.capturedAt.toISOString(),
+                id: source.id.toString(),
+                parserVersion: source.parserVersion,
+                provider: source.provider,
+                publishedAt: iso(source.publishedAt),
+                recordCount: source.recordCount,
+              }
+            : null,
+        ),
+      },
     },
     teams: teamRows.map((row) => ({
       active: row.active,

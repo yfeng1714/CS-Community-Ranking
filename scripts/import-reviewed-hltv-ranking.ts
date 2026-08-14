@@ -10,7 +10,8 @@ import { closeDatabasePool, getDatabase } from "../src/db/client.ts";
 import { requireDomainValue, DomainError } from "../src/domain/error.ts";
 import {
   validateReviewedHltvRanking,
-  REVIEWED_HLTV_RANKING_VERSION,
+  reviewedHltvRankingCoverage,
+  reviewedHltvRankingParserVersion,
 } from "../src/domain/external-data/reviewed-ranking.ts";
 import {
   approveRankingSourceSnapshot,
@@ -36,9 +37,13 @@ const sourceFile = path.resolve(
 const sourceBytes = await readFile(sourceFile);
 const snapshot = validateReviewedHltvRanking(JSON.parse(sourceBytes.toString("utf8")));
 const checksum = createHash("sha256").update(sourceBytes).digest("hex");
+const coverageThroughRank = reviewedHltvRankingCoverage(snapshot);
+const parserVersion = reviewedHltvRankingParserVersion(snapshot);
 const summary = {
   checksum,
+  coverageThroughRank,
   file: sourceFile,
+  parserVersion,
   publishedAt: snapshot.publishedAt,
   sourceUrl: snapshot.sourceUrl,
   teams: snapshot.teams.length,
@@ -76,7 +81,7 @@ if (!args.apply) {
     const written = await writeRankingSourceSnapshot(database, {
       capturedAt: new Date(),
       checksum,
-      parserVersion: REVIEWED_HLTV_RANKING_VERSION,
+      parserVersion,
       provider: "HLTV",
       snapshot,
     });

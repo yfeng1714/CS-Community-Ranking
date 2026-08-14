@@ -17,6 +17,15 @@ const formatTime = (value: string | null) =>
       )
     : "—";
 
+const poolUpdateActionLabels = {
+  APPROVE_SOURCE: "Approve the latest source snapshot below",
+  REVIEW_DRAFT_RESULT: "Resolve the latest Pool draft warnings or conflicts",
+  REVIEW_POOL_PROPOSALS: "Review the pending Pool proposals below",
+  RUN_POOL_DRAFT: "Run the trusted Pool draft command",
+  SYNC_MISSING_SOURCE: "Synchronize the missing ranking source",
+  UP_TO_DATE: "No Pool update action is currently pending",
+} as const;
+
 function Section({
   children,
   description,
@@ -116,6 +125,44 @@ export function AdminConsole({
             </small>
           </article>
         </div>
+        <article className="admin-workflow" data-state={data.dashboard.poolUpdate.nextAction}>
+          <div>
+            <h2>Pool update workflow</h2>
+            <span className="eyebrow">Exact next action</span>
+            <h3>{poolUpdateActionLabels[data.dashboard.poolUpdate.nextAction]}</h3>
+            <p>
+              Eligibility is calculated by the trusted Pool draft, but every source and proposed
+              admission still requires explicit Admin approval.
+            </p>
+          </div>
+          <dl>
+            {data.dashboard.poolUpdate.latestSources.map((source, index) => {
+              const provider = index === 0 ? "HLTV" : "Valve VRS";
+              return (
+                <div key={provider}>
+                  <dt>{provider}</dt>
+                  <dd>
+                    {source
+                      ? `${source.approvedAt ? "Approved" : "Awaiting approval"} · ${source.recordCount ?? "?"} teams`
+                      : "No snapshot"}
+                  </dd>
+                  <small>{source ? formatTime(source.publishedAt) : "Run source sync"}</small>
+                </div>
+              );
+            })}
+            <div>
+              <dt>Latest Pool draft</dt>
+              <dd>{data.dashboard.poolUpdate.latestDraft?.status ?? "Not run"}</dd>
+              <small>{formatTime(data.dashboard.poolUpdate.latestDraft?.finishedAt ?? null)}</small>
+            </div>
+            <div>
+              <dt>Pending proposals</dt>
+              <dd>{data.dashboard.poolUpdate.pendingPoolProposals}</dd>
+              <small>{data.dashboard.poolUpdate.blockedPoolProposals} with conflicts</small>
+            </div>
+          </dl>
+          <a href="#imports">Open source and proposal review</a>
+        </article>
       </section>
 
       <Section

@@ -20,7 +20,7 @@
 </tbody>
 </table>
 
-**版本** V0.1.17
+**版本** V0.1.18
 
 **日期** 2026-08-15
 
@@ -57,6 +57,8 @@
 **Owner M10 完整 Portrait Pass** 2026-08-14（V0.1.16；HLTV Lazy-load 分批导出，70 Player 全量完成）
 
 **Owner M10 Stats Rehearsal** 2026-08-15（V0.1.17；Direct 403、Live Parser Drift、Reviewed Stats Fallback）
+
+**Owner M10 Pool Workflow Review** 2026-08-15（V0.1.18；Top-20 边界、Admin Next Action、Clean-room Gate F）
 
 **定位** 产品背景、决策记录与后续 Review Context
 
@@ -205,7 +207,25 @@ Markup 已不再使用旧 Fixture 中的 `rating_3_0` / `recent_maps` 合成标�
 Period、唯一 ID 与精确官方 URL；Apply 还要求 Active Admin、Reason、双 Flag、覆盖全部已配置 HLTV
 Player Identity、ID/Slug 一致且 Capture Timestamp 未使用，并在单一事务写入实际观察到的 Metric
 与一条 Admin Audit。Recent 与 Career Source 分开；没有 Career Evidence 时继续显示 `—`，绝不把
-近三月 Rating 伪装为生涯 Rating。完整 70 人 Bundle 尚未批准或导入，Railway 仍未改动。
+近三月 Rating 伪装为生涯 Rating。随后从 Canonical Manifest 生成精确 70 Identity/URL 的 Null-first
+Template，在隔离 Clone 中只填入并导入一条 Browser 已观察到的 Recent Metric；其余 69 条 Recent
+与全部 Career 均保持缺失，证明 Atomic Fallback 可用但不伪造“完整 Stats”。Railway 仍未改动。
+
+同日 Owner 批准长周期 M10 收敛计划。Reviewed HLTV Ranking 边界被扩展为严格区分 Top 12 与
+Top 20：两者使用不同 Parser Label，且必须通过官方 Dated URL、Publication Date、连续 Rank、唯一
+Team Identity 与五名唯一 Starter 校验；当前 August 10 文件仍只有 Top 12，因此不被冒充为
+Review Auto 全量证据。已完成的 IEM Cologne Major Top 8 被整理为 Owner Review Packet，但八队均已
+属于 Core，没有自动增加新队。Exact Rank 13–20、Completed-2026 T1 Whitelist、Review Manual 与
+Special 仍保留给 Owner 决策。
+
+Admin Overview 新增只读 Pool Update Workflow：根据最新 HLTV/VRS Snapshot、Approval、Pool Draft
+与 Pending/Conflict Proposal，显示唯一明确的 Next Action。这里的 “Automatic” 继续只表示规则由
+Job 确定计算，不表示自动批准；VRS 周一 Scheduled Sync 只产生待审 Source，HLTV 与 Pool Draft
+仍由 Operator 发起，任何 Admission 仍需 Admin 单独批准。第二个全新本地 DB 独立通过 Migration、
+Canonical、Reviewed HLTV 与 Stats 边界，但本机 GitHub Transport 对官方 VRS 文件两次 Zero-byte
+Timeout，因此按 Fail-closed 停在缺失 Source，而没有复制旧 Snapshot 或制造 Partial Draft。该结果
+作为 Resilience 证据，不替代早先完整 396-Team VRS → 14 Core 演练，也不授权 Railway Reset 或
+Edition Activation。
 
 <table>
 <colgroup>

@@ -10,6 +10,8 @@ test("logs in and performs an audited Candidate Pool pairing toggle", async ({ p
   await expect(page).toHaveURL(/\/admin$/);
   await expect(page.getByRole("heading", { name: "Control room" })).toBeVisible();
   await expect(page.getByText("Score integrity")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Pool update workflow" })).toBeVisible();
+  await expect(page.getByText("Exact next action")).toBeVisible();
 
   const row = page.locator("#pool").getByRole("row").filter({ hasText: "Ace" });
   const reason = row.getByPlaceholder("Why is this change needed?");

@@ -1,4 +1,7 @@
+import path from "node:path";
+
 import { eq } from "drizzle-orm";
+import { migrate } from "drizzle-orm/node-postgres/migrator";
 
 import { getEnv } from "../src/config/env.ts";
 import { closeDatabasePool, getDatabase } from "../src/db/client.ts";
@@ -11,6 +14,8 @@ if (env.NODE_ENV === "production") {
 }
 
 const database = getDatabase();
+await migrate(database, { migrationsFolder: path.resolve("drizzle") });
+
 const passwordHash = await hashAdminPassword("playwright-only-password");
 const [existing] = await database
   .select({ id: adminUsers.id })

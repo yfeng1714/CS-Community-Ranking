@@ -346,6 +346,68 @@ input:focus-visible {
   border-color: color-mix(in srgb, var(--warning) 55%, var(--border));
 }
 
+.admin-workflow {
+  display: grid;
+  grid-template-columns: minmax(16rem, 0.8fr) minmax(28rem, 1.2fr) auto;
+  align-items: end;
+  gap: 1.5rem;
+  margin-top: 1rem;
+  padding: 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  background: var(--surface);
+  box-shadow: var(--shadow-soft);
+}
+
+.admin-workflow h2 {
+  margin: 0 0 0.8rem;
+  font-size: 0.86rem;
+  letter-spacing: -0.01em;
+}
+
+.admin-workflow h3 {
+  margin: 0.3rem 0 0.5rem;
+  font-size: 1.35rem;
+  letter-spacing: -0.035em;
+}
+
+.admin-workflow p,
+.admin-workflow small {
+  color: var(--muted);
+}
+
+.admin-workflow p {
+  margin: 0;
+  line-height: 1.5;
+}
+
+.admin-workflow dl {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin: 0;
+}
+
+.admin-workflow dl div {
+  min-width: 0;
+}
+
+.admin-workflow dt {
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+.admin-workflow dd {
+  margin: 0.2rem 0;
+  font-weight: 700;
+}
+
+.admin-workflow a {
+  color: var(--accent-strong);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
 .admin-section {
   scroll-margin-top: 130px;
 }
@@ -497,6 +559,15 @@ input:focus-visible {
   .admin-form-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .admin-workflow {
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .admin-workflow dl {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 640px) {
@@ -513,6 +584,10 @@ input:focus-visible {
   .admin-form-grid,
   .admin-audit-grid,
   .admin-section > header {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .admin-workflow dl {
     grid-template-columns: minmax(0, 1fr);
   }
 
