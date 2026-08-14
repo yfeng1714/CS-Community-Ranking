@@ -61,6 +61,21 @@ explicit manual fallback, not proof that automated HLTV retrieval worked, not a 
 and not Player-stat evidence. Retry the low-frequency live adapter near Railway cutover; if it is
 still blocked, Owner review of a fresh checksum-locked fallback is required again.
 
+The same access boundary applies independently to Player stats. On August 15, an identified direct
+request to the official three-month Player-stats URL returned HTTP 403, while the ordinary browser
+loaded the page and exposed the current Rating 3.0 and Maps Played presentation. The live page no
+longer exposes the synthetic `rating_3_0` / `recent_maps` labels used by the saved parser fixture, so
+the direct adapter remains fail-closed and must not be treated as current production evidence.
+
+`pnpm source:import-reviewed-hltv-stats -- --file <local-json>` is the guarded manual fallback. The
+input stays Git-ignored because it is frequently refreshed operational evidence. Dry run validates
+its checksum, exact period, unique IDs, and exact official per-Player URLs without a database. Apply
+also requires an active Admin, reason, `--apply`, and `--confirm-reviewed-stats`; one transaction
+requires exact coverage of every configured HLTV Player identity, rejects ID/slug drift and duplicate
+capture timestamps, writes only the metrics actually observed, and records one Admin audit. Recent
+and career evidence are separate: missing career data remains `—` rather than being inferred from a
+three-month page. This fallback does not make the browser export automatic or bypass HLTV controls.
+
 ## Canonical bootstrap boundary
 
 `data/canonical/2026-beta.json` closes the gap between ranking-source rows and the canonical

@@ -34,6 +34,7 @@
     "job:sync-vrs": "node --env-file-if-exists=.env --import ./scripts/register-path-aliases.mjs scripts/job-sync-vrs.ts",
     "job:sync-hltv": "node --env-file-if-exists=.env --import ./scripts/register-path-aliases.mjs scripts/job-sync-hltv.ts",
     "source:import-reviewed-hltv": "node --env-file-if-exists=.env --import ./scripts/register-path-aliases.mjs scripts/import-reviewed-hltv-ranking.ts",
+    "source:import-reviewed-hltv-stats": "node --env-file-if-exists=.env --import ./scripts/register-path-aliases.mjs scripts/import-reviewed-hltv-player-stats.ts",
     "source:approve-ranking": "node --env-file-if-exists=.env --import ./scripts/register-path-aliases.mjs scripts/approve-ranking-source.ts",
     "pending:review": "node --env-file-if-exists=.env --import ./scripts/register-path-aliases.mjs scripts/review-pending-imports.ts",
     "job:build-pool-draft": "node --env-file-if-exists=.env --import ./scripts/register-path-aliases.mjs scripts/job-build-pool-draft.ts",

@@ -233,8 +233,16 @@ export async function checkLaunchReadiness(
   );
   const assetRegistry = await loadAssetRegistry(input.rootDirectory);
   const attributedAssets = new Set(assetRegistry.assets.map((entry) => entry.assetPath));
+  const configuredPoolAssets = new Set([
+    ...teamRows.flatMap((row) => (row.logoPath ? [row.logoPath] : [])),
+    ...playerRows.flatMap((row) => (row.photoPath ? [row.photoPath] : [])),
+  ]);
   const pendingRightsAssets = assetRegistry.assets
-    .filter((entry) => entry.permission === "OWNER_ACCEPTED_PENDING_RIGHTS")
+    .filter(
+      (entry) =>
+        entry.permission === "OWNER_ACCEPTED_PENDING_RIGHTS" &&
+        configuredPoolAssets.has(entry.assetPath),
+    )
     .map((entry) => entry.assetPath);
   const latestApprovedSources = new Map<"HLTV" | "VALVE_VRS", (typeof sourceRows)[number]>();
   for (const row of sourceRows) {

@@ -103,6 +103,7 @@ commands and never run inside the web request path.
 pnpm job:sync-vrs
 pnpm job:sync-hltv -- --rankingUrl <official-ranking-url> --published <ISO-timestamp>
 pnpm job:sync-hltv -- --start YYYY-MM-DD --end YYYY-MM-DD
+pnpm source:import-reviewed-hltv-stats -- --file <ignored-reviewed-json>
 pnpm job:build-pool-draft -- --edition 2026
 pnpm job:snapshot-ranking -- --edition 2026 --date YYYY-MM-DD
 pnpm assets:check
@@ -115,6 +116,27 @@ served files. CI, production images, and public/Admin responses never receive th
 Keep `HLTV_SYNC_ENABLED=false` until the User-Agent, low-frequency schedule, and source URLs have
 been reviewed. Never respond to blocking by bypassing access controls. A failed sync is visible in
 Admin under **Sync runs / parser failures** and leaves stale snapshots intact.
+
+If the bounded Player-stat adapter is blocked or its saved fixture no longer matches the live page,
+prepare a local reviewed JSON bundle from ordinary browser-visible official pages. Validate it first:
+
+```bash
+pnpm source:import-reviewed-hltv-stats -- --file data/reviewed-sources/hltv-player-stats-local.json
+```
+
+After checking its checksum, period, coverage, missing metrics, and exact URLs, apply only to the
+intended database with an active Admin and both mutation flags:
+
+```bash
+pnpm source:import-reviewed-hltv-stats -- --file data/reviewed-sources/hltv-player-stats-local.json \
+  --actor owner --reason "Reviewed official HLTV Player stats" \
+  --apply --confirm-reviewed-stats
+```
+
+The bundle must cover every configured HLTV Player identity exactly once, but may explicitly record
+missing recent or career metrics. Never substitute a three-month Rating for career Rating. The input
+file is ignored and should be retained only as private operational evidence; the database stores each
+accepted metric with its exact official source URL and capture timestamp.
 
 The safe operating order is: sync → inspect and approve each source snapshot → generate Pool draft
 → inspect conflicts/freshness/JSON → approve or reject individual proposals. The generator reports

@@ -20,9 +20,9 @@
 </tbody>
 </table>
 
-**版本** V0.1.16
+**版本** V0.1.17
 
-**日期** 2026-08-14
+**日期** 2026-08-15
 
 **施工规范复核** 2026-08-10（V0.1.1；未改变冻结的产品决定）
 
@@ -55,6 +55,8 @@
 **Owner M10 图片记录收敛** 2026-08-14（V0.1.15；详细 Source Record 改为 Git/Docker 忽略的本地证据）
 
 **Owner M10 完整 Portrait Pass** 2026-08-14（V0.1.16；HLTV Lazy-load 分批导出，70 Player 全量完成）
+
+**Owner M10 Stats Rehearsal** 2026-08-15（V0.1.17；Direct 403、Live Parser Drift、Reviewed Stats Fallback）
 
 **定位** 产品背景、决策记录与后续 Review Context
 
@@ -194,6 +196,16 @@ Owner 要求重新验证 HLTV 并在必要时寻找其他完整来源。新检�
 与 70 个忽略的本地 Source Record 完整对应；加上 Logo 共 84 个 Asset，`assets:check` 全部通过。
 HLTV 提供的是一致的原生 200×200 Transform，工程没有为满足名义尺寸而人工放大。每队代表 Crop
 已做视觉检查，Monogram 仍作为未来清空/争议图片时的弹性 Fallback。
+
+随后进入 Player Stats Rehearsal。工程没有直接启动 70 人循环，而是先以项目识别 User-Agent 对
+一条官方近三月 Stats URL 做有界探测；该请求返回 HTTP 403，因此没有制造 70 组可预见失败，也
+没有写入部分 Snapshot。普通 Browser 能加载同一页面并显示 Rating 3.0 与 Maps Played，但 Live
+Markup 已不再使用旧 Fixture 中的 `rating_3_0` / `recent_maps` 合成标签，现有 Direct Parser 不能
+被冒充为仍然有效。工程因此增加独立的 Reviewed Player Stats JSON 边界：Dry-run 校验 Checksum、
+Period、唯一 ID 与精确官方 URL；Apply 还要求 Active Admin、Reason、双 Flag、覆盖全部已配置 HLTV
+Player Identity、ID/Slug 一致且 Capture Timestamp 未使用，并在单一事务写入实际观察到的 Metric
+与一条 Admin Audit。Recent 与 Career Source 分开；没有 Career Evidence 时继续显示 `—`，绝不把
+近三月 Rating 伪装为生涯 Rating。完整 70 人 Bundle 尚未批准或导入，Railway 仍未改动。
 
 <table>
 <colgroup>

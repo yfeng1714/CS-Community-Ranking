@@ -57,3 +57,6 @@ docker-data/
 
 # Local-only asset provenance
 /assets/attribution.json
+
+# Local reviewed Player-stat exports (frequently refreshed operational evidence)
+/data/reviewed-sources/hltv-player-stats-*.json

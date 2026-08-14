@@ -30,7 +30,7 @@
   exists, ADR 0006 approves a documented one-time reset of the existing PostgreSQL service after the
   final verified backup/restore/R2 evidence and explicit destructive-action approval. The current
   Web/cron/domain/database stack remains and no second Railway database is planned.
-- **Last updated:** 2026-08-14
+- **Last updated:** 2026-08-15
 
 ## Completed in the repository
 
@@ -56,6 +56,14 @@
   apply, and confirmation inputs. Its first real dry run exposed unsupported Node strip-only
   constructor syntax in `PendingImportReviewService`; the class now uses equivalent explicit fields,
   so the trusted CLI path is actually executable rather than merely type-tested.
+- The first isolated Player-stat rehearsal deliberately probed one official three-month HLTV Player
+  URL before attempting the 70-request job. The identified direct request returned HTTP 403, so no
+  batch hammering or partial database write was attempted. The ordinary browser loaded the same page
+  and confirmed Rating 3.0 plus Maps Played, while also proving that the saved parser fixture's
+  synthetic labels no longer represent the live structure. A guarded reviewed-stats JSON importer
+  now validates checksum, dates, exact official URLs, complete configured-identity coverage, ID/slug
+  matches, explicit missing metrics, duplicate capture time, and Admin confirmation before one
+  atomic metric/audit write. No real 70-Player stats bundle has been imported yet.
 - Pool drafting now applies the Owner-approved roster rule exactly: an HLTV roster mismatch blocks;
   a VRS mismatch is retained as an `HLTV_ROSTER_AUTHORITY_APPLIED` warning. Unmatched rank-13–20 VRS
   rows without qualifying Event evidence are warnings rather than false missing-Core blockers.
@@ -267,9 +275,10 @@ this verification window.
 
 ## Next task
 
-Owner-review the complete local asset set in a fresh canonical UI preview while the preserved
-rehearsal stays DRAFT and zeroed. Once the real-data UI is accepted, prepare the
-approved in-place Railway cutover by collecting final backup/restore/R2 evidence and explicit reset
-approval, pausing services, rebuilding the existing database from migrations, and repeating with
-fresh sources. Do not reset the cloud database, activate a production Edition, enable production
-Pool entries, or start closed beta without the explicit Gate F approvals.
+Prepare and review the complete ignored 70-Player stats bundle through the new dry-run boundary,
+rehearse its atomic import only in the isolated stats clone, and preserve missing career data
+honestly. Then prepare the approved in-place Railway cutover by collecting final
+backup/restore/R2 evidence and explicit reset approval, pausing services, rebuilding the existing
+database from migrations, and repeating with fresh sources. Do not reset the cloud database,
+activate a production Edition, enable production Pool entries, or start closed beta without the
+explicit Gate F approvals.

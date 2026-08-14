@@ -37,6 +37,10 @@ are not missing M9 inputs.
   fresh low-frequency live sync near cutover and require new Owner-reviewed fallback evidence if it
   remains blocked. The start date, HLTV-over-VRS roster policy, exact identities, and 14-Team union
   are resolved; all 14 current Pool proposals and Edition activation remain separate approvals.
+- Final Player-stat capture remains operational work near launch. The August 15 direct Player-stats
+  probe also returned HTTP 403, and browser inspection showed that the current page structure has
+  drifted from the saved parser fixture. A checksum-locked, exact-identity reviewed import now exists;
+  the 70-Player bundle and final capture time are not yet approved or imported.
 
 Resolved on 2026-08-14: the working launch label is `2026 Beta Edition`. The Owner later removed the
 personal email and dedicated privacy/contact page for the small community beta; reconsider both when
