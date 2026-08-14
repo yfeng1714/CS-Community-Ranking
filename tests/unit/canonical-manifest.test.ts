@@ -24,11 +24,9 @@ describe("M10 canonical manifest", () => {
     });
     expect(() => assertCanonicalManifestApproved(manifest)).not.toThrow();
     expect(manifest.teams.every((team) => team.players.length === 5)).toBe(true);
+    expect(manifest.teams.every((team) => team.logoPath !== null)).toBe(true);
     expect(
-      manifest.teams.every(
-        (team) =>
-          team.logoPath === null && team.players.every((player) => player.photoPath === null),
-      ),
+      manifest.teams.every((team) => team.players.every((player) => player.photoPath === null)),
     ).toBe(true);
   });
 

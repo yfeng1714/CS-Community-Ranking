@@ -17,6 +17,7 @@ export interface PublicRankingPlayer {
   skips: number;
   slug: string;
   team: string | null;
+  teamLogoUrl: string | null;
   teamShortName: string | null;
   updatedAt: string;
   winRate: number | null;
@@ -44,6 +45,7 @@ export interface PublicPlayerProfile {
   slug: string;
   statsCapturedAt: string | null;
   team: string | null;
+  teamLogoUrl: string | null;
   teamShortName: string | null;
 }
 

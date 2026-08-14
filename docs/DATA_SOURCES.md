@@ -93,9 +93,10 @@ The Gate D receiving boundary remains unchanged:
 `EXTERNAL_STATS_STALE_AFTER_HOURS` controls public HLTV stat labeling (default 48 hours). Missing or
 stale stats remain honest UI states and never block voting.
 
-Player photos and Team logos remain local. `assets/attribution.json` is the versioned manifest;
-every asset must have an exact source and honest rights status. The Owner may accept provisional
-community-beta use as a warning while handling license questions separately. Run `pnpm assets:check`;
+Player photos and Team logos remain local. Tracked `assets/registry.json` supplies each asset path
+and honest rights state to launch readiness; ignored `assets/attribution.json` keeps the exact source
+and detailed notes only for local Dev/Ops review. The Owner may accept provisional community-beta
+use as a warning while handling license questions separately. Run `pnpm assets:check` locally;
 never hotlink runtime assets. The source, normalization, and replacement plan is defined in
 `docs/IMAGE_SOURCING.md`.
 

@@ -19,6 +19,7 @@ function issued(id: string, reusedOpenBallot: boolean, dailyOrdinal = 1): Issued
     slug: "player",
     statsCapturedAt: null,
     team: null,
+    teamLogoUrl: null,
   };
   return {
     ballot: {

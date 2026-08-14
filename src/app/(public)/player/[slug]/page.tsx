@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { ArrowRightIcon } from "@/components/icons";
 import { ProductPageView } from "@/components/analytics/page-view";
 import { PlayerPortrait } from "@/components/player-portrait";
+import { TeamLogo } from "@/components/team-logo";
 import { getDatabase } from "@/db/client";
 import { getEnv } from "@/config/env";
 import { getPublicPlayer } from "@/domain/public/queries";
@@ -67,7 +68,10 @@ export default async function PlayerPage({ params }: { params: Promise<{ slug: s
           <h1>{player.nickname}</h1>
           <p className="player-profile__real-name">{player.realName ?? "真实姓名待补充"}</p>
           <div className="player-profile__meta">
-            <span>{player.team ?? "暂无战队"}</span>
+            <span className="player-profile__team">
+              {player.team ? <TeamLogo logoUrl={player.teamLogoUrl} /> : null}
+              {player.team ?? "暂无战队"}
+            </span>
             <span>{player.country ?? "国籍待补"}</span>
           </div>
         </div>

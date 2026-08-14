@@ -9,20 +9,20 @@ page view, so a provider outage or changed URL cannot break voting.
 
 ## Source-record visibility
 
-`assets/attribution.json` is developer/operations metadata, not public product content. It is outside
-`public/`, no public API reads it, and no Vote, Ranking, Player, About, or Admin screen renders its
-source URLs or notes. Launch readiness reads it server-side and reports only local asset paths plus
-whether a rights review remains pending.
+`assets/attribution.json` is local developer/operations metadata. It is ignored by Git, excluded
+from Docker images, and never read by the public product. No Vote, Ranking, Player, About, or Admin
+screen renders its source URLs or notes. The tracked `assets/registry.json` contains only each local
+asset path and its permission/review state so deployed launch readiness can still detect missing or
+pending-rights assets without publishing detailed provenance.
 
 This is a deliberate privacy boundary for provenance, not security-through-obscurity. Do not add a
 public route, client import, Admin table, or serialized API field for the attribution entries. A
 local asset path may of course be public so the image can render; its source URL,
 author/rightsholder, and review notes remain development-side records.
 
-Repository visibility is a separate concern: if the GitHub repository is ever made public, tracked
-source records are naturally visible to repository readers even though they are absent from the
-website. Move detailed records to an owner-private evidence store before making the repository public
-if that distinction becomes important.
+The local file is not a backup. Preserve it with the Owner's private operational evidence before
+changing machines or cleaning the workspace. `assets/attribution.example.json` documents the empty
+shape without exposing real records.
 
 ## Source plan by asset type
 
@@ -55,8 +55,9 @@ Do not upscale a visibly low-resolution source merely to meet the nominal dimens
 
 ## Source and rights record
 
-Every imported file receives one `assets/attribution.json` entry containing the exact source URL,
-the observed author/rightsholder when available, review notes, and one honest status:
+Every imported file receives one ignored `assets/attribution.json` entry containing the exact source
+URL, the observed author/rightsholder when available, review notes, and one honest status. It also
+receives a tracked `assets/registry.json` entry containing only the same local path and status:
 
 - `LICENSED` — the stated license covers the use;
 - `PERMISSION_GRANTED` — the rightsholder provided permission;
@@ -64,13 +65,15 @@ the observed author/rightsholder when available, review notes, and one honest st
 - `OWNER_ACCEPTED_PENDING_RIGHTS` — the Owner approved provisional community-beta use and will
   handle any required license or permission later.
 
-The last status does not claim ownership or permission. `pnpm launch:check` reports it as a warning,
-not a blocker. It always requires an exact source URL so the asset can be reviewed or replaced.
+The last status does not claim ownership or permission. `pnpm launch:check` reads the tracked
+registry and reports it as a warning, not a blocker. Local `pnpm assets:check` additionally requires
+the exact source URL and exact registry/record agreement so the asset can be reviewed or replaced.
 
 ## Import phases
 
 1. **Logo pass:** collect and normalize all 14 logos first. This immediately improves Vote, Ranking,
-   Player, and Admin views with a small download/storage footprint.
+   and Player views with a small download/storage footprint. Admin continues to manage the path
+   without exposing Dev/Ops provenance.
 2. **Portrait pass:** work Team by Team in canonical-manifest order, five Players at a time. Confirm
    the nickname/profile ID before attaching a portrait; never infer identity from filename alone.
 3. **Manifest pass:** add source/right-status records during import rather than trying to reconstruct
@@ -94,6 +97,20 @@ contributors.
 
 ## Current M10 state
 
-The canonical DRAFT still has null paths for all 14 Team logos and 70 Player photos. No external
-image has been imported yet. The next asset action is the 14-logo pass; roster/data rehearsal does
-not need to wait for the later 70-photo pass.
+The 14-logo pass is complete in the repository. Every canonical Team has a locally served path, a
+minimal tracked `OWNER_ACCEPTED_PENDING_RIGHTS` registry entry, and an exact ignored local source
+record captured from the official August 10 HLTV ranking page. `pnpm assets:check` passes, and the
+public Vote, Ranking, and Player projections render the logo when the database contains that path.
+Four SVG sources were rendered locally to transparent PNG; the remaining signed raster responses
+are stored as their actual WebP format.
+
+All 70 Player `photoPath` values remain null. The official ranking page exposes exact Player image
+URLs in its DOM, but its accordion loading plus CDN/browser export behavior did not provide a
+reliable complete-set import. Five already loaded Falcons files were deliberately not published:
+shipping one photographed Team and 13 placeholder Teams would be visually inconsistent. The
+neutral monogram therefore remains the honest complete-set fallback until all 70 portraits can be
+imported and reviewed together.
+
+The preserved local rehearsal databases were bootstrapped before the logo pass and still contain
+null logo paths. A fresh canonical bootstrap/reset will receive the configured paths; do not describe
+the old rehearsal report as evidence that the post-asset database was tested.

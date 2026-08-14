@@ -16,7 +16,7 @@ import {
   teamExternalIdentities,
   teams,
 } from "@/db/schema";
-import { loadAttributionManifest } from "@/domain/assets/attribution";
+import { loadAssetRegistry } from "@/domain/assets/attribution";
 import type { AppDatabase } from "@/domain/database";
 import { DomainError, requireDomainValue } from "@/domain/error";
 import { runIntegrityCheck } from "@/domain/integrity/check";
@@ -231,9 +231,9 @@ export async function checkLaunchReadiness(
   const currentStarterKeys = new Set(
     currentStarterRows.map((row) => `${row.sourceTeamEntryId}:${row.playerId}`),
   );
-  const attributionManifest = await loadAttributionManifest(input.rootDirectory);
-  const attributedAssets = new Set(attributionManifest.assets.map((entry) => entry.assetPath));
-  const pendingRightsAssets = attributionManifest.assets
+  const assetRegistry = await loadAssetRegistry(input.rootDirectory);
+  const attributedAssets = new Set(assetRegistry.assets.map((entry) => entry.assetPath));
+  const pendingRightsAssets = assetRegistry.assets
     .filter((entry) => entry.permission === "OWNER_ACCEPTED_PENDING_RIGHTS")
     .map((entry) => entry.assetPath);
   const latestApprovedSources = new Map<"HLTV" | "VALVE_VRS", (typeof sourceRows)[number]>();

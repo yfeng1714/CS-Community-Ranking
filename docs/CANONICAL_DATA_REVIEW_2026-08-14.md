@@ -67,8 +67,9 @@ identities, and not silently admitted.
 
 - The August 3 VRS and August 10 HLTV rankings are both within the configured 14-day maximum on
   August 14. Refresh both sources again if production activation occurs after this review date.
-- Real images are preferred. All 14 `logoPath` and 70 `photoPath` values remain null until the
-  separate asset pass imports local optimized copies with exact source/right-status records.
+- Real images are preferred. The separate asset pass imported all 14 Team logos as local copies with
+  exact source/right-status records. All 70 Player `photoPath` values remain null so the product uses
+  one consistent neutral-monogram fallback rather than an incomplete portrait set.
 - Owner-accepted provisional community-beta use is allowed as an explicit warning while the Owner
   handles external rights questions. Run `pnpm assets:check` and visually review every public crop;
   runtime hotlinking remains prohibited.
@@ -78,5 +79,5 @@ identities, and not silently admitted.
 - Identity/roster policy: **HLTV is authoritative for conflicts; approved 2026-08-14**
 - Edition proposed start: **2026-08-14; approved 2026-08-14**
 - Known conflicts: **Resolved by the HLTV-authority policy; evidence retained**
-- Manifest reviewer/date: **owner / 2026-08-14T08:30:59Z**
+- Manifest reviewer/date: **owner / 2026-08-14T11:57:01Z**
 - Result: **OWNER APPROVED — MAY APPLY ONLY TO AN EMPTY REHEARSAL/RESET DATABASE; NOT POOL APPROVAL**

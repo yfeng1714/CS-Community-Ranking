@@ -30,6 +30,11 @@ beforeAll(async () => {
     .where(eq(schema.players.id, aceId));
 
   await database
+    .update(schema.teams)
+    .set({ logoPath: "/images/teams/sample-alpha.webp" })
+    .where(eq(schema.teams.slug, "sample-alpha"));
+
+  await database
     .update(schema.playerRankings)
     .set({ losses: 0n, score: 2, wins: 2n })
     .where(eq(schema.playerRankings.playerId, aceId));
@@ -109,6 +114,7 @@ describe("Milestone 5 public queries", () => {
       recentMaps: 18,
       recentRating: 1.27,
       team: "Sample Alpha",
+      teamLogoUrl: "/images/teams/sample-alpha.webp",
       teamShortName: "ALPHA",
     });
     await expect(getPublicPlayer(database, "not-a-player")).resolves.toBeNull();

@@ -35,6 +35,7 @@ export interface BallotPlayerCard {
   slug: string;
   statsCapturedAt: string | null;
   team: string | null;
+  teamLogoUrl: string | null;
 }
 
 export interface IssuedBallotResponse {
@@ -364,6 +365,7 @@ export class BallotIssuanceService {
           photoUrl: players.photoPath,
           slug: players.slug,
           team: teams.name,
+          teamLogoUrl: teams.logoPath,
         })
         .from(players)
         .leftJoin(
@@ -391,6 +393,7 @@ export class BallotIssuanceService {
       slug: found.slug,
       statsCapturedAt: stats.statsCapturedAt,
       team: found.team,
+      teamLogoUrl: found.teamLogoUrl,
     };
   }
 }

@@ -942,6 +942,38 @@ button:disabled {
   transition: transform 220ms ease;
 }
 
+.team-logo {
+  display: inline-grid;
+  flex: 0 0 auto;
+  width: 1.9rem;
+  height: 1.9rem;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 0.55rem;
+  background: #202936;
+}
+
+.team-logo[data-size="small"] {
+  width: 1.35rem;
+  height: 1.35rem;
+  border-radius: 0.4rem;
+}
+
+.team-logo__image {
+  width: 78%;
+  height: 78%;
+  object-fit: contain;
+}
+
+.team-inline,
+.ranking-team,
+.player-profile__team {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
 .vote-card__identity {
   position: absolute;
   z-index: 3;
@@ -1416,6 +1448,11 @@ button:disabled {
   color: var(--brand-strong) !important;
 }
 
+.ranking-team {
+  color: var(--foreground);
+  font-weight: 700;
+}
+
 .ranking-player {
   display: inline-flex;
   align-items: center;
@@ -1528,13 +1565,17 @@ button:disabled {
   margin-top: 1.5rem;
 }
 
-.player-profile__meta span {
+.player-profile__meta > span {
   padding: 0.38rem 0.6rem;
   border: 1px solid var(--border);
   border-radius: 999px;
   color: var(--muted-strong);
   font-size: 0.72rem;
   font-weight: 700;
+}
+
+.player-profile__meta .team-logo {
+  margin: -0.2rem 0 -0.2rem -0.35rem;
 }
 
 .player-profile__rank {

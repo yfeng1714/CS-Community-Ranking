@@ -47,11 +47,13 @@ a snapshot/proposal, or copy an external image.
 
 ## Local rehearsal evidence — 2026-08-14
 
-The approved manifest was applied to the isolated local database
+The then-approved, pre-asset manifest was applied to the isolated local database
 `csr_m10_rehearsal_20260814`, not to Railway. It created one DRAFT Edition, 14 Teams, 70 Players, 70
 current five-player roster memberships, 84 HLTV Team/Player identities, and 239 audit rows while
 leaving both Pool tables empty. The dry-run manifest SHA-256 was
-`276c5c473f518a2e8247e73054f8bf7a401f7827e1fc34fdf2940ae9d95e330e`.
+`276c5c473f518a2e8247e73054f8bf7a401f7827e1fc34fdf2940ae9d95e330e`. That checksum is retained as
+historical rehearsal evidence; after the Owner-approved Team-logo pass, the current manifest
+checksum is `fbefb0cdb3b637367c9d4deb85fa04837d50f5d5f1e9e639aea46fd9240bf572`.
 
 A live official August 3 Valve sync and an audited reviewed August 10 HLTV fallback were then
 approved locally. The regenerated Pool draft completed `SUCCEEDED` with 14 conflict-free proposals.
@@ -73,9 +75,10 @@ normal roster history services.
 
 ## Image import boundary
 
-The canonical manifest keeps all `logoPath` and `photoPath` values null because image sourcing is a
-separate, replaceable pass. M10 may import real local images after the Owner accepts each source;
-unfinished external rights review is recorded honestly as `OWNER_ACCEPTED_PENDING_RIGHTS` and
-reported as a warning rather than a blocker. Add matching `assets/attribution.json` entries, run
-`pnpm assets:check`, and update canonical/Admin records. Until then, the public UI uses neutral
-placeholders; no runtime hotlinking is allowed. See `docs/IMAGE_SOURCING.md`.
+Image sourcing is a separate, replaceable pass. The current manifest configures all 14 local Team
+logo paths with matching tracked registry entries and ignored local attribution records, and keeps
+all 70 Player photo paths null.
+Unfinished external rights review is recorded honestly as `OWNER_ACCEPTED_PENDING_RIGHTS` and
+reported as a warning rather than a blocker. `pnpm assets:check` validates every configured path;
+unconfigured Player portraits use neutral monograms. No runtime hotlinking is allowed. See
+`docs/IMAGE_SOURCING.md`.

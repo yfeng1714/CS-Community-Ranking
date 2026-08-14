@@ -3,7 +3,7 @@
   "review": {
     "status": "OWNER_APPROVED",
     "approvedBy": "owner",
-    "reviewedAt": "2026-08-14T08:30:59Z"
+    "reviewedAt": "2026-08-14T11:57:01Z"
   },
   "observedAt": "2026-08-14",
   "edition": {
@@ -30,7 +30,7 @@
     "Draft union of the top 12 Teams in either listed ranking source: 14 Teams and 70 observed current formal starters.",
     "Per the Owner decision on 2026-08-14, current starter observations follow the August 10 HLTV ranking/Team profile whenever HLTV and VRS disagree; the later sync-and-review workflow must preserve those disagreements as conflicts.",
     "Roster startsAt is a conservative observation lower bound, not an asserted historical signing date.",
-    "Player photos and Team logos remain null until the Owner records a usable license or permission in assets/attribution.json; the UI uses neutral placeholders meanwhile.",
+    "All 14 Team logos use locally served copies with exact Dev/Ops-only source records and Owner-accepted pending-rights status; Player photos remain null until the complete 70-portrait set can be imported consistently.",
     "Both listed ranking sources are within the current 14-day freshness threshold on 2026-08-14; production still requires newly synchronized and approved snapshots close to activation."
   ],
   "teams": [
@@ -39,7 +39,7 @@
       "name": "Falcons",
       "shortName": "FALCONS",
       "countryCode": null,
-      "logoPath": null,
+      "logoPath": "/images/teams/falcons.webp",
       "hltvIdentity": {
         "externalId": "11283",
         "externalSlug": "falcons",
@@ -118,7 +118,7 @@
       "name": "Vitality",
       "shortName": "VIT",
       "countryCode": null,
-      "logoPath": null,
+      "logoPath": "/images/teams/vitality.webp",
       "hltvIdentity": {
         "externalId": "9565",
         "externalSlug": "vitality",
@@ -197,7 +197,7 @@
       "name": "Spirit",
       "shortName": "SPIRIT",
       "countryCode": null,
-      "logoPath": null,
+      "logoPath": "/images/teams/spirit.webp",
       "hltvIdentity": {
         "externalId": "7020",
         "externalSlug": "spirit",
@@ -276,7 +276,7 @@
       "name": "FURIA",
       "shortName": "FURIA",
       "countryCode": null,
-      "logoPath": null,
+      "logoPath": "/images/teams/furia.png",
       "hltvIdentity": {
         "externalId": "8297",
         "externalSlug": "furia",
@@ -355,7 +355,7 @@
       "name": "Natus Vincere",
       "shortName": "NAVI",
       "countryCode": null,
-      "logoPath": null,
+      "logoPath": "/images/teams/natus-vincere.png",
       "hltvIdentity": {
         "externalId": "4608",
         "externalSlug": "natus-vincere",
@@ -434,7 +434,7 @@
       "name": "9z",
       "shortName": "9Z",
       "countryCode": null,
-      "logoPath": null,
+      "logoPath": "/images/teams/9z.webp",
       "hltvIdentity": {
         "externalId": "9996",
         "externalSlug": "9z",
@@ -513,7 +513,7 @@
       "name": "BetBoom",
       "shortName": "BB",
       "countryCode": null,
-      "logoPath": null,
+      "logoPath": "/images/teams/betboom.webp",
       "hltvIdentity": {
         "externalId": "12394",
         "externalSlug": "betboom",
@@ -592,7 +592,7 @@
       "name": "Aurora",
       "shortName": "AURORA",
       "countryCode": null,
-      "logoPath": null,
+      "logoPath": "/images/teams/aurora.webp",
       "hltvIdentity": {
         "externalId": "11861",
         "externalSlug": "aurora",
@@ -671,7 +671,7 @@
       "name": "G2",
       "shortName": "G2",
       "countryCode": null,
-      "logoPath": null,
+      "logoPath": "/images/teams/g2.webp",
       "hltvIdentity": {
         "externalId": "5995",
         "externalSlug": "g2",
@@ -750,7 +750,7 @@
       "name": "MOUZ",
       "shortName": "MOUZ",
       "countryCode": null,
-      "logoPath": null,
+      "logoPath": "/images/teams/mouz.png",
       "hltvIdentity": {
         "externalId": "4494",
         "externalSlug": "mouz",
@@ -829,7 +829,7 @@
       "name": "Legacy",
       "shortName": "LEGACY",
       "countryCode": null,
-      "logoPath": null,
+      "logoPath": "/images/teams/legacy.webp",
       "hltvIdentity": {
         "externalId": "12468",
         "externalSlug": "legacy",
@@ -908,7 +908,7 @@
       "name": "FaZe",
       "shortName": "FAZE",
       "countryCode": null,
-      "logoPath": null,
+      "logoPath": "/images/teams/faze.webp",
       "hltvIdentity": {
         "externalId": "6667",
         "externalSlug": "faze",
@@ -987,7 +987,7 @@
       "name": "Astralis",
       "shortName": "AST",
       "countryCode": null,
-      "logoPath": null,
+      "logoPath": "/images/teams/astralis.png",
       "hltvIdentity": {
         "externalId": "6665",
         "externalSlug": "astralis",
@@ -1066,7 +1066,7 @@
       "name": "PARIVISION",
       "shortName": "PARI",
       "countryCode": null,
-      "logoPath": null,
+      "logoPath": "/images/teams/parivision.webp",
       "hltvIdentity": {
         "externalId": "12467",
         "externalSlug": "parivision",

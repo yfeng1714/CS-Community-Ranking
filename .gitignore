@@ -54,3 +54,6 @@ docker-data/
 .turbo/
 .cache/
 .vercel/
+
+# Local-only asset provenance
+/assets/attribution.json

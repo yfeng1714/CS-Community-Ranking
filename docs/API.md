@@ -98,6 +98,8 @@ unexpected failures return a detail-free `503`, all with `no-store`.
 
 Both are read-only public endpoints. The current server-rendered Ranking and Player pages use the
 same domain queries directly, so their display contract cannot drift from the JSON projection.
+Ranking and Player roster projections include nullable `teamLogoUrl`; Ballot Player cards use the
+same additive field. It contains only a local public asset path, never the source URL or rights notes.
 
 ## Implemented in Milestone 6
 

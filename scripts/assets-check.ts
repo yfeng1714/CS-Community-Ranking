@@ -1,21 +1,38 @@
 import { access, readdir } from "node:fs/promises";
 import path from "node:path";
 
-import { loadAttributionManifest } from "../src/domain/assets/attribution.ts";
+import { loadAssetRegistry, loadAttributionManifest } from "../src/domain/assets/attribution.ts";
 
-const manifest = await loadAttributionManifest();
-const seen = new Set<string>();
-for (const entry of manifest.assets) {
-  if (seen.has(entry.assetPath)) throw new Error(`Duplicate attribution: ${entry.assetPath}`);
-  seen.add(entry.assetPath);
+const [registry, attribution] = await Promise.all([loadAssetRegistry(), loadAttributionManifest()]);
+const registered = new Map<string, string>();
+for (const entry of registry.assets) {
+  if (registered.has(entry.assetPath))
+    throw new Error(`Duplicate registry path: ${entry.assetPath}`);
+  registered.set(entry.assetPath, entry.permission);
   await access(path.join(process.cwd(), "public", entry.assetPath.replace(/^\//, "")));
+}
+const sourced = new Set<string>();
+for (const entry of attribution.assets) {
+  if (sourced.has(entry.assetPath)) throw new Error(`Duplicate attribution: ${entry.assetPath}`);
+  sourced.add(entry.assetPath);
+  const permission = registered.get(entry.assetPath);
+  if (!permission) throw new Error(`Unregistered attribution: ${entry.assetPath}`);
+  if (permission !== entry.permission) {
+    throw new Error(`Permission mismatch for ${entry.assetPath}`);
+  }
 }
 for (const kind of ["players", "teams"] as const) {
   const directory = path.join(process.cwd(), "public", "images", kind);
   for (const file of await readdir(directory)) {
     if (file.startsWith(".")) continue;
     const assetPath = `/images/${kind}/${file}`;
-    if (!seen.has(assetPath)) throw new Error(`Missing attribution: ${assetPath}`);
+    if (!registered.has(assetPath)) throw new Error(`Missing registry entry: ${assetPath}`);
+    if (!sourced.has(assetPath)) throw new Error(`Missing local attribution: ${assetPath}`);
   }
 }
-process.stdout.write(`Validated ${manifest.assets.length} attributed local assets.\n`);
+if (registered.size !== sourced.size) {
+  throw new Error("Tracked registry and local attribution paths do not match");
+}
+process.stdout.write(
+  `Validated ${registry.assets.length} local assets against the tracked registry and ignored source records.\n`,
+);

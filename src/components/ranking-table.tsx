@@ -7,6 +7,7 @@ import type { PublicRankingPlayer } from "@/domain/public/types";
 
 import { SearchIcon } from "./icons";
 import { PlayerPortrait } from "./player-portrait";
+import { TeamLogo } from "./team-logo";
 
 function percent(value: number | null): string {
   return value === null ? "—" : `${Math.round(value * 100)}%`;
@@ -80,7 +81,12 @@ export function RankingTable({ players }: { players: PublicRankingPlayer[] }) {
                 <td className="ranking-table__score" data-positive={player.score > 0}>
                   {score(player.score)}
                 </td>
-                <td>{player.teamShortName ?? player.team ?? "—"}</td>
+                <td>
+                  <span className="ranking-team">
+                    {player.team ? <TeamLogo logoUrl={player.teamLogoUrl} size="small" /> : null}
+                    {player.teamShortName ?? player.team ?? "—"}
+                  </span>
+                </td>
                 <td>
                   {player.wins.toLocaleString("zh-CN")} / {player.losses.toLocaleString("zh-CN")}
                 </td>

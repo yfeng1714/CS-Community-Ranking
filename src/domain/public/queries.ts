@@ -29,6 +29,7 @@ interface RankingSourceRow {
   skips: bigint;
   slug: string;
   team: string | null;
+  teamLogoUrl: string | null;
   teamShortName: string | null;
   updatedAt: Date;
   wins: bigint;
@@ -86,6 +87,7 @@ function presentRankingRows(rows: readonly RankingSourceRow[]): PublicRankingPla
       skips: toPublicCount(row.skips, "ranking skips"),
       slug: row.slug,
       team: row.team,
+      teamLogoUrl: row.teamLogoUrl,
       teamShortName: row.teamShortName,
       updatedAt: row.updatedAt.toISOString(),
       winRate: calculateWinRate(wins, losses),
@@ -106,6 +108,7 @@ async function loadRankingRows(database: AppDatabase, editionId: bigint) {
       skips: playerRankings.skips,
       slug: players.slug,
       team: teams.name,
+      teamLogoUrl: teams.logoPath,
       teamShortName: teams.shortName,
       updatedAt: playerRankings.updatedAt,
       wins: playerRankings.wins,
@@ -163,6 +166,7 @@ export async function getPublicPlayer(
       realName: players.realName,
       slug: players.slug,
       team: teams.name,
+      teamLogoUrl: teams.logoPath,
       teamShortName: teams.shortName,
     })
     .from(players)
@@ -199,6 +203,7 @@ export async function getPublicPlayer(
     slug: player.slug,
     statsCapturedAt: stats.statsCapturedAt,
     team: player.team,
+    teamLogoUrl: player.teamLogoUrl,
     teamShortName: player.teamShortName,
   };
 }

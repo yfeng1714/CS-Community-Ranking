@@ -5,6 +5,7 @@ import type { RankingResult, ResolutionChoice } from "@/domain/votes/presentatio
 
 import { ChevronDownIcon } from "../icons";
 import { PlayerPortrait } from "../player-portrait";
+import { TeamLogo } from "../team-logo";
 
 function metric(value: number | null, digits = 2): string {
   return value === null ? "—" : value.toFixed(digits);
@@ -125,7 +126,10 @@ function PlayerIdentity({ player }: { player: BallotPlayerCard }) {
     <div className="vote-card__identity">
       <h2>{player.nickname}</h2>
       <p>
-        <span>{player.team ?? "暂无战队"}</span>
+        <span className="team-inline">
+          {player.team ? <TeamLogo logoUrl={player.teamLogoUrl} size="small" /> : null}
+          {player.team ?? "暂无战队"}
+        </span>
         <span aria-hidden="true">·</span>
         <span>{player.country ?? "国籍待补"}</span>
       </p>

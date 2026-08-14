@@ -56,6 +56,11 @@ presented as zero. When a Player has an approved `hltv_profile_url`, the profile
 explicit new-tab HLTV reference link; absent links leave no empty control and no third-party request
 is made while rendering the page.
 
+Vote cards, Ranking rows, and Player profiles render a locally served Team logo when `teamLogoUrl`
+is configured. The neutral charcoal container keeps both dark and light marks legible in either
+theme. A missing path removes only the mark and keeps the Team text, so older databases and
+unconfigured Teams degrade without a broken-image state.
+
 The latest HLTV recent `rating_3_0 / LAST_3_MONTHS` and `career_rating / CAREER` snapshots are used
 and labeled as HLTV Rating. Other providers' metrics remain isolated and cannot silently fill those
 fields. Stats are `MISSING` when absent, `CURRENT` through the configured freshness window, and
@@ -82,7 +87,8 @@ not conceal mismatches inside the application tree.
 
 `src/domain/public/queries.ts` is the shared read projection for pages and M5 JSON endpoints. Public
 counters are checked before conversion from `bigint`; unexpected read errors map to detail-free
-responses. No M5 route mutates Pool membership or imports external data.
+responses. `teamLogoUrl` is the public local path only; asset source, rights status, and review notes
+remain outside the projection. No M5 route mutates Pool membership or imports external data.
 
 See `docs/API.md` for endpoint/cache behavior and `docs/RUNBOOK.md` for the manual/browser smoke
 checks.

@@ -9,8 +9,10 @@ Milestones 0–9 are implemented and Owner Review Gate E was approved on 2026-08
 review-only preparation: a fail-closed launch-readiness command, an Owner-approved 14-Team/70-Player
 canonical manifest, and Gate F evidence checklist are in place. An isolated local rehearsal has
 applied that manifest and admitted the Owner-approved, conflict-free 14-Team/70-Player Core Pool
-from approved August 3 VRS and August 10 HLTV evidence. Its DRAFT launch-readiness report passes
-with only placeholder-image and optional-stat warnings. A separate local-only clone is ACTIVE for UI
+from approved August 3 VRS and August 10 HLTV evidence. Its pre-asset DRAFT launch-readiness report
+passes with only placeholder-image and optional-stat warnings. The repository now also contains the
+14 locally served, attributed Team logos; the complete 70-portrait set remains on neutral monograms.
+A separate local-only clone is ACTIVE for UI
 preview; the canonical rehearsal remains DRAFT and zeroed. No Railway reset, production Pool,
 production Edition activation, or closed beta has started. ADR 0006 selects a one-time
 in-place reset of the fictional Railway database after final verified backup evidence, so the launch
@@ -35,8 +37,8 @@ remain separate synchronization records.
 The small community beta intentionally has no public privacy/contact page. Existing data-minimizing
 cookie, IP-risk-key, and retention safeguards remain in place; a dedicated policy/contact surface
 will be reconsidered when the product has a custom domain or materially broader use. Real images may
-be imported for the beta under explicit Owner acceptance while source and rights status remain
-recorded. See `docs/IMAGE_SOURCING.md`.
+be imported for the beta under explicit Owner acceptance. Minimal path/review state is tracked while
+exact source records remain Git/Docker-ignored local Dev/Ops evidence. See `docs/IMAGE_SOURCING.md`.
 
 ## Technology
 

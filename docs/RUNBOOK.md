@@ -108,6 +108,10 @@ pnpm job:snapshot-ranking -- --edition 2026 --date YYYY-MM-DD
 pnpm assets:check
 ```
 
+`assets:check` is deliberately a local Owner/developer verification: it requires the ignored
+`assets/attribution.json` source record and compares it with tracked `assets/registry.json` plus the
+served files. CI, production images, and public/Admin responses never receive the detailed record.
+
 Keep `HLTV_SYNC_ENABLED=false` until the User-Agent, low-frequency schedule, and source URLs have
 been reviewed. Never respond to blocking by bypassing access controls. A failed sync is visible in
 Admin under **Sync runs / parser failures** and leaves stale snapshots intact.
@@ -162,8 +166,9 @@ The command prints JSON and exits `1` when any launch blocker exists. It deliber
 or missing approved sources, a missing/partial/outdated Pool-draft run, unresolved proposals,
 ineligible or stale-roster Pool players, missing zeroed rankings/identities/audit history, integrity
 violations, non-observe risk configuration, and unattributed configured assets. Missing optional
-images or stats are warnings and must be acknowledged. Run `pnpm assets:check` as the companion
-filesystem/license-manifest validation.
+images or stats are warnings and must be acknowledged. Run `pnpm assets:check` locally as the
+companion filesystem/source-record validation; deployed readiness uses only the tracked minimal
+asset registry.
 
 A successful report is evidence, not activation authority. Preserve it with the frozen commit and
 deployment ID, complete the remaining operational rows in `docs/LAUNCH_GATE_F.md`, then obtain the

@@ -34,8 +34,10 @@ Local rehearsal evidence as of 2026-08-14 (not production sign-off):
       under HLTV authority.
 - [x] Verified 14 Core Teams, 70 pairing-enabled current starters, 70 zeroed rankings, five starters
       per Team, 2,415 possible pairs, complete Pool/Admin audit coverage, and healthy integrity.
-- [x] Local `launch:check` reports `blocking: false`; its only warnings are 84 neutral-placeholder
-      paths (14 Teams + 70 Players) and 70 missing optional HLTV stat snapshots.
+- [x] The pre-asset local `launch:check` reports `blocking: false`; its only warnings were 84
+      neutral-placeholder paths (14 Teams + 70 Players) and 70 missing optional HLTV stat snapshots.
+      The later repository asset pass configured all 14 Team logos, but it has not been retroactively
+      applied to this preserved rehearsal DB.
 - [x] Kept `csr_m10_rehearsal_20260814` DRAFT and zeroed. Activated only a separate local clone,
       `csr_m10_ui_preview_20260814`, for public-UI inspection so preview activity cannot pollute the
       canonical rehearsal.
@@ -121,9 +123,12 @@ changes pairing probability or score.
 
 ## 4. Assets and early-community policy
 
-- [ ] Every configured Player photo/Team logo is local and appears in
-      `assets/attribution.json` with its exact source and honest rights status.
-- [ ] `pnpm assets:check` passes. `OWNER_ACCEPTED_PENDING_RIGHTS` assets are permitted for the small
+- [x] Every currently configured Team logo is local, appears in tracked `assets/registry.json`, and
+      has an ignored local `assets/attribution.json` record with its exact source and honest rights
+      status; no partial Player-photo set is configured.
+- [ ] Complete and review all 70 Player portraits, or explicitly sign off the consistent neutral
+      monogram fallback for the closed beta.
+- [x] `pnpm assets:check` passes. `OWNER_ACCEPTED_PENDING_RIGHTS` assets are permitted for the small
       community beta but remain explicit launch warnings for later Owner follow-up.
 - [x] The Owner deferred a public privacy/contact route and removed the personal email on 2026-08-14.
       Reconsider the route when a custom domain or materially broader use makes it useful.

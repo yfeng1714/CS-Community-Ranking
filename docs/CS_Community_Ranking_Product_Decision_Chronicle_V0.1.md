@@ -20,7 +20,7 @@
 </tbody>
 </table>
 
-**版本** V0.1.13
+**版本** V0.1.15
 
 **日期** 2026-08-14
 
@@ -49,6 +49,10 @@
 **Owner M10 本地 Pool 批准** 2026-08-14（V0.1.12；14 Core Team / 70 Player，Canonical DRAFT 与 UI Preview 隔离）
 
 **Owner M10 联网复测** 2026-08-14（V0.1.13；GitHub 恢复，HLTV Live Adapter 第三次仍 403）
+
+**Owner M10 图片首轮** 2026-08-14（V0.1.14；14 Team Logo 完成，70 Player 统一保留 Monogram）
+
+**Owner M10 图片记录收敛** 2026-08-14（V0.1.15；详细 Source Record 改为 Git/Docker 忽略的本地证据）
 
 **定位** 产品背景、决策记录与后续 Review Context
 
@@ -136,9 +140,10 @@ Source，但小规模 Beta 可以使用 `OWNER_ACCEPTED_PENDING_RIGHTS` 状态�
 Owner 随后批准了上述 14 Team / 70 Player Canonical Manifest，允许将它应用于独立空白本地库
 做 Rehearsal。该批准不等于 Candidate Pool Admission、Railway Reset 或 Edition Activation。Asset
 Source Record 被定义为 Dev/Ops Metadata：不放在 `public/`，不由 Public API 返回，也不在公开或
-Admin UI 展示 Source URL/Notes；Launch Gate 仅使用本地 Asset Path 和 Pending-rights 状态。若未来
-GitHub Repository 公开，Tracked Record 本身仍会对 Repo Reader 可见，届时再迁移到 Owner-private
-Evidence Store。
+Admin UI 展示 Source URL/Notes。图片首轮完成后，Owner 进一步要求详细 Source Record 不进入 Git：
+当前设计仅跟踪 Asset Path 与 Pending-rights 状态供部署后 Launch Gate 使用，精确 URL、Rights Notes
+与核验上下文保留在 Git/Docker 忽略的本地文件，并由本地 `assets:check` 强制与 Registry、实际文件
+完全对应。该本地文件不是备份，换机或清理 Workspace 前必须进入 Owner 私有运维证据。
 
 同日本地空库演练完成 Canonical Bootstrap：创建 DRAFT Edition、14 Team、70 Player、70 条当前
 Roster、84 条 HLTV Identity 与 239 条 Audit，Pool 仍为空。Valve 8 月 3 日官方 VRS Live Sync
@@ -169,6 +174,16 @@ Production Activation 或 Closed Beta。Owner 同时要求再试一次 HLTV 8 �
 随后重启出现异常的网络路径并要求复测；第三次请求已正常到达 HLTV，但仍收到 HTTP 403。
 三条失败 Run 均保留且没有新增部分 Snapshot；再次执行 Launch Check 仍为 `blocking: false`，
 Canonical DRAFT 保持 70 条零分 Ranking，Reviewed Fallback 的身份不变。
+
+Owner 随后批准执行图片 Pass。工程从官方 8 月 10 日 HLTV Ranking Page 的已验证 DOM/Network
+资源中取得全部 14 个 Team Logo，保存为本地真实格式，为每个文件在忽略的本地记录中写入精确
+Source URL，同时在跟踪的最小 Registry 中写入 `OWNER_ACCEPTED_PENDING_RIGHTS`，并使 Vote、Ranking、Player 的公共 Projection/UI 真正消费
+数据库中的 `logoPath`。深浅 Logo 统一置于中性深色容器，Source/Notes 仍只属于 Dev/Ops，未进入
+Public API 或 Admin UI。页面 DOM 同时包含 70 个 Player Image URL，但 Accordion Lazy Load、CDN
+403 与浏览器导出行为无法可靠得到完整 70 个文件；已加载的 5 个 Falcons Portrait 没有被单独
+发布，以免形成一队真实照片、十三队占位的失衡界面。当前所有 Player 继续使用一致的 Monogram，
+直到能够取得、核验并一次性上线完整 Portrait Set。原本地 Rehearsal DB 早于本轮 Asset Pass，
+因此其历史 Launch Report 不被冒充为新 Manifest 的数据库验证证据。
 
 <table>
 <colgroup>

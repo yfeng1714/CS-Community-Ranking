@@ -437,7 +437,9 @@ cs-community-ranking/
 │  ├─ teams/
 │  └─ placeholders/
 ├─ assets/
-│  └─ attribution.json
+│  ├─ registry.json
+│  ├─ attribution.example.json
+│  └─ attribution.json          # local-only, Git/Docker ignored
 ├─ scripts/
 │  ├─ seed.ts
 │  ├─ create-admin.ts
@@ -1839,7 +1841,9 @@ not hidden configuration in source code.
 V0.1 player photos and team logos are local static assets.
 
 - No runtime hotlinking.
-- Keep `assets/attribution.json` with exact source and honest rights status.
+- Keep a tracked `assets/registry.json` with each asset path and honest rights status. Keep exact
+  source URLs and review notes in Git/Docker-ignored `assets/attribution.json`; local
+  `pnpm assets:check` requires both files to agree.
 - Owner-accepted provisional beta use may proceed while external rights review remains pending; it
   is reported as a warning and must not be mislabeled as licensed or permission-granted.
 - Provide a neutral placeholder when an image cannot be used.

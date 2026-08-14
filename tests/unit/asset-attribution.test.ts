@@ -1,9 +1,23 @@
 import { describe, expect, it } from "vitest";
-import { attributionManifestSchema, loadAttributionManifest } from "@/domain/assets/attribution";
+import {
+  assetRegistrySchema,
+  attributionManifestSchema,
+  loadAssetRegistry,
+} from "@/domain/assets/attribution";
 
 describe("local asset attribution", () => {
   it("keeps a versioned and valid attribution manifest", async () => {
-    await expect(loadAttributionManifest()).resolves.toEqual({ assets: [], version: 1 });
+    const manifest = await loadAssetRegistry();
+
+    expect(manifest.version).toBe(1);
+    expect(manifest.assets).toHaveLength(14);
+    expect(manifest.assets.every((asset) => asset.assetPath.startsWith("/images/teams/"))).toBe(
+      true,
+    );
+    expect(
+      manifest.assets.every((asset) => asset.permission === "OWNER_ACCEPTED_PENDING_RIGHTS"),
+    ).toBe(true);
+    expect(assetRegistrySchema.parse(manifest)).toEqual(manifest);
   });
 
   it("records owner-accepted provisional assets without claiming a third-party license", () => {

@@ -25,6 +25,7 @@ const player: PublicPlayerProfile = {
   slug: "player",
   statsCapturedAt: null,
   team: null,
+  teamLogoUrl: null,
   teamShortName: null,
 };
 
