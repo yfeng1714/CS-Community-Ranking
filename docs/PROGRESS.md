@@ -41,8 +41,9 @@
 - The isolated local bootstrap rehearsal passed with 14 Teams, 70 Players, 70 current roster rows,
   84 identities, 239 audit rows, and an empty Pool. A live official August 3 Valve snapshot (396
   Teams) and checksum-locked reviewed August 10 HLTV top 12 were approved through audited paths. The
-  initial live HLTV adapter attempt and Owner-requested retry both correctly failed closed on HTTP
-  403 while ordinary Owner-browser access worked. The draft succeeded with 14 conflict-free
+  initial live HLTV adapter attempt, Owner-requested retry, and a third post-network-restart retry all
+  correctly failed closed on HTTP 403 while ordinary Owner-browser access worked. Each request has a
+  separate failed run and none wrote a partial snapshot. The draft succeeded with 14 conflict-free
   proposals and ten retained warnings; nothing was auto-applied.
 - After explicit Owner approval, all 14 exact proposal IDs passed guarded dry-run and were reviewed
   through `PendingImportReviewService`. The result is 14 Core Team rows, 70 pairing-enabled starters,

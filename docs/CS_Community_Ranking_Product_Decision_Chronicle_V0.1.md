@@ -20,7 +20,7 @@
 </tbody>
 </table>
 
-**版本** V0.1.12
+**版本** V0.1.13
 
 **日期** 2026-08-14
 
@@ -47,6 +47,8 @@
 **Owner M10 本地数据演练** 2026-08-14（V0.1.11；VRS Live + HLTV Reviewed Fallback，14 Team Draft 保持 Pending）
 
 **Owner M10 本地 Pool 批准** 2026-08-14（V0.1.12；14 Core Team / 70 Player，Canonical DRAFT 与 UI Preview 隔离）
+
+**Owner M10 联网复测** 2026-08-14（V0.1.13；GitHub 恢复，HLTV Live Adapter 第三次仍 403）
 
 **定位** 产品背景、决策记录与后续 Review Context
 
@@ -163,8 +165,10 @@ Admission Log。Launch Check 返回 `blocking: false`，组合数为 2,415，仅
 `csr_m10_rehearsal_20260814` 继续保持 DRAFT；另建本地 Clone
 `csr_m10_ui_preview_20260814`，在同一 Readiness Gate 通过后仅激活该 Clone。该 Active 状态不代表
 Production Activation 或 Closed Beta。Owner 同时要求再试一次 HLTV 8 月 10 日 Live Adapter；
-第二次 Identified/Bounded Request 仍返回 HTTP 403，而 Owner 普通 Browser 可访问页面。两条失败
-Run 均保留且没有新增部分 Snapshot，Reviewed Fallback 的身份不变。
+第二次 Identified/Bounded Request 仍返回 HTTP 403，而 Owner 普通 Browser 可访问页面。Owner
+随后重启出现异常的网络路径并要求复测；第三次请求已正常到达 HLTV，但仍收到 HTTP 403。
+三条失败 Run 均保留且没有新增部分 Snapshot；再次执行 Launch Check 仍为 `blocking: false`，
+Canonical DRAFT 保持 70 条零分 Ranking，Reviewed Fallback 的身份不变。
 
 <table>
 <colgroup>

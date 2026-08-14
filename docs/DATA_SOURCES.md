@@ -44,10 +44,11 @@ considered; never infer eligibility from a name-only row.
 ## Reviewed HLTV fallback
 
 The normal HLTV adapter remains the preferred path. During the August 14 local rehearsal, the
-initial deliberate bounded request and a later Owner-requested retry of the official August 10
-ranking were both denied with HTTP 403 even though the page remained accessible in the Owner's
-ordinary browser. Both jobs failed closed, recorded separate failed `sync_run` rows, and stored no
-partial snapshot. To keep an auditable rehearsal path without weakening the adapter,
+initial deliberate bounded request, a later Owner-requested retry, and a third retry after the Owner
+restarted the affected network path were each denied with HTTP 403 for the official August 10
+ranking even though the page remained accessible in the Owner's ordinary browser. All three jobs
+failed closed, recorded separate failed `sync_run` rows, and stored no partial snapshot. To keep an
+auditable rehearsal path without weakening the adapter,
 `data/reviewed-sources/hltv-ranking-2026-08-10-top12.json` contains the manually reviewed official
 top 12 used by the approved canonical sheet.
 

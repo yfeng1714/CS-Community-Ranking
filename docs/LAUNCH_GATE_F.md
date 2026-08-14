@@ -23,9 +23,9 @@ Local rehearsal evidence as of 2026-08-14 (not production sign-off):
       audit rows with an empty Pool.
 - [x] Synchronized and approved the live official August 3 Valve snapshot locally (396 Teams,
       checksum `9989f6e14c2ef288a4e9e0be6e709e664106aa129a1c901218d0ef9a2afbfb7e`).
-- [x] Recorded both the initial bounded August 10 HLTV fetch and the Owner-requested retry as failed
-      HTTP 403 with no partial snapshot, then imported the reviewed official top-12 fallback through
-      the guarded audited path (checksum
+- [x] Recorded the initial bounded August 10 HLTV fetch, Owner-requested retry, and post-network-
+      restart retry as three failed HTTP 403 runs with no partial snapshot, then imported the
+      reviewed official top-12 fallback through the guarded audited path (checksum
       `eb20d2d97ec3c693ce97c4ebccc1dfa2e598d3e445993152c3692a932a8a1e3d`). Ordinary Owner-browser
       access works; that does not make the server-side adapter request successful.
 - [x] Generated and Owner-approved 14 conflict-free Core Team proposals through Gate D. The prior
