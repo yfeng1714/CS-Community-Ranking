@@ -19,6 +19,8 @@ import { addRosterMembership, endRosterMembership } from "@/domain/rosters/servi
 import { createTeam, updateTeam } from "@/domain/teams/service";
 import { VoteModerationService } from "@/domain/votes/moderation";
 import { approveRankingSourceSnapshot } from "@/domain/external-data/snapshots";
+import { checkLaunchReadiness } from "@/domain/launch/readiness";
+import { DomainError } from "@/domain/error";
 
 import {
   adminErrorResponse,
@@ -63,6 +65,7 @@ const mutationSchema = z.discriminatedUnion("action", [
     action: z.literal("player.create"),
     ...base,
     countryCode: nullableText,
+    hltvProfileUrl: z.string().trim().max(2_000).nullable().optional(),
     nickname: z.string().trim().min(1).max(100),
     photoPath: nullableText,
     professionalStatus: z.enum(["ACTIVE", "INACTIVE", "RETIRED"]).optional(),
@@ -73,6 +76,7 @@ const mutationSchema = z.discriminatedUnion("action", [
     action: z.literal("player.update"),
     ...base,
     countryCode: nullableText,
+    hltvProfileUrl: z.string().trim().max(2_000).nullable().optional(),
     nickname: z.string().trim().min(1).max(100).optional(),
     photoPath: nullableText,
     playerId: id,
@@ -262,6 +266,23 @@ export function createAdminMutationHandler(dependencies: Dependencies) {
           result = await createEdition(dependencies.database, { ...mutation, actorAdminUserId });
           break;
         case "edition.transition":
+          if (mutation.status === "ACTIVE") {
+            const readiness = await checkLaunchReadiness(dependencies.database, {
+              editionId: mutation.editionId,
+              expectedRiskMode: dependencies.env.RISK_ENFORCEMENT_MODE,
+              sourceMaxAgeDays: dependencies.env.EXTERNAL_SOURCE_MAX_AGE_DAYS,
+            });
+            const blockers = readiness.checks
+              .filter((item) => item.status === "BLOCK")
+              .map((item) => item.code);
+            if (blockers.length > 0) {
+              throw new DomainError(
+                "EDITION_ACTIVATION_BLOCKED",
+                `Edition activation is blocked by: ${blockers.join(", ")}`,
+                { blockers },
+              );
+            }
+          }
           result = await transitionEdition(dependencies.database, {
             ...mutation,
             actorAdminUserId,

@@ -20,13 +20,27 @@ are not missing M9 inputs.
 
 - Final public product name, domain, slogan, and visual identity. M5 deliberately uses `CS 野榜` as
   a working identity rather than treating it as final branding.
-- Whether the late-2026 launch is labeled a normal Edition or explicitly a beta Edition.
 
-## Before Milestone 10
+## Milestone 10 inputs and approvals
 
 - Final Candidate Pool, Manual Review teams, Special players, and completed-2026 T1 whitelist.
-- Image rights/licensing, attribution, and public privacy/takedown contact.
+- Image acquisition remains an M10 work item, but external rights clearance no longer blocks the
+  small community beta. Exact sources are recorded; Owner-accepted pending-rights assets remain
+  visible warnings until the Owner clears or replaces them.
 - Final eligible-Ballot quota after closed-beta data.
+- Final execution evidence for the approved ADR 0006 in-place reset: verified backup/restore/R2
+  copy, exact target, cutover window, and explicit destructive-action approval. No second Railway DB
+  is planned, and the fictional `2026` records must not be relabeled as production.
+- Low-frequency HLTV sync window. The identifying User-Agent points to the deployed project URL, but
+  the bounded August 10 rehearsal request received HTTP 403. The reviewed, checksum-locked top-12
+  fallback proves the manual audited path without pretending automated retrieval succeeded. Retry a
+  fresh low-frequency live sync near cutover and require new Owner-reviewed fallback evidence if it
+  remains blocked. The start date, HLTV-over-VRS roster policy, exact identities, and 14-Team union
+  are resolved; all 14 current Pool proposals and Edition activation remain separate approvals.
+
+Resolved on 2026-08-14: the working launch label is `2026 Beta Edition`. The Owner later removed the
+personal email and dedicated privacy/contact page for the small community beta; reconsider both when
+the project gains a custom domain or materially broader usage.
 
 ## After ADR 0005 is triggered
 

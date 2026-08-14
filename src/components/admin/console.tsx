@@ -150,6 +150,12 @@ export function AdminConsole({
                 { label: "Real name", name: "realName" },
                 { label: "Country code", name: "countryCode" },
                 {
+                  label: "HLTV profile URL",
+                  name: "hltvProfileUrl",
+                  placeholder: "https://www.hltv.org/player/12345/nickname",
+                  type: "url",
+                },
+                {
                   label: "Photo path",
                   name: "photoPath",
                   placeholder: "/images/players/player.png",
@@ -394,6 +400,12 @@ export function AdminConsole({
                             label: "Photo path",
                             name: "photoPath",
                           },
+                          {
+                            defaultValue: player.hltvProfileUrl ?? "",
+                            label: "HLTV profile URL",
+                            name: "hltvProfileUrl",
+                            type: "url",
+                          },
                           reasonField,
                         ]}
                       />
@@ -550,6 +562,11 @@ export function AdminConsole({
           </div>
         </div>
         <div className="admin-table-wrap">
+          <p>
+            Moving a DRAFT Edition to ACTIVE runs the same fail-closed launch-readiness checks as
+            <code> launch:check</code>. A technical pass does not replace the Owner sign-off in Gate
+            F.
+          </p>
           <table>
             <thead>
               <tr>

@@ -33,6 +33,7 @@ export interface PublicPlayerProfile {
   careerRating: number | null;
   country: string | null;
   freshness: DataFreshness;
+  hltvProfileUrl: string | null;
   nickname: string;
   photoUrl: string | null;
   professionalStatus: "ACTIVE" | "INACTIVE" | "RETIRED";

@@ -2,7 +2,7 @@ export type BrowserProductEvent =
   | { eventType: "NEXT_CLICK" | "VOTE_RESULT_VIEW"; metadata?: Record<string, never> }
   | {
       eventType: "PAGE_VIEW" | "RANKING_VIEW";
-      metadata: { page: "about" | "privacy" | "ranking" | "vote" };
+      metadata: { page: "about" | "ranking" | "vote" };
     }
   | { eventType: "PLAYER_VIEW"; metadata: { page: "player"; playerSlug: string } };
 

@@ -16,7 +16,7 @@ export const productEventInputSchema = z
     ]),
     metadata: z
       .object({
-        page: z.enum(["about", "player", "privacy", "ranking", "vote"]).optional(),
+        page: z.enum(["about", "player", "ranking", "vote"]).optional(),
         playerSlug: z
           .string()
           .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)

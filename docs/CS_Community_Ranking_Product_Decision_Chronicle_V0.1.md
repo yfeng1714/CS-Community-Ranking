@@ -20,9 +20,9 @@
 </tbody>
 </table>
 
-**版本** V0.1.5
+**版本** V0.1.12
 
-**日期** 2026-08-09
+**日期** 2026-08-14
 
 **施工规范复核** 2026-08-10（V0.1.1；未改变冻结的产品决定）
 
@@ -33,6 +33,20 @@
 **Owner 灾备落地记录** 2026-08-13（V0.1.4；Private R2 独立第二副本）
 
 **Owner Gate E 批准** 2026-08-14（V0.1.5；Railway Staging 验收完成，进入 M10 边界）
+
+**Owner M10 启动** 2026-08-14（V0.1.6；先完成只读 Launch Gate，不把虚构 Staging 改名为生产）
+
+**Owner M10 数据库与选手资料修订** 2026-08-14（V0.1.7；单 Railway DB 原地重建，Player 可选 HLTV Profile URL）
+
+**Owner M10 真实资料边界** 2026-08-14（V0.1.8；Beta Edition、真实图片优先、Canonical DRAFT Manifest）
+
+**Owner M10 小规模社区修订** 2026-08-14（V0.1.9；移除公开 Privacy/个人邮箱，图片允许 Owner 承担待处理 Rights）
+
+**Owner M10 Canonical 批准** 2026-08-14（V0.1.10；14 Team / 70 Player Manifest 允许空库演练，Asset Source 只作 Dev/Ops 记录）
+
+**Owner M10 本地数据演练** 2026-08-14（V0.1.11；VRS Live + HLTV Reviewed Fallback，14 Team Draft 保持 Pending）
+
+**Owner M10 本地 Pool 批准** 2026-08-14（V0.1.12；14 Core Team / 70 Player，Canonical DRAFT 与 UI Preview 隔离）
 
 **定位** 产品背景、决策记录与后续 Review Context
 
@@ -69,6 +83,88 @@ Repository Config 管理，Owner 明确豁免为了制造 Failed Deployment 而�
 配置；Railway 的 $10 Usage Alert 也不通过故意产生费用来验证。Failed-job Email 已被实际
 证明，$25 Hard Limit 已设置。电信/联通设备与单独标记的晚高峰窗口作为后续观察项，不阻塞
 M10。该批准只开放 M10 的审查边界，不代表真实 Candidate Pool 已启用或 Closed Beta 已开始。
+
+同日 Owner 启动 M10。实现复核确认，当前 Railway 数据库虽然 Environment Label 为
+`production`，实际保存的是 M9 明确创建的虚构 `2026` Edition、测试选手、SKIP 和不可变审计
+历史；它继续作为 Staging，不能通过改名、删历史或复用唯一 Edition Code 伪装成正式数据。
+M10 因此先增加只读、Fail-closed 的 Launch Readiness Report 与 Gate F 清单。最初的最低成本建议是
+先在独立本地空库演练真实 Pool，再为虚构 Staging 做最终 Backup/R2 副本，并让现有 Railway
+Web/Cron/生成域名切换到一个全新空 PostgreSQL；长期保留两套云环境是更方便但重复计费的备选。
+真正创建资源或切换前，仍需向 Owner 说明用途、估算成本、回滚边界并取得批准。这个边界是
+审计/数据真实性澄清，不改变产品算法或初期直连 Railway 的决定。
+
+随后 Owner 选择了更严格的最低成本方案并批准 ADR 0006：不创建第二个 Railway PostgreSQL。
+先在独立本地空库完成真实 Pool 演练；接近切换时暂停 Web/Cron，为现有虚构 Staging 创建最终
+Logical Dump、恢复验证与 Private R2 副本，确认精确目标并再次批准破坏性操作后，只清空现有
+Railway PostgreSQL 的应用 Schema，再从已提交 Migration 重建。由于当前没有真实用户、真实
+Vote 或生产数据，保留经验证的恢复副本后删除虚构 Fixture 不违反“真实历史不可删除”；一旦
+写入有意义的真实数据，这个一次性例外立即失效。该方案接受上线前短暂停机与更慢的人工回滚，
+换取始终只有一套 Railway DB/Web/Cron 费用。
+
+同次修订中，Owner 要求 Player 增加可空的 HLTV Link。实现将其定义为
+`hltv_profile_url`：只允许直接 HTTPS `hltv.org/player/{id}/{slug}`，由 Admin 审计修改，并在
+公开 Player 页面存在时显示。它是供人核对的资料链接，不替代 `PlayerExternalIdentity` 中供
+Adapter、同步与 Launch Gate 使用的机器身份；公开页面只输出链接，不在请求期间抓取 HLTV。
+
+Owner 同时确认工作标签使用 `2026 Beta Edition`。真实选手照和 Team Logo 优先，
+图片使用本地文件与 Attribution Manifest，不在公开页请求期间 Hotlink Provider CDN。为避免手工创建
+14 个 Team、70 个 Player、84 个 HLTV Identity 与 70 条 Roster 时发生错配，M10 新增可审查的
+Canonical DRAFT Manifest。普通命令仅校验和输出 SHA-256；只有 Owner 把 Manifest 标为批准、
+Active Admin 存在、目标产品表为空且两个显式 Apply Flag 同时提供时，才会在单一事务中创建
+DRAFT Edition 与完整审计记录。它不等于 Pool 批准，也不会自动 Activate Edition。
+
+同日 Owner 指出 HLTV 已发布 8 月 3 日与 8 月 10 日周榜，并决定所有与 VRS 的当前 Roster
+冲突均以 HLTV 为准，但仍保留冲突作为 Review Evidence。Canonical DRAFT 因而改用 8 月 10 日
+HLTV 周榜与 8 月 3 日 VRS 的 Top-12 Union：FaZe、Astralis 进入，The MongolZ 不再位于任一
+Top 12，PARIVISION 则以 FL1T 替代 HObbit，最终为 14 Team / 70 Player。Beta Edition 的
+`starts_at` 同步改为 2026-08-14 00:00（Asia/Shanghai）。
+
+同日 Owner 根据产品仍是小规模兴趣社区的预期，撤回了公开个人联系邮箱与
+`/privacy` 页的当前需求。Footer、About、Analytics Type 与文档中的路由全部移除，
+HLTV User-Agent 改为识别已部署的项目 URL。这不撤销 Secure Anonymous Cookie、不保存
+Raw IP、有界 Analytics 与 Retention Cleanup 等已实现的数据最小化控制。等待自有域名、
+用户量明显增长、商业化或外部贡献者出现时再重新考虑公开 Policy/Contact。
+
+图片边界同步改为“真实图片优先、Owner 处理外部 Rights”。每个文件仍必须记录精确
+Source，但小规模 Beta 可以使用 `OWNER_ACCEPTED_PENDING_RIGHTS` 状态：它只表示 Owner
+接受暂时使用，不伪装成已获授权。Launch Readiness 将其作为 Warning 而非 Blocker。
+完整计划按 14 个 Logo 优先、70 个 Portrait 分 Team 导入、本地优化、移动端/双主题复核与
+可替换路径执行。
+
+Owner 随后批准了上述 14 Team / 70 Player Canonical Manifest，允许将它应用于独立空白本地库
+做 Rehearsal。该批准不等于 Candidate Pool Admission、Railway Reset 或 Edition Activation。Asset
+Source Record 被定义为 Dev/Ops Metadata：不放在 `public/`，不由 Public API 返回，也不在公开或
+Admin UI 展示 Source URL/Notes；Launch Gate 仅使用本地 Asset Path 和 Pending-rights 状态。若未来
+GitHub Repository 公开，Tracked Record 本身仍会对 Repo Reader 可见，届时再迁移到 Owner-private
+Evidence Store。
+
+同日本地空库演练完成 Canonical Bootstrap：创建 DRAFT Edition、14 Team、70 Player、70 条当前
+Roster、84 条 HLTV Identity 与 239 条 Audit，Pool 仍为空。Valve 8 月 3 日官方 VRS Live Sync
+成功并经审查批准；HLTV 8 月 10 日低频抓取收到 HTTP 403，Adapter 按设计记录失败且未写入部分
+Snapshot。为验证不依赖 Scraper 成功的人工恢复路径，工程新增严格校验、Checksum 固定且需
+Admin/Reason/双 Flag 的 Reviewed Top-12 JSON Import，其 Parser Version 明确标为 Manual
+Fallback，不能冒充 Live Sync 或 Player Stats。
+
+两份本地 Source 获批后，Pool Draft 生成 14 个无 Conflict 的 `PENDING` Team Proposal，没有自动
+Admission。VRS 中与 HLTV 不同的 G2、BetBoom、Legacy、PARIVISION Roster 按 Owner 决定采用
+HLTV，并保留 Warning；VRS Rank 13–20 中未进入 Canonical 且没有合格 Event Evidence 的六队只
+作为 Warning，不被误判为缺失 Core Identity。该结果仍需单独 Owner Pool Review；Railway Reset、
+Production Apply 与 Edition Activation 均未发生。
+
+Owner 随后明确批准这 14 个 Proposal。工程先以新增的 Guarded `pending:review` CLI 对精确 ID
+集合做 Dry-run，再逐条调用原有 `PendingImportReviewService`；因此每队仍执行 Expected State、
+Source Run、Evidence 与 Conflict 的 Gate D 复核，并写入普通 Pool/Admin Audit，而不是通过 SQL
+直接改状态。最终本地 Canonical Rehearsal 包含 14 个 Core Team、70 个 Pairing-enabled Starter、
+70 条零分 Ranking、14 条 Proposal Review Audit、14 条 Team Admission Log 和 70 条 Team-player
+Admission Log。Launch Check 返回 `blocking: false`，组合数为 2,415，仅保留 84 个 Placeholder 与
+70 个可选 HLTV Stats 缺失 Warning。
+
+为避免公开 UI 检查产生 Ballot/SKIP 而污染上述零基线，Canonical DB
+`csr_m10_rehearsal_20260814` 继续保持 DRAFT；另建本地 Clone
+`csr_m10_ui_preview_20260814`，在同一 Readiness Gate 通过后仅激活该 Clone。该 Active 状态不代表
+Production Activation 或 Closed Beta。Owner 同时要求再试一次 HLTV 8 月 10 日 Live Adapter；
+第二次 Identified/Bounded Request 仍返回 HTTP 403，而 Owner 普通 Browser 可访问页面。两条失败
+Run 均保留且没有新增部分 Snapshot，Reviewed Fallback 的身份不变。
 
 <table>
 <colgroup>
@@ -500,7 +596,7 @@ HLTV 提供很难找到完全等价替代品的 Rating、选手 Profile、战队
 
 ### **11.3 多源数据模型**
 
-Player、Team 与外部身份必须分离。PlayerExternalIdentity 保存 HLTV、Liquipedia、PandaScore 等 provider 的 external_id/slug；PlayerStatSnapshot 保存 provider、metric、period、maps 和 captured_at。这样未来可以同时保存 HLTV Rating、其他评分与本站 Community Score，而不会互相污染。
+Player、Team 与外部身份必须分离。PlayerExternalIdentity 保存 HLTV、Liquipedia、PandaScore 等 provider 的 external_id/slug；PlayerStatSnapshot 保存 provider、metric、period、maps 和 captured_at。这样未来可以同时保存 HLTV Rating、其他评分与本站 Community Score，而不会互相污染。M10 追加的 Player `hltv_profile_url` 只是可空的人类参考链接，不能被同步任务当作已验证 provider identity，也不能让公开请求实时依赖 HLTV。
 
 <table>
 <colgroup>

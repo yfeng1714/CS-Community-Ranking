@@ -99,6 +99,7 @@ export const players = pgTable(
     realName: text("real_name"),
     countryCode: text("country_code"),
     photoPath: text("photo_path"),
+    hltvProfileUrl: text("hltv_profile_url"),
     professionalStatus: professionalStatusEnum("professional_status").notNull(),
     createdAt: createdAt(),
     updatedAt: updatedAt(),
@@ -107,6 +108,10 @@ export const players = pgTable(
     unique("player_slug_unique").on(table.slug),
     check("player_slug_not_blank", sql`length(btrim(${table.slug})) > 0`),
     check("player_nickname_not_blank", sql`length(btrim(${table.nickname})) > 0`),
+    check(
+      "player_hltv_profile_url_valid",
+      sql`${table.hltvProfileUrl} is null or ${table.hltvProfileUrl} ~ '^https://(www\\.)?hltv\\.org/player/[1-9][0-9]*/[^/?#]+/?$'`,
+    ),
   ],
 );
 

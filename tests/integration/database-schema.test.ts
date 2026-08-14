@@ -207,6 +207,24 @@ describe("Milestone 1 PostgreSQL schema", () => {
     }
   });
 
+  it("accepts only nullable direct HTTPS HLTV player-profile links", async () => {
+    await pool.query(`update player set hltv_profile_url = $1 where id = $2`, [
+      "https://www.hltv.org/player/12345/integration-one",
+      fixture.player1Id,
+    ]);
+    await expectConstraintViolation(
+      () =>
+        pool.query(`update player set hltv_profile_url = $1 where id = $2`, [
+          "https://attacker.example/player/12345/integration-one",
+          fixture.player1Id,
+        ]),
+      "player_hltv_profile_url_valid",
+    );
+    await pool.query(`update player set hltv_profile_url = null where id = $1`, [
+      fixture.player1Id,
+    ]);
+  });
+
   it("enforces ranking score and non-negative counters", async () => {
     await expectConstraintViolation(
       () =>

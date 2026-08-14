@@ -15,7 +15,9 @@ You are implementing **CS Community Ranking / CS 野榜 V0.1**.
 
 ## Current handoff
 
-Milestones 0–9 are implemented and Owner Review Gate E was approved on 2026-08-14. The complete repository received an independent Gate D audit on
+Milestones 0–9 are implemented and Owner Review Gate E was approved on 2026-08-14. M10 repository
+preparation is in progress: `launch:check` and `docs/LAUNCH_GATE_F.md` now define the fail-closed
+pre-activation and operational evidence boundary. The complete repository received an independent Gate D audit on
 2026-08-12, followed by fixture-tested Valve VRS/HLTV adapters, scheduled sync commands, explicit
 source-snapshot approval, freshness/stale fallback, review-only Pool draft generation, daily ranking
 snapshots, local asset attribution, privacy-preserving risk keys, observe/enforce abuse
@@ -25,9 +27,14 @@ domain/Cloudflare edge layer. The first retained local backup, exact 14-table re
 private R2 second copy pass. The owner waived an artificial failed-deployment drill against the sole
 active staging service and deliberate spend solely to trigger an alert. M10 is the next authorized
 boundary, but no real Pool entry may be activated and no closed beta may start without the M10
-owner-review steps.
+owner-review steps. The existing Railway database is fictional staging despite its `production`
+environment label; never relabel it into a real `2026` Edition. ADR 0006 approves one pre-launch,
+in-place reset of that same PostgreSQL service after a final verified backup and explicit reset
+approval. No second Railway database is planned. Once meaningful real data exists, the exception
+expires and history must be preserved normally.
 See `docs/IMPLEMENTATION_REVIEW_2026-08-12.md` for Gate D,
 `docs/STAGING_GATE_E.md` for the M9 evidence boundary, and `docs/PROGRESS.md` for current status.
+Use `docs/LAUNCH_GATE_F.md` for all M10 production-data, beta, and launch evidence.
 
 Always trust the latest `docs/PROGRESS.md` over this summary if they ever differ.
 

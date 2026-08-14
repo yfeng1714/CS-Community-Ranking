@@ -14,6 +14,7 @@ const player: PublicPlayerProfile = {
   careerRating: null,
   country: "CN",
   freshness: "MISSING",
+  hltvProfileUrl: null,
   nickname: "Player",
   photoUrl: null,
   professionalStatus: "ACTIVE",

@@ -10,7 +10,7 @@ export interface AdminField {
   options?: readonly { label: string; value: string }[];
   placeholder?: string;
   required?: boolean;
-  type?: "checkbox" | "date" | "datetime-local" | "number" | "select" | "text";
+  type?: "checkbox" | "date" | "datetime-local" | "number" | "select" | "text" | "url";
 }
 
 export function AdminActionForm({

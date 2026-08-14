@@ -69,8 +69,8 @@ export default function AboutPage() {
           <Link className="button button--primary" href="/">
             开始投票
           </Link>
-          <Link className="button button--ghost" href="/privacy">
-            查看隐私说明
+          <Link className="button button--ghost" href="/ranking">
+            查看社区榜
           </Link>
         </div>
       </section>

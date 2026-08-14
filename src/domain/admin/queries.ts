@@ -136,6 +136,7 @@ export async function getAdminConsoleData(
     })),
     players: playerRows.map((row) => ({
       countryCode: row.countryCode,
+      hltvProfileUrl: row.hltvProfileUrl,
       id: row.id.toString(),
       nickname: row.nickname,
       photoPath: row.photoPath,

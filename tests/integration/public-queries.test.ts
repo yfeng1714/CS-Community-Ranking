@@ -25,6 +25,11 @@ beforeAll(async () => {
   if (!aceId || !boltId) throw new Error("Development fixture players are missing");
 
   await database
+    .update(schema.players)
+    .set({ hltvProfileUrl: "https://www.hltv.org/player/12345/sample-ace" })
+    .where(eq(schema.players.id, aceId));
+
+  await database
     .update(schema.playerRankings)
     .set({ losses: 0n, score: 2, wins: 2n })
     .where(eq(schema.playerRankings.playerId, aceId));
@@ -98,6 +103,7 @@ describe("Milestone 5 public queries", () => {
     expect(player).toMatchObject({
       careerRating: 1.14,
       freshness: "CURRENT",
+      hltvProfileUrl: "https://www.hltv.org/player/12345/sample-ace",
       nickname: "Ace",
       ranking: { rank: 1, score: 2 },
       recentMaps: 18,

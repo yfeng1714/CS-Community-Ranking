@@ -2,7 +2,7 @@
 
 ## Current position
 
-- **Milestone:** 9 — Staging deployment and operational readiness (**complete**)
+- **Milestone:** 10 — Candidate Pool V1, closed beta, and launch (**in progress; preparation only**)
 - **Status:** Owner Review Gate E was approved on 2026-08-14. Railway direct-host staging is deployed
   and healthy; fictional bootstrap, all six cron
   jobs, owner Admin login/logout, the minimum direct load window, failed-job email delivery,
@@ -11,14 +11,77 @@
   explicitly deferred a custom domain/Cloudflare edge layer; the first retained local dump, its full
   restore verification, and its independent private R2 copy pass. The owner explicitly waived an
   artificial failed-deployment drill against the sole active staging service and deliberate spend
-  solely to trigger the $10 alert. M10 is the next authorized boundary.
+  solely to trigger the $10 alert. M10 repository preparation now adds a read-only, fail-closed
+  launch-readiness report and a Gate F evidence/sign-off workflow. The Owner then approved ADR 0006:
+  rehearse locally and reset the existing fictional Railway database in place after final verified
+  backup evidence, with no second Railway database. The isolated local real-data rehearsal has now
+  applied the approved canonical manifest, approved the official August 3 VRS plus audited reviewed
+  August 10 HLTV evidence, and admitted the Owner-approved 14-Team/70-Player Core Pool through Gate
+  D. Local readiness passes with only optional asset/stat warnings. The canonical rehearsal remains
+  DRAFT and zeroed; a separate clone is ACTIVE only for local UI inspection. Railway was not
+  mutated. Production Edition activation, database reset, and closed beta have not started.
 - **Review boundary:** The owner-approved Hobby baseline contains PostgreSQL, Web, and six cron
   services. The Railway-generated environment is still named `production`, but it is being treated
   only as staging until M10 deliberately creates production data. No real Candidate Pool or
-  closed-beta launch has happened yet.
+  closed-beta launch has happened yet. The existing rows cannot become production by relabeling:
+  they contain an ACTIVE fictional `2026` Edition and test history. Because no meaningful real data
+  exists, ADR 0006 approves a documented one-time reset of the existing PostgreSQL service after the
+  final verified backup/restore/R2 evidence and explicit destructive-action approval. The current
+  Web/cron/domain/database stack remains and no second Railway database is planned.
 - **Last updated:** 2026-08-14
 
 ## Completed in the repository
+
+- M10 adds a fail-closed canonical bootstrap boundary. `data/canonical/2026-beta.json` is an
+  Owner-approved input containing the 14-Team union of the August 3 Valve and August 10 HLTV top-12
+  sources, 70 direct Player HLTV identities/profile links, and five observed current starters per
+  Team. `pnpm canonical:bootstrap` is dry-run only by default; apply requires Owner-approved metadata,
+  an active Admin, two explicit flags, and empty product tables, then writes the DRAFT Edition and
+  all canonical/audit rows atomically. It never admits a Pool entry or activates the Edition.
+- The isolated local bootstrap rehearsal passed with 14 Teams, 70 Players, 70 current roster rows,
+  84 identities, 239 audit rows, and an empty Pool. A live official August 3 Valve snapshot (396
+  Teams) and checksum-locked reviewed August 10 HLTV top 12 were approved through audited paths. The
+  initial live HLTV adapter attempt and Owner-requested retry both correctly failed closed on HTTP
+  403 while ordinary Owner-browser access worked. The draft succeeded with 14 conflict-free
+  proposals and ten retained warnings; nothing was auto-applied.
+- After explicit Owner approval, all 14 exact proposal IDs passed guarded dry-run and were reviewed
+  through `PendingImportReviewService`. The result is 14 Core Team rows, 70 pairing-enabled starters,
+  70 zeroed rankings, 14 review audits, 14 Team admission logs, and 70 Team-player admission logs.
+  Full integrity is healthy and local `launch:check` passes with `blocking: false`, 2,415 possible
+  pairs, and only missing-image/missing-optional-stat warnings.
+- The trusted `pending:review` CLI previews only explicitly supplied IDs and requires actor, reason,
+  apply, and confirmation inputs. Its first real dry run exposed unsupported Node strip-only
+  constructor syntax in `PendingImportReviewService`; the class now uses equivalent explicit fields,
+  so the trusted CLI path is actually executable rather than merely type-tested.
+- Pool drafting now applies the Owner-approved roster rule exactly: an HLTV roster mismatch blocks;
+  a VRS mismatch is retained as an `HLTV_ROSTER_AUTHORITY_APPLIED` warning. Unmatched rank-13–20 VRS
+  rows without qualifying Event evidence are warnings rather than false missing-Core blockers.
+- The Owner removed the personal email and dedicated `/privacy` route for the small community beta;
+  existing data-minimizing controls remain. The HLTV User-Agent identifies the deployed project URL.
+  Real images may use the honest `OWNER_ACCEPTED_PENDING_RIGHTS` status while the Owner handles
+  external rights later; all canonical paths remain null until the separate asset pass. Source URLs
+  and notes remain server-side developer metadata and are not rendered by public or Admin UI.
+
+- M10 adds `pnpm launch:check -- --edition <code>`, a read-only JSON report that exits nonzero on
+  missing/stale approved HLTV/VRS inputs, an incomplete or outdated Pool draft, unresolved imports,
+  eligibility/roster drift, nonzero/missing ranking baselines, missing HLTV identities, integrity
+  failures, non-observe risk mode, unattributed configured assets, or incomplete Pool audit history.
+  Missing optional photos/logos and stats remain explicit warnings.
+- The normal Admin `DRAFT` → `ACTIVE` action re-runs that report and fails closed on any blocker.
+  It cannot infer or replace Gate F's explicit Owner, image-source/right-status, beta, route, and
+  backup sign-offs. The production Docker image now includes the versioned asset-attribution
+  manifest used by this runtime check.
+- M10 adds the nullable, audited `player.hltv_profile_url` reference field through ordered migration
+  `0003`. It accepts only direct HTTPS `hltv.org/player/{id}/{slug}` URLs, is editable in Admin,
+  passes through reviewed imports, and appears on the public Player page when present. Machine-facing
+  provider IDs remain in `player_external_identity`.
+- `docs/LAUNCH_GATE_F.md` separates repository proof from real operational proof: clean production
+  provisioning, canonical data/source review, category-by-category Owner approval, asset source and
+  rights-status review, pre-activation evidence, multi-device/network beta observations, limit
+  tuning, backup cadence, and final sign-off. It forbids seed commands and fictional-history
+  relabeling in production.
+- A PostgreSQL integration test constructs a fully auditable five-player DRAFT Pool with exact
+  source provenance and proves the gate both passes it and blocks unresolved import/roster drift.
 
 - `railway/web.json` fixes Web to one Singapore replica, checks database readiness, and runs only
   committed migrations in Railway's pre-deploy phase. A nonzero migration exit blocks traffic from
@@ -51,20 +114,20 @@
 
 ## Local validation
 
-| Command/check                       | Result | Notes                                                                                                                                                                                                                             |
-| ----------------------------------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `pnpm lint`                         | PASS   | Zero warnings.                                                                                                                                                                                                                    |
-| `pnpm format:check`                 | PASS   | Source, JSON configuration, tests, and docs formatted.                                                                                                                                                                            |
-| `pnpm typecheck`                    | PASS   | Strict TypeScript `6.0.3`.                                                                                                                                                                                                        |
-| `pnpm test:unit`                    | PASS   | Latest pass: 35 files, 124 tests including Railway, CLI, backup, security, and readiness safety.                                                                                                                                  |
-| `pnpm test:integration`             | PASS   | 9 files, 40 tests against PostgreSQL 18.                                                                                                                                                                                          |
-| `pnpm db:migrate` / `pnpm db:check` | PASS   | Ordered migrations apply; journal is consistent.                                                                                                                                                                                  |
-| Operational CLI execution           | PASS   | Integrity healthy/zero-sum; expiration and retention ran successfully.                                                                                                                                                            |
-| Local logical restore drill         | PASS   | PostgreSQL 18 custom dump restored to separate empty DB in 1.27s; all 14 critical table counts matched; scratch DB/dump removed.                                                                                                  |
-| `pnpm build`                        | PASS   | Optimized Next.js `16.3.0` Webpack build and standalone traces.                                                                                                                                                                   |
-| `pnpm test:e2e`                     | PASS   | 6 public/Admin journeys in desktop/mobile Chromium. Harmless dev-server aborted-stream messages remained during browser teardown.                                                                                                 |
-| `git diff --check`                  | PASS   | No whitespace errors.                                                                                                                                                                                                             |
-| Production Docker rebuild           | PASS   | Pinned Node 24.14.0/pnpm 11.16.0 image built; final 190,565,606-byte image runs as `node`, excludes Vitest/TypeScript, and contains Web, migration, all six cron entry points, migrations, public assets, and Next static output. |
+| Command/check                       | Result | Notes                                                                                                                                                                                                                                                                      |
+| ----------------------------------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm lint`                         | PASS   | Zero warnings.                                                                                                                                                                                                                                                             |
+| `pnpm format:check`                 | PASS   | Source, JSON configuration, tests, and docs formatted.                                                                                                                                                                                                                     |
+| `pnpm typecheck`                    | PASS   | Strict TypeScript `6.0.3`, including the M10 report/CLI/test.                                                                                                                                                                                                              |
+| `pnpm test:unit`                    | PASS   | Latest pass: 38 files, 137 tests including Railway, CLI, backup, security, Admin activation safety, HLTV profile-URL normalization, canonical-manifest review guards, reviewed-HLTV fallback validation, roster-authority policy, and provisional asset-source validation. |
+| `pnpm test:integration`             | PASS   | Full pass: 11 files, 44 tests against PostgreSQL 18, including external-source warning policy, the launch-readiness gate, nullable HLTV profile-URL migration/constraint, and atomic 14-Team/70-Player canonical bootstrap with 239 audit rows.                            |
+| `pnpm db:migrate` / `pnpm db:check` | PASS   | Ordered migrations apply; journal is consistent.                                                                                                                                                                                                                           |
+| Operational CLI execution           | PASS   | Integrity healthy/zero-sum; expiration and retention ran successfully.                                                                                                                                                                                                     |
+| Local logical restore drill         | PASS   | PostgreSQL 18 custom dump restored to separate empty DB in 1.27s; all 14 critical table counts matched; scratch DB/dump removed.                                                                                                                                           |
+| `pnpm build`                        | PASS   | Optimized Next.js `16.3.0` Webpack build and standalone traces.                                                                                                                                                                                                            |
+| `pnpm test:e2e`                     | PASS   | 6 public/Admin journeys in desktop/mobile Chromium. Harmless dev-server aborted-stream messages remained during browser teardown.                                                                                                                                          |
+| `git diff --check`                  | PASS   | No whitespace errors.                                                                                                                                                                                                                                                      |
+| Production Docker rebuild           | PASS   | Pinned Node 24.14.0/pnpm 11.16.0 image built; final 190,565,606-byte image runs as `node`, excludes Vitest/TypeScript, and contains Web, migration, all six cron entry points, migrations, public assets, and Next static output.                                          |
 
 Docker Desktop was restarted once because its Linux engine initially hung. It was used only for
 PostgreSQL/integration/restore work; the project database is stopped and Docker Desktop is quit after
@@ -195,7 +258,10 @@ this verification window.
 
 ## Next task
 
-Begin M10 planning from `docs/IMPLEMENTATION_PLAN_V0.1.md`: generate a fresh review-only 2026 Pool
-draft, collect the remaining owner inputs and asset/attribution evidence, and present conflicts and
-proposed entries for approval. Do not activate the real Edition, enable production Pool entries, or
-start closed beta without the M10 approvals required by the plan.
+Owner-review the local-only ACTIVE preview UI while the canonical rehearsal stays DRAFT and zeroed.
+Continue the separate 14-logo/70-portrait asset pass with Dev/Ops-only source records; neutral
+placeholders remain an accepted technical fallback. Once the real-data UI is accepted, prepare the
+approved in-place Railway cutover by collecting final backup/restore/R2 evidence and explicit reset
+approval, pausing services, rebuilding the existing database from migrations, and repeating with
+fresh sources. Do not reset the cloud database, activate a production Edition, enable production
+Pool entries, or start closed beta without the explicit Gate F approvals.

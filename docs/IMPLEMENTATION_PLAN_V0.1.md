@@ -401,8 +401,7 @@ cs-community-ranking/
 │  │  │  ├─ page.tsx
 │  │  │  ├─ ranking/page.tsx
 │  │  │  ├─ player/[slug]/page.tsx
-│  │  │  ├─ about/page.tsx
-│  │  │  └─ privacy/page.tsx
+│  │  │  └─ about/page.tsx
 │  │  ├─ admin/
 │  │  └─ api/v1/
 │  │     ├─ ballots/next/route.ts
@@ -566,6 +565,8 @@ check. Migration SQL—not only Drizzle declarations—is reviewed at Gate B.
 - `real_name text nullable`
 - `country_code text nullable`
 - `photo_path text nullable`
+- `hltv_profile_url text nullable` — Owner-approved M10 amendment; human-facing direct HTTPS
+  player-profile reference, not the provider identity used by synchronization
 - `professional_status enum(ACTIVE, INACTIVE, RETIRED)`
 - `created_at timestamptz`
 - `updated_at timestamptz`
@@ -1688,13 +1689,12 @@ Keep it short and direct:
 - no objective-truth claim;
 - some high-frequency or abnormal votes may not count;
 - Candidate Pool rules link;
-- data-source attribution link;
-- privacy link.
+- data-source attribution link.
 
-The Privacy page must state the anonymous-cookie purpose, quota/risk processing,
-retention windows, analytics categories, external data attribution, and a contact
-path for privacy or image-rights/takedown requests. Final legal wording and the
-contact address are launch blockers, not Milestone 0 blockers.
+For the small community beta, the Owner has deferred a dedicated privacy/contact page. The
+data-minimizing implementation remains unchanged: secure anonymous cookies, no raw-IP persistence,
+bounded product events, and retention cleanup. Reconsider a public policy/contact route when the
+project gains a custom domain or materially broader use.
 
 ## 17.6 Accessibility
 
@@ -1839,9 +1839,11 @@ not hidden configuration in source code.
 V0.1 player photos and team logos are local static assets.
 
 - No runtime hotlinking.
-- Keep `assets/attribution.json` with source/license/permission notes.
+- Keep `assets/attribution.json` with exact source and honest rights status.
+- Owner-accepted provisional beta use may proceed while external rights review remains pending; it
+  is reported as a warning and must not be mislabeled as licensed or permission-granted.
 - Provide a neutral placeholder when an image cannot be used.
-- Do not copy third-party image assets merely because their pages are publicly accessible.
+- Keep replacement/removal independent from Player, Team, and ranking history.
 
 ---
 
@@ -2361,7 +2363,8 @@ Tasks:
   request the next Ballot without showing the result interstitial.
 - Build Ranking page with ties.
 - Build Player page.
-- Build About and Privacy pages.
+- Build the About page. The originally implemented Privacy page was removed by the M10 Owner
+  decision for the small community beta.
 - Add missing-data and stale-data states.
 - Add keyboard/accessibility support.
 - Add Playwright core journey.
@@ -2543,7 +2546,8 @@ The project is not V0.1 complete until all are true.
 - [ ] Import failures preserve old data.
 - [ ] Candidate changes require approval.
 - [ ] Data freshness is visible.
-- [ ] Images have attribution/permission records or placeholders.
+- [ ] Images have source/right-status records or placeholders; provisional Owner-accepted assets are
+      explicit warnings.
 
 ## Operations
 

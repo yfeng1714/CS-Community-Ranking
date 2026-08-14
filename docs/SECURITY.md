@@ -123,4 +123,25 @@ Remaining real proxy-header behavior, notification delivery, retained logical-ba
 route/load evidence, and Mainland China access stay bounded by the applicable rows in
 `docs/STAGING_GATE_E.md`. Cloudflare-only rows are owner-deferred under ADR 0005 until its trigger.
 
+## Milestone 10 launch controls
+
+- `launch:check` is read-only and fails closed on missing/stale source approval, an incomplete or
+  outdated Pool draft, pending imports, eligibility/roster drift, missing zero baselines/provider
+  identities/audit evidence, integrity violations, non-observe risk mode, and unattributed local
+  assets. Its JSON result is retained as launch evidence; it never activates an Edition.
+- The authenticated Admin `DRAFT` → `ACTIVE` path re-runs the same readiness report and refuses the
+  transition when any blocker exists. This is a final operator-surface guard; Gate F's licensing,
+  public-contact, tester, backup, route, and Owner approvals remain mandatory human evidence.
+- The fictional M9 rows must not be renamed or disguised as real history. Under ADR 0006, their only
+  live copy may be removed during one explicitly approved pre-user schema reset after a verified
+  local backup/restore and private R2 second copy. The existing Railway database service is then
+  rebuilt from committed migrations without seeds. Once meaningful real data exists, this exception
+  expires and normal append-only/forward-migration rules apply.
+- Closed beta starts in risk observe mode. Shared-network false positives, request/API metrics,
+  integrity, resource use, and spend evidence must be reviewed before any enforcement or limit
+  change. Configuration convenience is not approval to weaken database quota/correctness truth.
+- Edition activation and beta remain explicit Owner actions after the full `docs/LAUNCH_GATE_F.md`
+  operational checklist. A passing automated report alone cannot assert final image-rights status,
+  tester diversity, backup cadence, route evidence, or Owner approval.
+
 Never add a raw IP, visitor cookie, Admin token, password, or complete provider HTML body to logs.

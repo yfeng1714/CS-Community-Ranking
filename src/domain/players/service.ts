@@ -8,6 +8,7 @@ import { players } from "../../db/schema/index.ts";
 export type ProfessionalStatus = "ACTIVE" | "INACTIVE" | "RETIRED";
 
 const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const hltvPlayerPathPattern = /^\/player\/[1-9]\d*\/[^/]+\/?$/;
 
 function normalizeSlug(value: string): string {
   const slug = requireNonBlank(value, "Player slug");
@@ -17,9 +18,44 @@ function normalizeSlug(value: string): string {
   return slug;
 }
 
+export function normalizeHltvProfileUrl(value: string | null | undefined): string | null {
+  const candidate = value?.trim();
+  if (!candidate) return null;
+  if (candidate.length > 2_000) {
+    throw new DomainError("INVALID_HLTV_PROFILE_URL", "HLTV profile URL is too long");
+  }
+
+  let url: URL;
+  try {
+    url = new URL(candidate);
+  } catch {
+    throw new DomainError("INVALID_HLTV_PROFILE_URL", "HLTV profile URL must be a valid URL");
+  }
+
+  if (
+    url.protocol !== "https:" ||
+    !["hltv.org", "www.hltv.org"].includes(url.hostname.toLowerCase()) ||
+    url.port !== "" ||
+    url.username !== "" ||
+    url.password !== "" ||
+    url.search !== "" ||
+    url.hash !== "" ||
+    !hltvPlayerPathPattern.test(url.pathname)
+  ) {
+    throw new DomainError(
+      "INVALID_HLTV_PROFILE_URL",
+      "HLTV profile URL must use https://www.hltv.org/player/{id}/{slug}",
+    );
+  }
+
+  url.hostname = "www.hltv.org";
+  return url.toString();
+}
+
 export interface CreatePlayerInput {
   actorAdminUserId: bigint;
   countryCode?: string | null | undefined;
+  hltvProfileUrl?: string | null | undefined;
   nickname: string;
   photoPath?: string | null | undefined;
   professionalStatus?: ProfessionalStatus | undefined;
@@ -36,6 +72,7 @@ export async function createPlayer(database: AppDatabase, input: CreatePlayerInp
       .insert(players)
       .values({
         countryCode: input.countryCode?.trim() || null,
+        hltvProfileUrl: normalizeHltvProfileUrl(input.hltvProfileUrl),
         nickname: requireNonBlank(input.nickname, "Player nickname"),
         photoPath: input.photoPath?.trim() || null,
         professionalStatus: input.professionalStatus ?? "ACTIVE",
@@ -67,6 +104,7 @@ export async function updatePlayer(
   input: {
     actorAdminUserId: bigint;
     countryCode?: string | null | undefined;
+    hltvProfileUrl?: string | null | undefined;
     nickname?: string | undefined;
     photoPath?: string | null | undefined;
     professionalStatus?: ProfessionalStatus | undefined;
@@ -97,6 +135,9 @@ export async function updatePlayer(
         ...(input.countryCode === undefined
           ? {}
           : { countryCode: input.countryCode?.trim() || null }),
+        ...(input.hltvProfileUrl === undefined
+          ? {}
+          : { hltvProfileUrl: normalizeHltvProfileUrl(input.hltvProfileUrl) }),
         ...(input.nickname === undefined
           ? {}
           : { nickname: requireNonBlank(input.nickname, "Player nickname") }),

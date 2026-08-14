@@ -162,6 +162,11 @@ describe("Milestone 7 external data jobs", () => {
       now: new Date("2026-08-10T00:00:00Z"),
     });
     expect(report.proposed).toContain("Sample Alpha");
+    expect(report.warnings).toContainEqual({
+      codes: ["TOP20_TEAM_NOT_IMPORTED_NO_EVENT_EVIDENCE"],
+      provider: "VALVE_VRS",
+      sourceTeam: "Sample Charlie",
+    });
     const [pending] = await database
       .select()
       .from(schema.pendingImportChanges)

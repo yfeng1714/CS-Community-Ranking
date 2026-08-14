@@ -116,7 +116,8 @@ disclosing whether the prior token was valid.
 
 ### `POST /api/v1/admin/mutate`
 
-Accepts a discriminated JSON action for Team/Player details and external identities, Roster,
+Accepts a discriminated JSON action for Team/Player details (including an optional direct HTTPS
+HLTV player-profile URL) and external identities, Roster,
 Edition, Event whitelist/result, Candidate Pool Team/Special/team-derived Player admission and
 pairing state, pending-import review, or Vote revocation. Every request passes the shared mutation
 guard and a fresh database session/active-Admin check. The actor ID always comes from that session.

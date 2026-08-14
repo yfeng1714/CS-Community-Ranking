@@ -67,7 +67,8 @@ the product scope.
 - Added a 90-day default retention window after which daily IP-risk keys are
   nulled while Votes remain preserved.
 - Prevented pre-resolution disclosure of suspicious risk classification.
-- Added minimum Privacy-page disclosure and takedown/contact requirements.
+- Added minimum Privacy-page disclosure and takedown/contact requirements. The M10 Owner decision
+  later removed that route for the small community beta while retaining the underlying controls.
 
 ### Operations and data
 
@@ -102,7 +103,8 @@ These do not block Milestone 0 and should remain owner decisions:
 - final name, domain, slogan, and visual identity;
 - production Candidate Pool, Manual Review teams, and Special players;
 - completed-2026 T1 event whitelist;
-- image rights/licensing and the public takedown contact;
+- image sourcing/right-status review; the public contact route is deferred until a custom domain or
+  materially broader usage;
 - final quota after closed-beta data;
 - Cloudflare proxy-on versus DNS-only after Mainland China network tests.
 

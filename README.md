@@ -5,7 +5,16 @@ simple pairwise votes.
 
 ## Status
 
-Milestones 0–9 are implemented and Owner Review Gate E was approved on 2026-08-14. The runtime foundation, full V0.1 database schema, data-driven
+Milestones 0–9 are implemented and Owner Review Gate E was approved on 2026-08-14. M10 is now in
+review-only preparation: a fail-closed launch-readiness command, an Owner-approved 14-Team/70-Player
+canonical manifest, and Gate F evidence checklist are in place. An isolated local rehearsal has
+applied that manifest and admitted the Owner-approved, conflict-free 14-Team/70-Player Core Pool
+from approved August 3 VRS and August 10 HLTV evidence. Its DRAFT launch-readiness report passes
+with only placeholder-image and optional-stat warnings. A separate local-only clone is ACTIVE for UI
+preview; the canonical rehearsal remains DRAFT and zeroed. No Railway reset, production Pool,
+production Edition activation, or closed beta has started. ADR 0006 selects a one-time
+in-place reset of the fictional Railway database after final verified backup evidence, so the launch
+plan keeps one Railway PostgreSQL service. The runtime foundation, full V0.1 database schema, data-driven
 Candidate Pool, secure anonymous visitor identity, atomic random Ballot issuance, exactly-once
 Vote/ranking transactions, and the responsive public Vote/Ranking/Player vertical slice are in
 place, together with the authenticated Admin Console, fixture-tested VRS/HLTV adapters, external
@@ -16,8 +25,18 @@ integrity and retention jobs, bounded public API protection, and site-wide secur
 production image, migration-gated Railway topology, scheduled-service configs, staging smoke/load,
 and backup/restore verification are versioned. Direct Railway staging is live; the first retained
 local logical backup has passed a full 14-table restore and has a verified independent copy in a
-private Cloudflare R2 bucket. Milestone 10—real Candidate Pool review, closed beta, and launch—is the
-next authorized boundary; no production Pool or real-user beta has started yet.
+private Cloudflare R2 bucket. The M10 next boundary is real-data rehearsal, final in-place-reset
+evidence/approval, and Owner review under `docs/LAUNCH_GATE_F.md`.
+
+Players may carry an optional validated HLTV profile URL for human reference. It is managed through
+the audited Admin flow and shown on the public Player page, while external provider identities
+remain separate synchronization records.
+
+The small community beta intentionally has no public privacy/contact page. Existing data-minimizing
+cookie, IP-risk-key, and retention safeguards remain in place; a dedicated policy/contact surface
+will be reconsidered when the product has a custom domain or materially broader use. Real images may
+be imported for the beta under explicit Owner acceptance while source and rights status remain
+recorded. See `docs/IMAGE_SOURCING.md`.
 
 ## Technology
 
@@ -90,6 +109,12 @@ If port `5432` is already occupied, set `POSTGRES_PORT` to another host port in
 | `pnpm pool:disable-player -- ...` | Disable future pairing without deleting history |
 | `pnpm score:check -- --edition <code>` | Verify zero-sum and Vote/ranking/aggregate integrity |
 | `pnpm report:kpi -- --edition <code> [--date YYYY-MM-DD]` | Generate the first-party daily KPI report |
+| `pnpm launch:check -- --edition <code>` | Produce the fail-closed, read-only pre-activation readiness report |
+| `pnpm canonical:bootstrap [-- ...]` | Validate the DRAFT canonical manifest; explicit approved flags are required to apply it to an empty DB |
+| `pnpm source:approve-ranking -- --snapshot <id> [...]` | Review an immutable ranking snapshot; explicit actor, reason, apply, and confirmation inputs are required to approve it |
+| `pnpm source:import-reviewed-hltv [-- ...]` | Validate the checksum-locked reviewed HLTV top-12 fallback; guarded apply records and approves it when live retrieval is blocked |
+| `pnpm job:build-pool-draft -- --edition <code>` | Build review-only Pool proposals from the latest approved HLTV/VRS snapshots |
+| `pnpm pending:review -- --id <id>[,<id>...] [...]` | Preview exact pending proposals; guarded apply reviews each through the ordinary audited Gate D service |
 | `pnpm job:integrity-check -- --edition <code>` | Check ranking, Pool, Vote, aggregate, and risk-key integrity |
 | `pnpm job:expire-ballots [-- --batch <count>]` | Batch-expire overdue open Ballots |
 | `pnpm job:retention-cleanup` | Apply configured analytics and IP-risk-key retention |
@@ -108,12 +133,16 @@ If port `5432` is already occupied, set `POSTGRES_PORT` to another host port in
 - [`docs/API.md`](docs/API.md) — API conventions
 - [`docs/DATABASE.md`](docs/DATABASE.md) — database conventions
 - [`docs/CANDIDATE_POOL.md`](docs/CANDIDATE_POOL.md) — Candidate Pool rules, services, cache, and CLI
+- [`docs/CANONICAL_BOOTSTRAP.md`](docs/CANONICAL_BOOTSTRAP.md) — fail-closed real-data manifest review and empty-DB bootstrap boundary
+- [`docs/CANONICAL_DATA_REVIEW_2026-08-14.md`](docs/CANONICAL_DATA_REVIEW_2026-08-14.md) — proposed 14-Team roster sheet, source conflicts, and Owner review record
 - [`docs/BALLOT_ISSUANCE.md`](docs/BALLOT_ISSUANCE.md) — visitor identity, quota, random pairing, and issuance transaction
 - [`docs/VOTE_RESOLUTION.md`](docs/VOTE_RESOLUTION.md) — exactly-once resolution, ranking, revocation, and integrity checks
 - [`docs/PUBLIC_UI.md`](docs/PUBLIC_UI.md) — public pages, display rules, reload orchestration, and accessibility
+- [`docs/IMAGE_SOURCING.md`](docs/IMAGE_SOURCING.md) — image source priorities, provisional-rights status, and local import workflow
 - [`docs/ADMIN_CONSOLE.md`](docs/ADMIN_CONSOLE.md) — Admin sessions, mutation/audit workflows, and pending-review safety
 - [`docs/SECURITY.md`](docs/SECURITY.md) — security baseline
 - [`docs/STAGING_GATE_E.md`](docs/STAGING_GATE_E.md) — staging evidence checklist and Owner Review Gate E
+- [`docs/LAUNCH_GATE_F.md`](docs/LAUNCH_GATE_F.md) — M10 production Pool, closed-beta, and launch sign-off record
 
 When documents disagree about product intent, use the Product Decision Chronicle
 as the primary reference and record important changes.

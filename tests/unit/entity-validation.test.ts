@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import type { AppDatabase } from "@/domain/database";
 import { createEdition } from "@/domain/editions/service";
 import { createEvent } from "@/domain/events/service";
+import { normalizeHltvProfileUrl } from "@/domain/players/service";
 
 const noDatabaseAccess = {} as AppDatabase;
 
@@ -47,5 +48,23 @@ describe("entity service validation", () => {
     ).rejects.toMatchObject({
       code: "INVALID_EVENT_SLUG",
     });
+  });
+
+  it("normalizes only direct HTTPS HLTV player-profile links", () => {
+    expect(normalizeHltvProfileUrl(" https://hltv.org/player/11893/zywoo ")).toBe(
+      "https://www.hltv.org/player/11893/zywoo",
+    );
+    expect(normalizeHltvProfileUrl("  ")).toBeNull();
+
+    for (const invalid of [
+      "http://www.hltv.org/player/11893/zywoo",
+      "https://example.com/player/11893/zywoo",
+      "https://www.hltv.org/team/9565/vitality",
+      "https://www.hltv.org/player/11893/zywoo?utm_source=test",
+    ]) {
+      expect(() => normalizeHltvProfileUrl(invalid)).toThrowError(
+        expect.objectContaining({ code: "INVALID_HLTV_PROFILE_URL" }),
+      );
+    }
   });
 });

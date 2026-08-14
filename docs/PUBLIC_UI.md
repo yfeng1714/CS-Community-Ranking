@@ -7,12 +7,12 @@ Milestone 5 is the first complete anonymous public journey. It provides:
 - `/` — random Vote pair, expandable details, Skip, result, and explicit Next;
 - `/ranking` — active-Edition competition ranking and client-side search;
 - `/player/{slug}` — public player identity, roster, score record, and approved stats;
-- `/about` — short product, scoring, random-pairing, and Candidate Pool explanation;
-- `/privacy` — anonymous identity, quota/risk, retention, external-data, and contact disclosures.
+- `/about` — short product, scoring, random-pairing, and Candidate Pool explanation.
 
 The top navigation contains Vote, Ranking, and About. Player pages are reached through player links;
-Privacy is linked from the footer and About page. `CS 野榜` is a working identity pending the final
-name/domain/visual decision.
+the About call-to-action links back to Vote and Ranking. The small community beta has no dedicated
+privacy/contact route; the Owner will reconsider one when the project has a custom domain or
+materially broader use. `CS 野榜` is a working identity pending the final name/domain/visual decision.
 
 ## Vote interaction
 
@@ -52,7 +52,9 @@ contains the expanded record.
 
 Search is local to the loaded ranking and matches nickname, team name/short name, and country. Player
 pages display missing values as `—` or an explicit explanatory phrase; a missing value is never
-presented as zero.
+presented as zero. When a Player has an approved `hltv_profile_url`, the profile includes an
+explicit new-tab HLTV reference link; absent links leave no empty control and no third-party request
+is made while rendering the page.
 
 The latest HLTV recent `rating_3_0 / LAST_3_MONTHS` and `career_rating / CAREER` snapshots are used
 and labeled as HLTV Rating. Other providers' metrics remain isolated and cannot silently fill those

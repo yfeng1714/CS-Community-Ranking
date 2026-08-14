@@ -1,0 +1,103 @@
+{
+  "version": 1,
+  "publishedAt": "2026-08-10T00:00:00.000Z",
+  "sourceUrl": "https://www.hltv.org/ranking/teams/2026/august/10",
+  "teams": [
+    {
+      "externalId": "11283",
+      "externalSlug": "falcons",
+      "name": "Falcons",
+      "points": null,
+      "rank": 1,
+      "roster": ["karrigan", "NiKo", "TeSeS", "m0NESY", "kyousuke"]
+    },
+    {
+      "externalId": "7020",
+      "externalSlug": "spirit",
+      "name": "Spirit",
+      "points": null,
+      "rank": 2,
+      "roster": ["sh1ro", "magixx", "tN1R", "zont1x", "donk"]
+    },
+    {
+      "externalId": "8297",
+      "externalSlug": "furia",
+      "name": "FURIA",
+      "points": null,
+      "rank": 3,
+      "roster": ["FalleN", "yuurih", "YEKINDAR", "KSCERATO", "molodoy"]
+    },
+    {
+      "externalId": "9565",
+      "externalSlug": "vitality",
+      "name": "Vitality",
+      "points": null,
+      "rank": 4,
+      "roster": ["apEX", "ropz", "ZywOo", "flameZ", "mezii"]
+    },
+    {
+      "externalId": "4494",
+      "externalSlug": "mouz",
+      "name": "MOUZ",
+      "points": null,
+      "rank": 5,
+      "roster": ["torzsi", "Spinx", "xertioN", "PR", "xelex"]
+    },
+    {
+      "externalId": "4608",
+      "externalSlug": "natus-vincere",
+      "name": "Natus Vincere",
+      "points": null,
+      "rank": 6,
+      "roster": ["Aleksib", "iM", "b1t", "w0nderful", "makazze"]
+    },
+    {
+      "externalId": "9996",
+      "externalSlug": "9z",
+      "name": "9z",
+      "points": null,
+      "rank": 7,
+      "roster": ["max", "dgt", "meyern", "luchov", "HUASOPEEK"]
+    },
+    {
+      "externalId": "11861",
+      "externalSlug": "aurora",
+      "name": "Aurora",
+      "points": null,
+      "rank": 8,
+      "roster": ["XANTARES", "woxic", "Jimpphat", "kyxsan", "Wicadia"]
+    },
+    {
+      "externalId": "6667",
+      "externalSlug": "faze",
+      "name": "FaZe",
+      "points": null,
+      "rank": 9,
+      "roster": ["frozen", "Twistzz", "Neityu", "jcobbb", "JBOEN"]
+    },
+    {
+      "externalId": "5995",
+      "externalSlug": "g2",
+      "name": "G2",
+      "points": null,
+      "rank": 10,
+      "roster": ["huNter-", "NertZ", "r1nkle", "HeavyGod", "MATYS"]
+    },
+    {
+      "externalId": "6665",
+      "externalSlug": "astralis",
+      "name": "Astralis",
+      "points": null,
+      "rank": 11,
+      "roster": ["HooXi", "phzy", "jabbi", "Staehr", "ryu"]
+    },
+    {
+      "externalId": "12394",
+      "externalSlug": "betboom",
+      "name": "BetBoom",
+      "points": null,
+      "rank": 12,
+      "roster": ["Boombl4", "zorte", "S1ren", "d1Ledez", "Magnojez"]
+    }
+  ]
+}

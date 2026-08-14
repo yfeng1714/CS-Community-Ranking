@@ -155,6 +155,7 @@ export async function getPublicPlayer(
   const [player] = await database
     .select({
       country: players.countryCode,
+      hltvProfileUrl: players.hltvProfileUrl,
       id: players.id,
       nickname: players.nickname,
       photoUrl: players.photoPath,
@@ -187,6 +188,7 @@ export async function getPublicPlayer(
     careerRating: stats.careerRating,
     country: player.country,
     freshness: stats.freshness,
+    hltvProfileUrl: player.hltvProfileUrl,
     nickname: player.nickname,
     photoUrl: player.photoUrl,
     professionalStatus: player.professionalStatus,

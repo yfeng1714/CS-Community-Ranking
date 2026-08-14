@@ -30,6 +30,13 @@ async function readConfig(name: string): Promise<RailwayConfig> {
 }
 
 describe("Railway config-as-code", () => {
+  it("ships the reviewed launch and canonical inputs used by trusted commands", async () => {
+    const dockerfile = await readFile(path.join(root, "Dockerfile"), "utf8");
+
+    expect(dockerfile).toContain("/app/assets ./assets");
+    expect(dockerfile).toContain("/app/data ./data");
+  });
+
   it("migration-gates the single Singapore web replica and checks database readiness", async () => {
     const config = await readConfig("web.json");
 

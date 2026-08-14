@@ -9,11 +9,16 @@ The complete V0.1 PostgreSQL model is implemented in:
 - `drizzle/0000_m1_initial_schema.sql`
 - `drizzle/0001_m8_integrity_hardening.sql`
 - `drizzle/0002_m8_risk_key_constraints.sql`
+- `drizzle/0003_player_hltv_profile_url.sql`
 
 The initial migration creates 27 tables and 21 PostgreSQL enums. M8 adds `risk_observation`,
 `api_request_metric`, and persisted Ballot risk reasons through an ordered forward migration. The
 migrations are generated from the Drizzle schema, committed for review, and tested against an empty
 PostgreSQL 18 database.
+
+M10 adds nullable `player.hltv_profile_url` as a human-facing reference. Its database constraint
+allows only direct HTTPS HLTV player-profile paths. It is deliberately separate from
+`player_external_identity`, which remains the machine-facing provider ID/slug mapping used by sync.
 
 ## Conventions
 
@@ -51,6 +56,7 @@ The migration SQL is the final enforcement layer for row-local and uniqueness ru
 | At most one current roster row per player                                   | `roster_one_current_per_player` partial unique index              |
 | At most one open Ballot per visitor and Edition                             | `ballot_one_open_per_visitor_edition` partial unique index        |
 | At most one Vote per Ballot                                                 | `vote_ballot_unique`                                              |
+| Optional Player HLTV URL is a direct HTTPS player-profile path              | `player_hltv_profile_url_valid`                                   |
 | Ballot pair is canonical and its orientation matches                        | `ballot_canonical_pair`, `ballot_orientation_matches_pair`        |
 | Ballot status, resolution, and timestamp agree                              | `ballot_resolution_state`                                         |
 | Vote choice agrees with winner/loser nullability                            | `vote_choice_player_shape`                                        |

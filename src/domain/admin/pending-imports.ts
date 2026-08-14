@@ -95,6 +95,7 @@ const proposalSchema = z.discriminatedUnion("action", [
     ...envelope,
     input: z.strictObject({
       countryCode: nullableText,
+      hltvProfileUrl: z.string().trim().max(2_000).nullable().optional(),
       nickname: z.string().trim().min(1).max(100),
       photoPath: nullableText,
       professionalStatus: z.enum(["ACTIVE", "INACTIVE", "RETIRED"]).optional(),
@@ -107,6 +108,7 @@ const proposalSchema = z.discriminatedUnion("action", [
     ...envelope,
     input: z.strictObject({
       countryCode: nullableText,
+      hltvProfileUrl: z.string().trim().max(2_000).nullable().optional(),
       nickname: z.string().trim().min(1).max(100).optional(),
       photoPath: nullableText,
       playerId: bigintId,
@@ -490,12 +492,22 @@ async function applyProposal(
 }
 
 export class PendingImportReviewService {
+  private readonly activePool:
+    | Partial<
+        Pick<CandidatePoolService, "invalidateActivePlayerIds" | "invalidateAllActivePlayerIds">
+      >
+    | undefined;
+  private readonly database: AppDatabase;
+
   constructor(
-    private readonly database: AppDatabase,
-    private readonly activePool?: Partial<
+    database: AppDatabase,
+    activePool?: Partial<
       Pick<CandidatePoolService, "invalidateActivePlayerIds" | "invalidateAllActivePlayerIds">
     >,
-  ) {}
+  ) {
+    this.database = database;
+    this.activePool = activePool;
+  }
 
   async review(input: {
     actorAdminUserId: bigint;

@@ -101,10 +101,12 @@ describe("Milestone 2 Candidate Pool domain", () => {
     });
     const player = await createPlayer(database, {
       actorAdminUserId,
+      hltvProfileUrl: "https://hltv.org/player/84/domain-player",
       nickname: "Domain Player",
       reason: "Exercise the Player service",
       slug: "domain-player",
     });
+    expect(player.hltvProfileUrl).toBe("https://www.hltv.org/player/84/domain-player");
     const membership = await addRosterMembership(database, {
       actorAdminUserId,
       playerId: player.id,

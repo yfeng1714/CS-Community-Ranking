@@ -1,0 +1,1144 @@
+{
+  "version": 1,
+  "review": {
+    "status": "OWNER_APPROVED",
+    "approvedBy": "owner",
+    "reviewedAt": "2026-08-14T08:30:59Z"
+  },
+  "observedAt": "2026-08-14",
+  "edition": {
+    "code": "2026",
+    "name": "2026 Beta Edition",
+    "startsAt": "2026-08-14T00:00:00+08:00",
+    "endsAt": "2027-01-01T00:00:00+08:00",
+    "fullWeightBallotsPerDay": 50,
+    "ballotTtlMinutes": 30
+  },
+  "sources": [
+    {
+      "label": "Valve global standings 2026-08-03",
+      "url": "https://raw.githubusercontent.com/ValveSoftware/counter-strike_regional_standings/main/invitation/2026/standings_global_2026_08_03.md",
+      "publishedAt": "2026-08-03T00:00:00Z"
+    },
+    {
+      "label": "HLTV world ranking 2026-08-10",
+      "url": "https://www.hltv.org/ranking/teams/2026/august/10",
+      "publishedAt": "2026-08-10T00:00:00Z"
+    }
+  ],
+  "notes": [
+    "Draft union of the top 12 Teams in either listed ranking source: 14 Teams and 70 observed current formal starters.",
+    "Per the Owner decision on 2026-08-14, current starter observations follow the August 10 HLTV ranking/Team profile whenever HLTV and VRS disagree; the later sync-and-review workflow must preserve those disagreements as conflicts.",
+    "Roster startsAt is a conservative observation lower bound, not an asserted historical signing date.",
+    "Player photos and Team logos remain null until the Owner records a usable license or permission in assets/attribution.json; the UI uses neutral placeholders meanwhile.",
+    "Both listed ranking sources are within the current 14-day freshness threshold on 2026-08-14; production still requires newly synchronized and approved snapshots close to activation."
+  ],
+  "teams": [
+    {
+      "slug": "falcons",
+      "name": "Falcons",
+      "shortName": "FALCONS",
+      "countryCode": null,
+      "logoPath": null,
+      "hltvIdentity": {
+        "externalId": "11283",
+        "externalSlug": "falcons",
+        "sourceUrl": "https://www.hltv.org/team/11283/falcons"
+      },
+      "players": [
+        {
+          "slug": "karrigan",
+          "nickname": "karrigan",
+          "realName": "Finn Andersen",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/429/karrigan",
+          "hltvIdentity": {
+            "externalId": "429",
+            "externalSlug": "karrigan",
+            "sourceUrl": "https://www.hltv.org/player/429/karrigan"
+          }
+        },
+        {
+          "slug": "niko",
+          "nickname": "NiKo",
+          "realName": "Nikola Kovač",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/3741/niko",
+          "hltvIdentity": {
+            "externalId": "3741",
+            "externalSlug": "niko",
+            "sourceUrl": "https://www.hltv.org/player/3741/niko"
+          }
+        },
+        {
+          "slug": "teses",
+          "nickname": "TeSeS",
+          "realName": "René Madsen",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/12018/teses",
+          "hltvIdentity": {
+            "externalId": "12018",
+            "externalSlug": "teses",
+            "sourceUrl": "https://www.hltv.org/player/12018/teses"
+          }
+        },
+        {
+          "slug": "m0nesy",
+          "nickname": "m0NESY",
+          "realName": "Ilya Osipov",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/19230/m0nesy",
+          "hltvIdentity": {
+            "externalId": "19230",
+            "externalSlug": "m0nesy",
+            "sourceUrl": "https://www.hltv.org/player/19230/m0nesy"
+          }
+        },
+        {
+          "slug": "kyousuke",
+          "nickname": "kyousuke",
+          "realName": "Maksim Lukin",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/24177/kyousuke",
+          "hltvIdentity": {
+            "externalId": "24177",
+            "externalSlug": "kyousuke",
+            "sourceUrl": "https://www.hltv.org/player/24177/kyousuke"
+          }
+        }
+      ]
+    },
+    {
+      "slug": "vitality",
+      "name": "Vitality",
+      "shortName": "VIT",
+      "countryCode": null,
+      "logoPath": null,
+      "hltvIdentity": {
+        "externalId": "9565",
+        "externalSlug": "vitality",
+        "sourceUrl": "https://www.hltv.org/team/9565/vitality"
+      },
+      "players": [
+        {
+          "slug": "apex",
+          "nickname": "apEX",
+          "realName": "Dan Madesclaire",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/7322/apex",
+          "hltvIdentity": {
+            "externalId": "7322",
+            "externalSlug": "apex",
+            "sourceUrl": "https://www.hltv.org/player/7322/apex"
+          }
+        },
+        {
+          "slug": "ropz",
+          "nickname": "ropz",
+          "realName": "Robin Kool",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/11816/ropz",
+          "hltvIdentity": {
+            "externalId": "11816",
+            "externalSlug": "ropz",
+            "sourceUrl": "https://www.hltv.org/player/11816/ropz"
+          }
+        },
+        {
+          "slug": "zywoo",
+          "nickname": "ZywOo",
+          "realName": "Mathieu Herbaut",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/11893/zywoo",
+          "hltvIdentity": {
+            "externalId": "11893",
+            "externalSlug": "zywoo",
+            "sourceUrl": "https://www.hltv.org/player/11893/zywoo"
+          }
+        },
+        {
+          "slug": "flamez",
+          "nickname": "flameZ",
+          "realName": "Shahar Shushan",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/16693/flamez",
+          "hltvIdentity": {
+            "externalId": "16693",
+            "externalSlug": "flamez",
+            "sourceUrl": "https://www.hltv.org/player/16693/flamez"
+          }
+        },
+        {
+          "slug": "mezii",
+          "nickname": "mezii",
+          "realName": "William Merriman",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/18462/mezii",
+          "hltvIdentity": {
+            "externalId": "18462",
+            "externalSlug": "mezii",
+            "sourceUrl": "https://www.hltv.org/player/18462/mezii"
+          }
+        }
+      ]
+    },
+    {
+      "slug": "spirit",
+      "name": "Spirit",
+      "shortName": "SPIRIT",
+      "countryCode": null,
+      "logoPath": null,
+      "hltvIdentity": {
+        "externalId": "7020",
+        "externalSlug": "spirit",
+        "sourceUrl": "https://www.hltv.org/team/7020/spirit"
+      },
+      "players": [
+        {
+          "slug": "sh1ro",
+          "nickname": "sh1ro",
+          "realName": "Dmitry Sokolov",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/16920/sh1ro",
+          "hltvIdentity": {
+            "externalId": "16920",
+            "externalSlug": "sh1ro",
+            "sourceUrl": "https://www.hltv.org/player/16920/sh1ro"
+          }
+        },
+        {
+          "slug": "magixx",
+          "nickname": "magixx",
+          "realName": "Boris Vorobiev",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/18317/magixx",
+          "hltvIdentity": {
+            "externalId": "18317",
+            "externalSlug": "magixx",
+            "sourceUrl": "https://www.hltv.org/player/18317/magixx"
+          }
+        },
+        {
+          "slug": "tn1r",
+          "nickname": "tN1R",
+          "realName": "Andrey Tatarinovich",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/19808/tn1r",
+          "hltvIdentity": {
+            "externalId": "19808",
+            "externalSlug": "tn1r",
+            "sourceUrl": "https://www.hltv.org/player/19808/tn1r"
+          }
+        },
+        {
+          "slug": "zont1x",
+          "nickname": "zont1x",
+          "realName": "Myroslav Plakhotia",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/20423/zont1x",
+          "hltvIdentity": {
+            "externalId": "20423",
+            "externalSlug": "zont1x",
+            "sourceUrl": "https://www.hltv.org/player/20423/zont1x"
+          }
+        },
+        {
+          "slug": "donk",
+          "nickname": "donk",
+          "realName": "Danil Kryshkovets",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/21167/donk",
+          "hltvIdentity": {
+            "externalId": "21167",
+            "externalSlug": "donk",
+            "sourceUrl": "https://www.hltv.org/player/21167/donk"
+          }
+        }
+      ]
+    },
+    {
+      "slug": "furia",
+      "name": "FURIA",
+      "shortName": "FURIA",
+      "countryCode": null,
+      "logoPath": null,
+      "hltvIdentity": {
+        "externalId": "8297",
+        "externalSlug": "furia",
+        "sourceUrl": "https://www.hltv.org/team/8297/furia"
+      },
+      "players": [
+        {
+          "slug": "fallen",
+          "nickname": "FalleN",
+          "realName": "Gabriel Toledo",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/2023/fallen",
+          "hltvIdentity": {
+            "externalId": "2023",
+            "externalSlug": "fallen",
+            "sourceUrl": "https://www.hltv.org/player/2023/fallen"
+          }
+        },
+        {
+          "slug": "yuurih",
+          "nickname": "yuurih",
+          "realName": "Yuri Santos",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/12553/yuurih",
+          "hltvIdentity": {
+            "externalId": "12553",
+            "externalSlug": "yuurih",
+            "sourceUrl": "https://www.hltv.org/player/12553/yuurih"
+          }
+        },
+        {
+          "slug": "yekindar",
+          "nickname": "YEKINDAR",
+          "realName": "Mareks Gaļinskis",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/13915/yekindar",
+          "hltvIdentity": {
+            "externalId": "13915",
+            "externalSlug": "yekindar",
+            "sourceUrl": "https://www.hltv.org/player/13915/yekindar"
+          }
+        },
+        {
+          "slug": "kscerato",
+          "nickname": "KSCERATO",
+          "realName": "Kaike Cerato",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/15631/kscerato",
+          "hltvIdentity": {
+            "externalId": "15631",
+            "externalSlug": "kscerato",
+            "sourceUrl": "https://www.hltv.org/player/15631/kscerato"
+          }
+        },
+        {
+          "slug": "molodoy",
+          "nickname": "molodoy",
+          "realName": "Danil Golubenko",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/24144/molodoy",
+          "hltvIdentity": {
+            "externalId": "24144",
+            "externalSlug": "molodoy",
+            "sourceUrl": "https://www.hltv.org/player/24144/molodoy"
+          }
+        }
+      ]
+    },
+    {
+      "slug": "natus-vincere",
+      "name": "Natus Vincere",
+      "shortName": "NAVI",
+      "countryCode": null,
+      "logoPath": null,
+      "hltvIdentity": {
+        "externalId": "4608",
+        "externalSlug": "natus-vincere",
+        "sourceUrl": "https://www.hltv.org/team/4608/natus-vincere"
+      },
+      "players": [
+        {
+          "slug": "aleksib",
+          "nickname": "Aleksib",
+          "realName": "Aleksi Virolainen",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/9816/aleksib",
+          "hltvIdentity": {
+            "externalId": "9816",
+            "externalSlug": "aleksib",
+            "sourceUrl": "https://www.hltv.org/player/9816/aleksib"
+          }
+        },
+        {
+          "slug": "im",
+          "nickname": "iM",
+          "realName": "Mihai Ivan",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/14759/im",
+          "hltvIdentity": {
+            "externalId": "14759",
+            "externalSlug": "im",
+            "sourceUrl": "https://www.hltv.org/player/14759/im"
+          }
+        },
+        {
+          "slug": "b1t",
+          "nickname": "b1t",
+          "realName": "Valeriy Vakhovskiy",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/18987/b1t",
+          "hltvIdentity": {
+            "externalId": "18987",
+            "externalSlug": "b1t",
+            "sourceUrl": "https://www.hltv.org/player/18987/b1t"
+          }
+        },
+        {
+          "slug": "w0nderful",
+          "nickname": "w0nderful",
+          "realName": "Ihor Zhdanov",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/20127/w0nderful",
+          "hltvIdentity": {
+            "externalId": "20127",
+            "externalSlug": "w0nderful",
+            "sourceUrl": "https://www.hltv.org/player/20127/w0nderful"
+          }
+        },
+        {
+          "slug": "makazze",
+          "nickname": "makazze",
+          "realName": "Drin Shaqiri",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/22673/makazze",
+          "hltvIdentity": {
+            "externalId": "22673",
+            "externalSlug": "makazze",
+            "sourceUrl": "https://www.hltv.org/player/22673/makazze"
+          }
+        }
+      ]
+    },
+    {
+      "slug": "9z",
+      "name": "9z",
+      "shortName": "9Z",
+      "countryCode": null,
+      "logoPath": null,
+      "hltvIdentity": {
+        "externalId": "9996",
+        "externalSlug": "9z",
+        "sourceUrl": "https://www.hltv.org/team/9996/9z"
+      },
+      "players": [
+        {
+          "slug": "max",
+          "nickname": "max",
+          "realName": "Maximiliano Gonzalez",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/12092/max",
+          "hltvIdentity": {
+            "externalId": "12092",
+            "externalSlug": "max",
+            "sourceUrl": "https://www.hltv.org/player/12092/max"
+          }
+        },
+        {
+          "slug": "dgt",
+          "nickname": "dgt",
+          "realName": "Franco Garcia",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/14736/dgt",
+          "hltvIdentity": {
+            "externalId": "14736",
+            "externalSlug": "dgt",
+            "sourceUrl": "https://www.hltv.org/player/14736/dgt"
+          }
+        },
+        {
+          "slug": "meyern",
+          "nickname": "meyern",
+          "realName": "Ignacio Meyer",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/14737/meyern",
+          "hltvIdentity": {
+            "externalId": "14737",
+            "externalSlug": "meyern",
+            "sourceUrl": "https://www.hltv.org/player/14737/meyern"
+          }
+        },
+        {
+          "slug": "luchov",
+          "nickname": "luchov",
+          "realName": "Luciano Herrera",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/20394/luchov",
+          "hltvIdentity": {
+            "externalId": "20394",
+            "externalSlug": "luchov",
+            "sourceUrl": "https://www.hltv.org/player/20394/luchov"
+          }
+        },
+        {
+          "slug": "huasopeek",
+          "nickname": "HUASOPEEK",
+          "realName": "Matias Ibañez Hernandez",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/22613/huasopeek",
+          "hltvIdentity": {
+            "externalId": "22613",
+            "externalSlug": "huasopeek",
+            "sourceUrl": "https://www.hltv.org/player/22613/huasopeek"
+          }
+        }
+      ]
+    },
+    {
+      "slug": "betboom",
+      "name": "BetBoom",
+      "shortName": "BB",
+      "countryCode": null,
+      "logoPath": null,
+      "hltvIdentity": {
+        "externalId": "12394",
+        "externalSlug": "betboom",
+        "sourceUrl": "https://www.hltv.org/team/12394/betboom"
+      },
+      "players": [
+        {
+          "slug": "boombl4",
+          "nickname": "Boombl4",
+          "realName": "Kirill Mikhailov",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/11840/boombl4",
+          "hltvIdentity": {
+            "externalId": "11840",
+            "externalSlug": "boombl4",
+            "sourceUrl": "https://www.hltv.org/player/11840/boombl4"
+          }
+        },
+        {
+          "slug": "zorte",
+          "nickname": "zorte",
+          "realName": "Aleksandr Zagodyrenko",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/15662/zorte",
+          "hltvIdentity": {
+            "externalId": "15662",
+            "externalSlug": "zorte",
+            "sourceUrl": "https://www.hltv.org/player/15662/zorte"
+          }
+        },
+        {
+          "slug": "s1ren",
+          "nickname": "S1ren",
+          "realName": "Pavel Ogloblin",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/18506/s1ren",
+          "hltvIdentity": {
+            "externalId": "18506",
+            "externalSlug": "s1ren",
+            "sourceUrl": "https://www.hltv.org/player/18506/s1ren"
+          }
+        },
+        {
+          "slug": "d1ledez",
+          "nickname": "d1Ledez",
+          "realName": "Daniil Kustov",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/20357/d1ledez",
+          "hltvIdentity": {
+            "externalId": "20357",
+            "externalSlug": "d1ledez",
+            "sourceUrl": "https://www.hltv.org/player/20357/d1ledez"
+          }
+        },
+        {
+          "slug": "magnojez",
+          "nickname": "Magnojez",
+          "realName": "Kirill Rodnov",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/21667/magnojez",
+          "hltvIdentity": {
+            "externalId": "21667",
+            "externalSlug": "magnojez",
+            "sourceUrl": "https://www.hltv.org/player/21667/magnojez"
+          }
+        }
+      ]
+    },
+    {
+      "slug": "aurora",
+      "name": "Aurora",
+      "shortName": "AURORA",
+      "countryCode": null,
+      "logoPath": null,
+      "hltvIdentity": {
+        "externalId": "11861",
+        "externalSlug": "aurora",
+        "sourceUrl": "https://www.hltv.org/team/11861/aurora"
+      },
+      "players": [
+        {
+          "slug": "xantares",
+          "nickname": "XANTARES",
+          "realName": "Ismailcan Dörtkardeş",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/7938/xantares",
+          "hltvIdentity": {
+            "externalId": "7938",
+            "externalSlug": "xantares",
+            "sourceUrl": "https://www.hltv.org/player/7938/xantares"
+          }
+        },
+        {
+          "slug": "woxic",
+          "nickname": "woxic",
+          "realName": "Özgür Eker",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/8574/woxic",
+          "hltvIdentity": {
+            "externalId": "8574",
+            "externalSlug": "woxic",
+            "sourceUrl": "https://www.hltv.org/player/8574/woxic"
+          }
+        },
+        {
+          "slug": "jimpphat",
+          "nickname": "Jimpphat",
+          "realName": "Jimi Salo",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/18850/jimpphat",
+          "hltvIdentity": {
+            "externalId": "18850",
+            "externalSlug": "jimpphat",
+            "sourceUrl": "https://www.hltv.org/player/18850/jimpphat"
+          }
+        },
+        {
+          "slug": "kyxsan",
+          "nickname": "kyxsan",
+          "realName": "Damjan Stoilkovski",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/19677/kyxsan",
+          "hltvIdentity": {
+            "externalId": "19677",
+            "externalSlug": "kyxsan",
+            "sourceUrl": "https://www.hltv.org/player/19677/kyxsan"
+          }
+        },
+        {
+          "slug": "wicadia",
+          "nickname": "Wicadia",
+          "realName": "Ali Haydar Yalçın",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/21243/wicadia",
+          "hltvIdentity": {
+            "externalId": "21243",
+            "externalSlug": "wicadia",
+            "sourceUrl": "https://www.hltv.org/player/21243/wicadia"
+          }
+        }
+      ]
+    },
+    {
+      "slug": "g2",
+      "name": "G2",
+      "shortName": "G2",
+      "countryCode": null,
+      "logoPath": null,
+      "hltvIdentity": {
+        "externalId": "5995",
+        "externalSlug": "g2",
+        "sourceUrl": "https://www.hltv.org/team/5995/g2"
+      },
+      "players": [
+        {
+          "slug": "hunter",
+          "nickname": "huNter-",
+          "realName": "Nemanja Kovač",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/3972/hunter",
+          "hltvIdentity": {
+            "externalId": "3972",
+            "externalSlug": "hunter",
+            "sourceUrl": "https://www.hltv.org/player/3972/hunter"
+          }
+        },
+        {
+          "slug": "nertz",
+          "nickname": "NertZ",
+          "realName": "Guy Iluz",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/9436/nertz",
+          "hltvIdentity": {
+            "externalId": "9436",
+            "externalSlug": "nertz",
+            "sourceUrl": "https://www.hltv.org/player/9436/nertz"
+          }
+        },
+        {
+          "slug": "r1nkle",
+          "nickname": "r1nkle",
+          "realName": "Artem Moroz",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/20425/r1nkle",
+          "hltvIdentity": {
+            "externalId": "20425",
+            "externalSlug": "r1nkle",
+            "sourceUrl": "https://www.hltv.org/player/20425/r1nkle"
+          }
+        },
+        {
+          "slug": "heavygod",
+          "nickname": "HeavyGod",
+          "realName": "Nikita Martynenko",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/20447/heavygod",
+          "hltvIdentity": {
+            "externalId": "20447",
+            "externalSlug": "heavygod",
+            "sourceUrl": "https://www.hltv.org/player/20447/heavygod"
+          }
+        },
+        {
+          "slug": "matys",
+          "nickname": "MATYS",
+          "realName": "Matúš Šimko",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/21062/matys",
+          "hltvIdentity": {
+            "externalId": "21062",
+            "externalSlug": "matys",
+            "sourceUrl": "https://www.hltv.org/player/21062/matys"
+          }
+        }
+      ]
+    },
+    {
+      "slug": "mouz",
+      "name": "MOUZ",
+      "shortName": "MOUZ",
+      "countryCode": null,
+      "logoPath": null,
+      "hltvIdentity": {
+        "externalId": "4494",
+        "externalSlug": "mouz",
+        "sourceUrl": "https://www.hltv.org/team/4494/mouz"
+      },
+      "players": [
+        {
+          "slug": "torzsi",
+          "nickname": "torzsi",
+          "realName": "Ádám Torzsás",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/18072/torzsi",
+          "hltvIdentity": {
+            "externalId": "18072",
+            "externalSlug": "torzsi",
+            "sourceUrl": "https://www.hltv.org/player/18072/torzsi"
+          }
+        },
+        {
+          "slug": "spinx",
+          "nickname": "Spinx",
+          "realName": "Lotan Giladi",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/18221/spinx",
+          "hltvIdentity": {
+            "externalId": "18221",
+            "externalSlug": "spinx",
+            "sourceUrl": "https://www.hltv.org/player/18221/spinx"
+          }
+        },
+        {
+          "slug": "xertion",
+          "nickname": "xertioN",
+          "realName": "Dorian Berman",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/20312/xertion",
+          "hltvIdentity": {
+            "externalId": "20312",
+            "externalSlug": "xertion",
+            "sourceUrl": "https://www.hltv.org/player/20312/xertion"
+          }
+        },
+        {
+          "slug": "pr",
+          "nickname": "PR",
+          "realName": "Oldřich Nový",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/22279/pr",
+          "hltvIdentity": {
+            "externalId": "22279",
+            "externalSlug": "pr",
+            "sourceUrl": "https://www.hltv.org/player/22279/pr"
+          }
+        },
+        {
+          "slug": "xelex",
+          "nickname": "xelex",
+          "realName": "Adrian Vincze",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/24457/xelex",
+          "hltvIdentity": {
+            "externalId": "24457",
+            "externalSlug": "xelex",
+            "sourceUrl": "https://www.hltv.org/player/24457/xelex"
+          }
+        }
+      ]
+    },
+    {
+      "slug": "legacy",
+      "name": "Legacy",
+      "shortName": "LEGACY",
+      "countryCode": null,
+      "logoPath": null,
+      "hltvIdentity": {
+        "externalId": "12468",
+        "externalSlug": "legacy",
+        "sourceUrl": "https://www.hltv.org/team/12468/legacy"
+      },
+      "players": [
+        {
+          "slug": "art",
+          "nickname": "arT",
+          "realName": "Andrei Piovezan",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/12521/art",
+          "hltvIdentity": {
+            "externalId": "12521",
+            "externalSlug": "art",
+            "sourceUrl": "https://www.hltv.org/player/12521/art"
+          }
+        },
+        {
+          "slug": "dumau",
+          "nickname": "dumau",
+          "realName": "Eduardo Wolkmer",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/15698/dumau",
+          "hltvIdentity": {
+            "externalId": "15698",
+            "externalSlug": "dumau",
+            "sourceUrl": "https://www.hltv.org/player/15698/dumau"
+          }
+        },
+        {
+          "slug": "latto",
+          "nickname": "latto",
+          "realName": "Bruno Rebelatto",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/19045/latto",
+          "hltvIdentity": {
+            "externalId": "19045",
+            "externalSlug": "latto",
+            "sourceUrl": "https://www.hltv.org/player/19045/latto"
+          }
+        },
+        {
+          "slug": "n1ssim",
+          "nickname": "n1ssim",
+          "realName": "Vinicius Pereira",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/19686/n1ssim",
+          "hltvIdentity": {
+            "externalId": "19686",
+            "externalSlug": "n1ssim",
+            "sourceUrl": "https://www.hltv.org/player/19686/n1ssim"
+          }
+        },
+        {
+          "slug": "try",
+          "nickname": "try",
+          "realName": "Santino Rigal",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/19869/try",
+          "hltvIdentity": {
+            "externalId": "19869",
+            "externalSlug": "try",
+            "sourceUrl": "https://www.hltv.org/player/19869/try"
+          }
+        }
+      ]
+    },
+    {
+      "slug": "faze",
+      "name": "FaZe",
+      "shortName": "FAZE",
+      "countryCode": null,
+      "logoPath": null,
+      "hltvIdentity": {
+        "externalId": "6667",
+        "externalSlug": "faze",
+        "sourceUrl": "https://www.hltv.org/team/6667/faze"
+      },
+      "players": [
+        {
+          "slug": "frozen",
+          "nickname": "frozen",
+          "realName": "David Čerňanský",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/9960/frozen",
+          "hltvIdentity": {
+            "externalId": "9960",
+            "externalSlug": "frozen",
+            "sourceUrl": "https://www.hltv.org/player/9960/frozen"
+          }
+        },
+        {
+          "slug": "twistzz",
+          "nickname": "Twistzz",
+          "realName": "Russel Van Dulken",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/10394/twistzz",
+          "hltvIdentity": {
+            "externalId": "10394",
+            "externalSlug": "twistzz",
+            "sourceUrl": "https://www.hltv.org/player/10394/twistzz"
+          }
+        },
+        {
+          "slug": "neityu",
+          "nickname": "Neityu",
+          "realName": "Ryan Aubry",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/21972/neityu",
+          "hltvIdentity": {
+            "externalId": "21972",
+            "externalSlug": "neityu",
+            "sourceUrl": "https://www.hltv.org/player/21972/neityu"
+          }
+        },
+        {
+          "slug": "jcobbb",
+          "nickname": "jcobbb",
+          "realName": "Jakub Pietruszewski",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/22383/jcobbb",
+          "hltvIdentity": {
+            "externalId": "22383",
+            "externalSlug": "jcobbb",
+            "sourceUrl": "https://www.hltv.org/player/22383/jcobbb"
+          }
+        },
+        {
+          "slug": "jboen",
+          "nickname": "JBOEN",
+          "realName": "Jason Boe Nielsen",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/22866/jboen",
+          "hltvIdentity": {
+            "externalId": "22866",
+            "externalSlug": "jboen",
+            "sourceUrl": "https://www.hltv.org/player/22866/jboen"
+          }
+        }
+      ]
+    },
+    {
+      "slug": "astralis",
+      "name": "Astralis",
+      "shortName": "AST",
+      "countryCode": null,
+      "logoPath": null,
+      "hltvIdentity": {
+        "externalId": "6665",
+        "externalSlug": "astralis",
+        "sourceUrl": "https://www.hltv.org/team/6665/astralis"
+      },
+      "players": [
+        {
+          "slug": "hooxi",
+          "nickname": "HooXi",
+          "realName": "Rasmus Nielsen",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/10096/hooxi",
+          "hltvIdentity": {
+            "externalId": "10096",
+            "externalSlug": "hooxi",
+            "sourceUrl": "https://www.hltv.org/player/10096/hooxi"
+          }
+        },
+        {
+          "slug": "phzy",
+          "nickname": "phzy",
+          "realName": "Love Smidebrant",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/16726/phzy",
+          "hltvIdentity": {
+            "externalId": "16726",
+            "externalSlug": "phzy",
+            "sourceUrl": "https://www.hltv.org/player/16726/phzy"
+          }
+        },
+        {
+          "slug": "jabbi",
+          "nickname": "jabbi",
+          "realName": "Jakob Nygaard",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/17956/jabbi",
+          "hltvIdentity": {
+            "externalId": "17956",
+            "externalSlug": "jabbi",
+            "sourceUrl": "https://www.hltv.org/player/17956/jabbi"
+          }
+        },
+        {
+          "slug": "staehr",
+          "nickname": "Staehr",
+          "realName": "Victor Staehr",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/20304/staehr",
+          "hltvIdentity": {
+            "externalId": "20304",
+            "externalSlug": "staehr",
+            "sourceUrl": "https://www.hltv.org/player/20304/staehr"
+          }
+        },
+        {
+          "slug": "ryu",
+          "nickname": "ryu",
+          "realName": "Gytis Glušauskas",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/21217/ryu",
+          "hltvIdentity": {
+            "externalId": "21217",
+            "externalSlug": "ryu",
+            "sourceUrl": "https://www.hltv.org/player/21217/ryu"
+          }
+        }
+      ]
+    },
+    {
+      "slug": "parivision",
+      "name": "PARIVISION",
+      "shortName": "PARI",
+      "countryCode": null,
+      "logoPath": null,
+      "hltvIdentity": {
+        "externalId": "12467",
+        "externalSlug": "parivision",
+        "sourceUrl": "https://www.hltv.org/team/12467/parivision"
+      },
+      "players": [
+        {
+          "slug": "fl1t",
+          "nickname": "FL1T",
+          "realName": "Evgenii Lebedev",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/12732/fl1t",
+          "hltvIdentity": {
+            "externalId": "12732",
+            "externalSlug": "fl1t",
+            "sourceUrl": "https://www.hltv.org/player/12732/fl1t"
+          }
+        },
+        {
+          "slug": "jame",
+          "nickname": "Jame",
+          "realName": "Dzhami Ali",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/13776/jame",
+          "hltvIdentity": {
+            "externalId": "13776",
+            "externalSlug": "jame",
+            "sourceUrl": "https://www.hltv.org/player/13776/jame"
+          }
+        },
+        {
+          "slug": "xielo",
+          "nickname": "xiELO",
+          "realName": "Vladislav Lysov",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/22471/xielo",
+          "hltvIdentity": {
+            "externalId": "22471",
+            "externalSlug": "xielo",
+            "sourceUrl": "https://www.hltv.org/player/22471/xielo"
+          }
+        },
+        {
+          "slug": "zweih",
+          "nickname": "zweih",
+          "realName": "Ivan Gogin",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/23685/zweih",
+          "hltvIdentity": {
+            "externalId": "23685",
+            "externalSlug": "zweih",
+            "sourceUrl": "https://www.hltv.org/player/23685/zweih"
+          }
+        },
+        {
+          "slug": "slaxejezzz",
+          "nickname": "slaxejezzz",
+          "realName": "Vyacheslav Vinokurov",
+          "countryCode": null,
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/24807/slaxejezzz",
+          "hltvIdentity": {
+            "externalId": "24807",
+            "externalSlug": "slaxejezzz",
+            "sourceUrl": "https://www.hltv.org/player/24807/slaxejezzz"
+          }
+        }
+      ]
+    }
+  ]
+}

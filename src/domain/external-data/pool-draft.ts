@@ -22,6 +22,28 @@ import { runRecordedSync } from "./sync-runs.ts";
 export const POOL_DRAFT_JOB_NAME = "build-pool-draft";
 const normalizeName = (value: string) => value.normalize("NFKC").trim().toLocaleLowerCase("en");
 
+export function classifyPoolDraftRosterEvidence(
+  provider: "HLTV" | "VALVE_VRS",
+  sourceRoster: readonly string[],
+  currentRoster: readonly string[],
+): { conflicts: string[]; warnings: string[] } {
+  const normalizedCurrentRoster = new Set(currentRoster.map(normalizeName));
+  const issue =
+    sourceRoster.length !== 5
+      ? `${provider}_ROSTER_INCOMPLETE`
+      : sourceRoster.some((nickname) => !normalizedCurrentRoster.has(normalizeName(nickname)))
+        ? `${provider}_ROSTER_MISMATCH`
+        : null;
+  if (!issue) return { conflicts: [], warnings: [] };
+  if (provider === "VALVE_VRS") {
+    return {
+      conflicts: [],
+      warnings: [issue, ...(issue.endsWith("_MISMATCH") ? ["HLTV_ROSTER_AUTHORITY_APPLIED"] : [])],
+    };
+  }
+  return { conflicts: [issue], warnings: [] };
+}
+
 interface SourceTeam extends NormalizedTeamRanking {
   provider: "HLTV" | "VALVE_VRS";
 }
@@ -32,6 +54,7 @@ export interface PoolDraftReport {
   pendingIds: bigint[];
   proposed: string[];
   sourceFreshness: Record<string, string>;
+  warnings: Array<{ codes: string[]; provider: string; sourceTeam: string }>;
   wouldRemove: string[];
 }
 
@@ -163,6 +186,7 @@ export async function buildCandidatePoolDraft(
         { hltvRank?: number; sourceTeams: SourceTeam[]; vrsRank?: number }
       >();
       const conflicts: PoolDraftReport["conflicts"] = [];
+      const warnings: PoolDraftReport["warnings"] = [];
       for (const sourceTeam of sourceTeams) {
         const identityTeamId =
           sourceTeam.provider === "HLTV" && sourceTeam.externalId
@@ -175,11 +199,19 @@ export async function buildCandidatePoolDraft(
             ? nameMatches[0]
             : undefined;
         if (!matched) {
-          conflicts.push({
-            codes: [nameMatches.length > 1 ? "AMBIGUOUS_TEAM_IDENTITY" : "TEAM_IDENTITY_MISSING"],
+          const issue = {
+            codes: [
+              nameMatches.length > 1
+                ? "AMBIGUOUS_TEAM_IDENTITY"
+                : sourceTeam.rank <= 12
+                  ? "TEAM_IDENTITY_MISSING"
+                  : "TOP20_TEAM_NOT_IMPORTED_NO_EVENT_EVIDENCE",
+            ],
             provider: sourceTeam.provider,
             sourceTeam: sourceTeam.name,
-          });
+          };
+          if (sourceTeam.rank <= 12) conflicts.push(issue);
+          else warnings.push(issue);
           continue;
         }
         const record = grouped.get(matched.id) ?? { sourceTeams: [] };
@@ -225,12 +257,18 @@ export async function buildCandidatePoolDraft(
           for (const sourceTeam of ranking.sourceTeams) {
             if (staleProviders.has(sourceTeam.provider))
               conflictCodes.push(`${sourceTeam.provider}_SOURCE_STALE`);
-            if (sourceTeam.roster.length !== 5) {
-              conflictCodes.push(`${sourceTeam.provider}_ROSTER_INCOMPLETE`);
-            } else {
-              const persisted = new Set(currentRoster.map(normalizeName));
-              if (sourceTeam.roster.some((nickname) => !persisted.has(normalizeName(nickname))))
-                conflictCodes.push(`${sourceTeam.provider}_ROSTER_MISMATCH`);
+            const rosterEvidence = classifyPoolDraftRosterEvidence(
+              sourceTeam.provider,
+              sourceTeam.roster,
+              currentRoster,
+            );
+            conflictCodes.push(...rosterEvidence.conflicts);
+            if (rosterEvidence.warnings.length) {
+              warnings.push({
+                codes: rosterEvidence.warnings,
+                provider: sourceTeam.provider,
+                sourceTeam: team.name,
+              });
             }
           }
           const eventResults = resultRows.filter((row) => row.teamId === teamId);
@@ -288,6 +326,7 @@ export async function buildCandidatePoolDraft(
         pendingIds,
         proposed,
         sourceFreshness,
+        warnings,
         wouldRemove: [...wouldRemove],
       };
       return {
@@ -297,6 +336,8 @@ export async function buildCandidatePoolDraft(
           pendingIds: pendingIds.map(String),
           proposed,
           sourceFreshness,
+          warningCount: warnings.length,
+          warnings,
           wouldRemove: [...wouldRemove],
         },
         recordsChanged: pendingIds.length,

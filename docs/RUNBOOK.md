@@ -61,8 +61,8 @@ Public-data smoke checks:
 - `/ranking` shows all seeded players, tied competition ranks, and client-side search.
 - `/player/sample-ace` shows identity, roster, ranking, and deliberate `—`/missing-data states.
 - `/about` explains random pairing and scoring without defining what “better” means.
-- `/privacy` explains the anonymous cookie, non-counting quota/risk states, retention categories,
-  external data, and the pre-launch contact placeholder.
+- The footer and About page contain no retired `/privacy` link. Direct `/privacy` requests return
+  the ordinary Next.js not-found response for the small community beta.
 
 Admin smoke checks:
 
@@ -115,6 +115,59 @@ Admin under **Sync runs / parser failures** and leaves stale snapshots intact.
 The safe operating order is: sync → inspect and approve each source snapshot → generate Pool draft
 → inspect conflicts/freshness/JSON → approve or reject individual proposals. The generator reports
 possible removals but deliberately cannot remove live Pool entries.
+
+## M10 launch-readiness gate
+
+Use `docs/LAUNCH_GATE_F.md` as the evidence record. The current Railway database is fictional M9
+staging even though its environment label is `production`; never relabel its Edition or disguise
+its fixtures as real history. ADR 0006 approves the lowest-cost boundary: after a final verified
+backup/restore/R2 copy and separate destructive-action approval, pause Web and all scheduled
+services, reset the confirmed existing Railway database's application schema in place, and rebuild
+it from committed migrations. Keep the same database service; do not create a second Railway DB.
+Create the production Admin and DRAFT Edition through audited commands, and never run either seed.
+
+To minimize paid overlap, first rehearse canonical data, source sync, conflict resolution, and the
+review-only Pool draft in a separate clean local database. Keep it distinct from the fictional
+development database, apply migrations without either seed, and run Docker only during the review
+window. Near closed beta, pause the current services, make one final verified staging backup/R2
+copy, reset the confirmed existing application schema, apply migrations, and repeat the flow with
+fresh sources before resuming service. Never restore the rehearsal database as a shortcut around
+production Admin/source approvals.
+
+Validate the DRAFT canonical proposal without touching a database:
+
+```bash
+pnpm canonical:bootstrap
+```
+
+After Owner review changes its state to `OWNER_APPROVED`, an empty migrated rehearsal/production DB
+with an active `owner` Admin can apply it only with both explicit mutation flags:
+
+```bash
+pnpm canonical:bootstrap -- --actor owner --apply --confirm-canonical-bootstrap
+```
+
+The command creates the DRAFT Edition, canonical Teams/Players, HLTV identities, roster observations,
+and ordinary audit rows in one transaction. It refuses non-empty product tables and never admits the
+Pool or activates the Edition. See `docs/CANONICAL_BOOTSTRAP.md`.
+
+After the latest HLTV/VRS snapshots and Pool proposals have been reviewed, run this read-only gate
+against the rebuilt target while the Edition remains `DRAFT`:
+
+```bash
+pnpm launch:check -- --edition 2026
+```
+
+The command prints JSON and exits `1` when any launch blocker exists. It deliberately blocks stale
+or missing approved sources, a missing/partial/outdated Pool-draft run, unresolved proposals,
+ineligible or stale-roster Pool players, missing zeroed rankings/identities/audit history, integrity
+violations, non-observe risk configuration, and unattributed configured assets. Missing optional
+images or stats are warnings and must be acknowledged. Run `pnpm assets:check` as the companion
+filesystem/license-manifest validation.
+
+A successful report is evidence, not activation authority. Preserve it with the frozen commit and
+deployment ID, complete the remaining operational rows in `docs/LAUNCH_GATE_F.md`, then obtain the
+Owner's explicit approval before the one audited `DRAFT` → `ACTIVE` transition or real-user beta.
 
 ## M8 analytics, integrity, and retention jobs
 
@@ -361,6 +414,6 @@ Origin CA is not sufficient for the direct/DNS-only route; retain publicly trust
 - Cost spike: pause external sync and nonessential cron services first, inspect request/job logs and
   database load, then apply infrastructure limits. Never change score/quota truth to reduce cost.
 
-Use `docs/STAGING_GATE_E.md` as the required evidence and owner sign-off record. M9 is not complete
-until real deployment, alerts, retained recovery, the owner-selected route, and applicable Mainland
-China checks are documented. Cloudflare A/B becomes required only if Cloudflare enters scope.
+Use `docs/STAGING_GATE_E.md` for accepted M9 staging evidence and `docs/LAUNCH_GATE_F.md` for the M10
+production-data, closed-beta, and launch boundary. Cloudflare A/B becomes required only if
+Cloudflare enters scope.

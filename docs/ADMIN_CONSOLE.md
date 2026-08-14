@@ -29,9 +29,13 @@ Admin actor. Successful login/logout and every product-data mutation write `admi
 The console manages the following without a deployment:
 
 - Team create/update, logo path, reversible active status, and provider identities.
-- Player create/update, image path, professional status, and provider identities.
+- Player create/update, image path, optional validated HLTV profile URL, professional status, and
+  provider identities. The profile URL is for human reference; provider identity remains the sync
+  key.
 - Roster membership creation and explicit end dates.
-- Edition creation and forward-only `DRAFT → ACTIVE → FROZEN → ARCHIVED` transitions.
+- Edition creation and forward-only `DRAFT → ACTIVE → FROZEN → ARCHIVED` transitions. The M10
+  `DRAFT → ACTIVE` path first re-runs the fail-closed launch-readiness report and refuses any
+  blocker; the Owner still completes the operational Gate F sign-off.
 - Event creation, one-way confirmed T1 whitelist decisions, and Team placement results.
 - Manual Team admission, Special Player admission, newly signed formal starters from an already
   admitted Team, and reversible pairing eligibility.
@@ -102,6 +106,12 @@ Runtime Pool cache invalidation occurs only after the outer approval transaction
 professional-status updates clear all in-process Pool snapshots; Edition-scoped Pool actions
 invalidate their Edition. M7 must emit this exact contract or deliberately version it in docs and
 tests.
+
+For an Owner-reviewed explicit set, `pnpm pending:review -- --id <id>[,<id>...]` is a dry-run
+summary. Apply requires the exact IDs plus `--actor`, `--reason`, `--apply`, and
+`--confirm-pending-review`. It preflights that every selected row is still pending and conflict-free,
+then reviews each through `PendingImportReviewService`, preserving the ordinary mutation, Pool, and
+Admin audit rows. It never selects all pending work implicitly.
 
 ## Search-engine and response treatment
 
