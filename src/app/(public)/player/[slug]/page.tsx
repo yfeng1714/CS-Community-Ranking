@@ -137,7 +137,7 @@ export default async function PlayerPage({ params }: { params: Promise<{ slug: s
         <p className="data-note">
           {player.statsCapturedAt
             ? `最近抓取：${new Intl.DateTimeFormat("zh-CN", { dateStyle: "long", timeZone: "Asia/Shanghai" }).format(new Date(player.statsCapturedAt))}`
-            : "尚无经过审核的外部数据。缺失值显示为“—”，不会伪装成 0。"}
+            : "尚无经过审核的外部数据。缺失值显示为“—”。"}
         </p>
         {player.hltvProfileUrl && (
           <p className="data-note">

@@ -281,7 +281,7 @@ function ResultPanel({
             {result.resolution.voteStatus === "THROTTLED"
               ? "今日有效额度已用完，你仍可继续查看结果和投票。"
               : result.resolution.counted
-                ? "胜者 +1，败者 -1。结果不会自动跳走。"
+                ? "胜者 +1，败者 -1。"
                 : "这次选择保留在记录中，但不会改变双方分数。"}
           </p>
         </div>
