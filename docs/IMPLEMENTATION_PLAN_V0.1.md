@@ -497,7 +497,7 @@ IP_HMAC_SECRET
 ADMIN_SESSION_SECRET
 
 ACTIVE_EDITION_CODE=2026
-DEFAULT_FULL_WEIGHT_BALLOTS_PER_DAY=50
+DEFAULT_FULL_WEIGHT_BALLOTS_PER_DAY=150
 DEFAULT_BALLOT_TTL_MINUTES=30
 RISK_ENFORCEMENT_MODE=observe
 IP_RISK_KEY_RETENTION_DAYS=90
@@ -605,7 +605,7 @@ old row.
 - `status enum(DRAFT, ACTIVE, FROZEN, ARCHIVED)`
 - `starts_at timestamptz`
 - `ends_at timestamptz`
-- `full_weight_ballots_per_day int not null default 50`
+- `full_weight_ballots_per_day int not null default 150`
 - `ballot_ttl_minutes int not null default 30`
 - `created_at timestamptz`
 - `updated_at timestamptz`
@@ -1384,15 +1384,15 @@ Do not send the active ID list to the client.
 Initial configuration:
 
 ```text
-edition.full_weight_ballots_per_day = 50
+edition.full_weight_ballots_per_day = 150
 Time zone = Asia/Shanghai
 ```
 
-- Ballots 1–50: `ELIGIBLE`, unless risk enforcement marks them suspicious.
-- Ballots 51+: `THROTTLED`.
+- Ballots 1–150: `ELIGIBLE`, unless risk enforcement marks them suspicious.
+- Ballots 151+: `THROTTLED`.
 - The user may continue playing indefinitely.
 - Throttled votes are stored and can display results, but do not change score or counted H2H.
-- The UI must show a small, honest notice when the effective ranking quota has been exhausted.
+- The public Vote UI does not disclose remaining quota or that a Vote was throttled.
 
 The quota is assigned at Ballot issuance. Crossing midnight after issuance does not change that Ballot’s eligibility.
 
@@ -1668,9 +1668,8 @@ Keep the same two cards on screen and show:
 
 Do not auto-advance.
 
-If throttled:
-
-> 今日影响社区榜的有效投票额度已用完。你仍然可以继续投票和查看结果。
+Post-quota `THROTTLED` votes use the same public confirmation copy as counted votes. Do not show a
+quota-exhausted banner or remaining-quota pill.
 
 ## 17.4 Ranking page
 

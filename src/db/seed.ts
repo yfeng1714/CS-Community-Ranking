@@ -39,7 +39,7 @@ export async function seedDevelopmentData(database: Database): Promise<void> {
         ballotTtlMinutes: 30,
         code: "2026",
         endsAt: new Date("2027-01-01T00:00:00.000Z"),
-        fullWeightBallotsPerDay: 50,
+        fullWeightBallotsPerDay: 150,
         name: "2026 Development Edition",
         startsAt: new Date("2026-01-01T00:00:00.000Z"),
         status: "DRAFT",
@@ -49,7 +49,7 @@ export async function seedDevelopmentData(database: Database): Promise<void> {
         set: {
           ballotTtlMinutes: 30,
           endsAt: new Date("2027-01-01T00:00:00.000Z"),
-          fullWeightBallotsPerDay: 50,
+          fullWeightBallotsPerDay: 150,
           name: "2026 Development Edition",
           startsAt: new Date("2026-01-01T00:00:00.000Z"),
           updatedAt: new Date(),

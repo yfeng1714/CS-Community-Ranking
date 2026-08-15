@@ -190,22 +190,9 @@ export function VoteExperience() {
   return (
     <section className="vote-experience" aria-busy={busy}>
       <div className="vote-intro">
-        <div>
-          <span className="eyebrow">第 {ballot.ballot.dailyOrdinal} 组 · 随机对决</span>
-          <h1>{result ? "社区怎么选？" : "两个人。选一个。"}</h1>
-        </div>
-        <div className="quota-pill" data-throttled={ballot.ballot.rankingMode === "THROTTLED"}>
-          {ballot.ballot.rankingMode === "THROTTLED"
-            ? "继续投票 · 不计榜"
-            : `今日还可影响 ${ballot.quota.remainingEligibleBallots} 组`}
-        </div>
+        <span className="eyebrow">第 {ballot.ballot.dailyOrdinal} 组 · 随机对决</span>
+        <h1>{result ? "社区投票结果" : "二选一投票箱"}</h1>
       </div>
-
-      {ballot.ballot.rankingMode === "THROTTLED" ? (
-        <p className="quota-notice">
-          今日影响社区榜的有效投票额度已用完。你仍然可以继续投票和查看结果。
-        </p>
-      ) : null}
 
       <div className="vote-matchup">
         <VotePlayerCard
@@ -275,14 +262,14 @@ function ResultPanel({
         </span>
         <div>
           <h2 ref={headingRef} tabIndex={-1}>
-            {result.resolution.counted ? "这一票已计入社区榜" : "选择已记录，但本次不计榜"}
+            {result.resolution.counted || result.resolution.voteStatus === "THROTTLED"
+              ? "这一票已计入社区榜"
+              : "选择已记录，但本次不计榜"}
           </h2>
           <p>
-            {result.resolution.voteStatus === "THROTTLED"
-              ? "今日有效额度已用完，你仍可继续查看结果和投票。"
-              : result.resolution.counted
-                ? "胜者 +1，败者 -1。"
-                : "这次选择保留在记录中，但不会改变双方分数。"}
+            {result.resolution.counted || result.resolution.voteStatus === "THROTTLED"
+              ? "胜者 +1，败者 -1。"
+              : "这次选择保留在记录中，但不会改变双方分数。"}
           </p>
         </div>
       </div>

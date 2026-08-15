@@ -29,6 +29,13 @@
       "when": 1786686782383,
       "tag": "0003_player_hltv_profile_url",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1786809331347,
+      "tag": "0004_edition_daily_quota_150",
+      "breakpoints": true
     }
   ]
 }

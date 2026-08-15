@@ -13,7 +13,7 @@ test("votes, keeps the result visible, advances explicitly, and treats reload as
   expect(response?.headers()["content-security-policy"]).toContain("frame-ancestors 'none'");
   expect(response?.headers()["x-content-type-options"]).toBe("nosniff");
   expect(response?.headers()["referrer-policy"]).toBe("strict-origin-when-cross-origin");
-  await expect(page.getByRole("heading", { name: "两个人。选一个。" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "二选一投票箱" })).toBeVisible();
 
   const groupLabel = page.locator(".vote-intro .eyebrow");
   const firstOrdinal = ordinal(await groupLabel.textContent());
@@ -33,7 +33,7 @@ test("votes, keeps the result visible, advances explicitly, and treats reload as
 
   const beforeReload = ordinal(await groupLabel.textContent());
   await page.reload();
-  await expect(page.getByRole("heading", { name: "两个人。选一个。" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "二选一投票箱" })).toBeVisible();
   await expect.poll(async () => ordinal(await groupLabel.textContent())).toBe(beforeReload + 1);
 });
 

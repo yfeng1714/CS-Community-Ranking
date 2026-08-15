@@ -58,8 +58,9 @@ the latest committed ranking and head-to-head state, not a historical snapshot f
 | `SUSPICIOUS`       | `SUSPICIOUS`       | Yes                    | No                    | No             |
 
 The issuance transaction decides eligibility once and persists it on the Ballot. Resolution never
-recomputes quota. Thus Ballot 51 is still a durable Vote and observed comparison, but does not
-affect public rankings or counted head-to-head results.
+recomputes quota. Thus the first Ballot after the Edition's daily full-weight limit is still a
+durable Vote and observed comparison, but does not affect public rankings or counted head-to-head
+results. The public Vote UI does not disclose that post-quota state.
 
 ## Manual refresh boundary
 

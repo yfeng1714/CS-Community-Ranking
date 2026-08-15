@@ -152,7 +152,7 @@ export const editions = pgTable(
     status: editionStatusEnum("status").notNull(),
     startsAt: requiredTimestamp("starts_at"),
     endsAt: requiredTimestamp("ends_at"),
-    fullWeightBallotsPerDay: integer("full_weight_ballots_per_day").notNull().default(50),
+    fullWeightBallotsPerDay: integer("full_weight_ballots_per_day").notNull().default(150),
     ballotTtlMinutes: integer("ballot_ttl_minutes").notNull().default(30),
     createdAt: createdAt(),
     updatedAt: updatedAt(),

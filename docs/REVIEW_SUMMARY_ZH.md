@@ -145,7 +145,7 @@ SKIP
 默认配置：
 
 ```text
-每天前 50 张 Ballot 可影响排行榜
+每天前 150 张 Ballot 可影响排行榜
 按 Asia/Shanghai 切日
 Ballot TTL 30 分钟
 ```
@@ -156,7 +156,7 @@ Ballot TTL 30 分钟
 - 手动刷新按 Skip 留下一条可审计 Vote，原机会不退，新 Ballot 再消耗下一个 Ordinal。
 - 抽到后关页面也消耗一次机会。
 - 过期不退机会。
-- 第 51 张开始仍能继续玩和看结果，但 Vote 状态为 THROTTLED，不影响 Score。
+- 超过当日额度后仍能继续玩和看结果，但 Vote 状态为 THROTTLED，不影响 Score。公开 Vote UI 不展示剩余额度，也不把 THROTTLED 显示成“不计榜”。
 
 这保证用户不能免费无限刷新 Pair，直到刷出自己想投的明星选手；同时满足用户刷新后想
 看到新随机 Pair 的直觉。

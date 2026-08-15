@@ -22,12 +22,20 @@ show recent three-month Rating/maps, career Rating, deliberate placeholders for 
 and an honest freshness label.
 
 After resolution, the same two cards remain in place and show the user's selection plus both current
-rank/score records. The result panel reports whether the action counted, current counted H2H
-percentages, counted decisions/Skips, and a small-sample warning below 30 decisions. Zero-decision
-percentages are displayed as unavailable rather than `0%`. There is no timer and no automatic Next.
+rank/score records. The result panel reports a counted-style confirmation for ordinary and
+post-quota votes, current counted H2H percentages, counted decisions/Skips, and a small-sample
+warning below 30 decisions. Zero-decision percentages are displayed as unavailable rather than `0%`.
+There is no timer and no automatic Next.
 
-`THROTTLED` and `SUSPICIOUS` actions are stored but honestly presented as non-counting. A user who
-has exhausted the 50-Ballot daily full-weight quota may continue voting and seeing results.
+The public Vote page does not show remaining daily quota, post-quota warnings, or a distinct
+"did not count" state for `THROTTLED` votes. Daily full-weight quota remains backend-only: issuance
+still marks Ballots `THROTTLED` after the Edition limit, and those Votes still do not change ranking.
+`SUSPICIOUS` votes can still be presented as non-counting. A visitor who has exhausted the 150-Ballot
+daily full-weight quota may continue voting; the UI stays the same.
+
+Vote headlines are `二选一投票箱` before resolution and `社区投票结果` afterward. Player portraits
+are sized to the local 200×200 sources: about 112px on Vote cards, 200px on Player pages, and the
+existing 2.6rem Ranking avatar. They are not stretched as full-bleed posters.
 
 ## Manual reload contract
 

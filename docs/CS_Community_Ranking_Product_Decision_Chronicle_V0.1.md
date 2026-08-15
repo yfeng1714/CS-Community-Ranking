@@ -20,7 +20,7 @@
 </tbody>
 </table>
 
-**版本** V0.1.20
+**版本** V0.1.21
 
 **日期** 2026-08-15
 
@@ -63,6 +63,8 @@
 **Owner M10 Core-only Launch Scope** 2026-08-15（V0.1.19；首轮 Beta 暂缓 Review/T1/Special）
 
 **Owner M10 Production Cutover** 2026-08-15（V0.1.20；一次性 Reset 已执行，Core Beta 已激活）
+
+**Owner 投票页与日额度修订** 2026-08-15（V0.1.21；公开 UI 不再展示额度/THROTTLED，每日 Full-weight Ballot 默认 150）
 
 **定位** 产品背景、决策记录与后续 Review Context
 
@@ -767,7 +769,7 @@ PlayerStatSnapshot = 某来源、某指标、某时间窗口的快照</th>
 
 ### **14.2 日额度按 Ballot Opportunity 计算**
 
-额度不是“前 50 个成功投票”，而是“前 50 次获得新随机 Ballot 的机会”。Skip、拿到后关页面、等待过期都消耗机会，否则用户仍可通过连续跳过或等待过期来 fishing。第 51 张以后网站继续正常可玩，但产生 THROTTLED Vote，不影响正式榜。
+额度不是“前 N 个成功投票”，而是“前 N 次获得新随机 Ballot 的机会”。Skip、拿到后关页面、等待过期都消耗机会，否则用户仍可通过连续跳过或等待过期来 fishing。超过当日额度后网站继续正常可玩，但产生 THROTTLED Vote，不影响正式榜。公开 Vote UI 不展示剩余额度，也不把 THROTTLED 显示成不计榜。
 
 <table>
 <colgroup>
@@ -778,7 +780,7 @@ PlayerStatSnapshot = 某来源、某指标、某时间窗口的快照</th>
 <tr class="header">
 <th></th>
 <th><p><strong>默认而非定论</strong></p>
-<p>50 和 30 分钟 TTL 都是可配置的启动值。Closed Beta 后应根据 Votes per Visitor、真实高频玩家分布和误伤情况调整，不能散落在代码里写死。</p></th>
+<p>当前默认是每日 150 张 Full-weight Ballot 和 30 分钟 TTL。Closed Beta 后仍可根据 Votes per Visitor、真实高频玩家分布和误伤情况调整，不能散落在代码里写死。公开界面不承担解释额度的职责。</p></th>
 </tr>
 </thead>
 <tbody>
@@ -1044,7 +1046,7 @@ Pool 的审查与 Closed Beta 准备，但仍需遵守 M10 的逐项 Owner Appro
 | **品牌名、域名与正式 Slogan**            | 不阻塞 Milestone 0–4；在 Public UI 前冻结。                   |
 | **首发 Candidate Pool V1 具体名单**      | 由 Importer 生成 Draft，Owner 审批冲突、Manual 与 Special。   |
 | **首批 T1 Event Whitelist 完整历史**     | 先覆盖影响 Candidate Pool 的赛事；可持续补录。                |
-| **每日 Full-weight Ballot 配额**         | 默认 50，Closed Beta 根据分布调整。                           |
+| **每日 Full-weight Ballot 配额**         | 默认 150；公开 Vote UI 不展示剩余额度或 THROTTLED 不计榜。    |
 | **Ballot TTL**                           | 默认 30 分钟，观察用户回访与 fishing 风险。                   |
 | **Cloudflare 最终保持代理还是 DNS-only** | 初期直连 Railway；达到 ADR 0005 触发条件后再做大陆三网 A/B。 |
 | **选手头像和队标授权方案**               | 上线前完成来源记录；无法确认时使用占位图。                    |

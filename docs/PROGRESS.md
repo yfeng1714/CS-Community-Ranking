@@ -23,6 +23,18 @@
 
 ## Completed in the repository
 
+- Public Vote headlines are `二选一投票箱` / `社区投票结果`, slightly smaller than the previous
+  poster-sized type. Vote cards and Player pages display the local 200×200 portraits at native-friendly
+  sizes instead of stretching them as full-bleed posters.
+- The public Vote UI no longer shows remaining daily quota, a post-quota banner, or a distinct
+  non-counting result for `THROTTLED` votes. Backend issuance and resolution still apply the Edition
+  quota; `SUSPICIOUS` votes can still be presented as non-counting.
+- Owner raised the daily full-weight Ballot default from 50 to 150. Ordered migration
+  `0004_edition_daily_quota_150` updates the column default and existing Edition rows that still used
+  50. Canonical `2026-beta.json`, seed, and `DEFAULT_FULL_WEIGHT_BALLOTS_PER_DAY` match. After deploy,
+  confirm the live Edition row is 150 and set the Railway env var to 150 so Admin create defaults
+  match.
+
 - M10 adds a fail-closed canonical bootstrap boundary. `data/canonical/2026-beta.json` is an
   Owner-approved input containing the 14-Team union of the August 3 Valve and August 10 HLTV top-12
   sources, 70 direct Player HLTV identities/profile links, and five observed current starters per

@@ -30,7 +30,7 @@ are not missing M9 inputs.
 - Image acquisition is complete for the current canonical 14 Teams/70 Players. External rights
   clearance no longer blocks the small community beta; exact sources are recorded, and
   Owner-accepted pending-rights assets remain visible warnings until cleared or replaced.
-- Final eligible-Ballot quota after closed-beta data.
+- Daily full-weight Ballot quota is now 150; further closed-beta tuning remains possible.
 - The ADR 0006 one-time reset is resolved and consumed. Final dump/restore/private-R2 evidence, exact
   target, clean migrations, source approval, 14 proposal approvals, activation, credential rotation,
   and production smoke are recorded in `docs/LAUNCH_GATE_F.md`.

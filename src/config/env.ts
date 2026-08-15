@@ -67,7 +67,7 @@ export const envSchema = z
       .string()
       .regex(/^\d{4}$/)
       .default("2026"),
-    DEFAULT_FULL_WEIGHT_BALLOTS_PER_DAY: positiveIntegerFromEnvironment.default(50),
+    DEFAULT_FULL_WEIGHT_BALLOTS_PER_DAY: positiveIntegerFromEnvironment.default(150),
     DEFAULT_BALLOT_TTL_MINUTES: positiveIntegerFromEnvironment.default(30),
     ACTIVE_POOL_CACHE_TTL_SECONDS: positiveIntegerFromEnvironment.default(60),
     BALLOT_NEXT_RATE_LIMIT_PER_MINUTE: positiveIntegerFromEnvironment.default(30),

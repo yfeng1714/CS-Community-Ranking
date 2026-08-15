@@ -9,7 +9,8 @@ before the real Pool is approved.
 
 - Code/name: `2026` / `2026 Beta Edition`
 - Proposed window: 2026-08-14 00:00 Asia/Shanghai through 2027-01-01 00:00 Asia/Shanghai
-- Daily full-weight Ballots: 50
+- Daily full-weight Ballots: 50 at Owner approval on 2026-08-14; raised to **150** on 2026-08-15
+  by Owner decision (`drizzle/0004_edition_daily_quota_150.sql` and canonical manifest).
 - Ballot TTL: 30 minutes
 - State after bootstrap: DRAFT
 

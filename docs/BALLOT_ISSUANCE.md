@@ -55,8 +55,10 @@ summary, and minimal left/right player cards. Statistics remain `null` until the
 work in Milestone 7.
 
 An internally `SUSPICIOUS` Ballot is presented as `ELIGIBLE` before resolution so risk state does not
-become an attacker feedback oracle. Ordinary post-quota `THROTTLED` mode is shown honestly. The
-eligibility decision is persisted at issuance and does not change if Shanghai midnight passes later.
+become an attacker feedback oracle. Ordinary post-quota `THROTTLED` mode remains in the API payload
+and is enforced at resolution, but the public Vote UI does not disclose quota remaining or that a
+Vote was throttled. The eligibility decision is persisted at issuance and does not change if Shanghai
+midnight passes later.
 
 All responses use `Cache-Control: no-store`. Expected public errors are:
 

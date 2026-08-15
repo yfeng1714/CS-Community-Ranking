@@ -10,6 +10,7 @@ The complete V0.1 PostgreSQL model is implemented in:
 - `drizzle/0001_m8_integrity_hardening.sql`
 - `drizzle/0002_m8_risk_key_constraints.sql`
 - `drizzle/0003_player_hltv_profile_url.sql`
+- `drizzle/0004_edition_daily_quota_150.sql`
 
 The initial migration creates 27 tables and 21 PostgreSQL enums. M8 adds `risk_observation`,
 `api_request_metric`, and persisted Ballot risk reasons through an ordered forward migration. The
