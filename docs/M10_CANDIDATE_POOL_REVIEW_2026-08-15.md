@@ -72,15 +72,18 @@ adapter run was recorded and stored no partial source snapshot. The clean-room d
 stopped at its required missing VRS input; the earlier complete rehearsal remains the end-to-end
 VRS/Pool proof.
 
-## Owner review still required
+## Owner scope decision and follow-ups
 
-- Obtain and checksum-lock exact official ranks 13–20 from a permitted, reliable source path, then
-  rerun the Review Auto evaluation.
-- Decide and confirm the completed-2026 T1 Event whitelist; the Cologne Major result above is ready
-  to enter after that decision.
-- Decide any `REVIEW_MANUAL` Teams and public reasons. None are inferred in this packet.
-- Decide any individual `SPECIAL` Players and public reasons. None are inferred in this packet.
-- Near cutover, refresh and approve both ranking sources, regenerate the Pool draft, review exact
-  proposal IDs, and rerun `launch:check` while the real Edition is still DRAFT.
-- Keep the ADR 0006 backup/restore/R2/reset approval and the later Edition activation as separate
-  Gate F decisions.
+- **Resolved for the initial beta on 2026-08-15:** the Owner chose a Core-only launch. Review Auto,
+  Review Manual, the completed-2026 T1 Event whitelist, and Special Players are deliberately
+  deferred rather than treated as missing launch blockers. The launch Pool is the rehearsed
+  14-Team/70-Player Core set.
+- Exact official ranks 13–20 and the Cologne Major evidence remain preserved future inputs. When the
+  Owner reopens Review Auto, checksum-lock permitted top-20 evidence, decide the T1 whitelist, and
+  rerun the ordinary source → draft → proposal-review workflow.
+- Any later Review Manual Team or Special Player still requires an explicit public reason and
+  audited Admin action. None is inferred or pre-approved here.
+- Production execution completed on 2026-08-15: refreshed/approved sources, regenerated the draft,
+  reviewed exact proposal IDs 1–14, and passed `launch:check` while the real Edition was DRAFT.
+- ADR 0006 backup/restore/R2/reset approval and the later Edition activation remained separate Gate
+  F decisions; both execution records are in `docs/LAUNCH_GATE_F.md`.

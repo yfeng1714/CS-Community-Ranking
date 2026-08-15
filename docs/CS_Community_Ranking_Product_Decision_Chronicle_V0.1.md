@@ -20,7 +20,7 @@
 </tbody>
 </table>
 
-**版本** V0.1.18
+**版本** V0.1.20
 
 **日期** 2026-08-15
 
@@ -59,6 +59,10 @@
 **Owner M10 Stats Rehearsal** 2026-08-15（V0.1.17；Direct 403、Live Parser Drift、Reviewed Stats Fallback）
 
 **Owner M10 Pool Workflow Review** 2026-08-15（V0.1.18；Top-20 边界、Admin Next Action、Clean-room Gate F）
+
+**Owner M10 Core-only Launch Scope** 2026-08-15（V0.1.19；首轮 Beta 暂缓 Review/T1/Special）
+
+**Owner M10 Production Cutover** 2026-08-15（V0.1.20；一次性 Reset 已执行，Core Beta 已激活）
 
 **定位** 产品背景、决策记录与后续 Review Context
 
@@ -226,6 +230,21 @@ Canonical、Reviewed HLTV 与 Stats 边界，但本机 GitHub Transport 对官�
 Timeout，因此按 Fail-closed 停在缺失 Source，而没有复制旧 Snapshot 或制造 Partial Draft。该结果
 作为 Resilience 证据，不替代早先完整 396-Team VRS → 14 Core 演练，也不授权 Railway Reset 或
 Edition Activation。
+
+Owner 随后冻结首轮 Beta 的 Candidate Pool 范围为 Core-only：使用已演练的 14 Team 与 70 名当前
+Starter；Review Auto、Review Manual、Completed-2026 T1 Whitelist 与 Special Player 均明确后置，
+不再作为本次 Gate F 的缺失输入。后置不是删除规则：未来仍可在不部署代码的情况下，由最新
+Top-20/Event Evidence 或公开人工理由通过 Admin 的 Source、Draft、Proposal/Audit 边界新增，且不会
+改动现有一票 `+1/-1`、等概率 Pair 或历史 Ranking。Player Stats 也继续是可选展示资料；本地 Atomic
+Import 成功不等于 Railway 已获得完整 70 人数据，首发不得把单条观察值描述成完整 Stats Feed。
+
+在最终 Dump 的 Railway/Local SHA-256、一套独立 PostgreSQL 18 Restore 与 Owner 确认的私有 R2
+副本全部通过后，Owner 授权的一次性 ADR 0006 Cutover 于 2026-08-15 执行。Fictional M9 History
+没有改名冒充真实数据，而是在 Web/Cron 停止且 Schedule 清空后被 Reset；Committed Migration、
+Canonical Manifest、两份 Approved Ranking Source 与 14 个逐条 Proposal Approval 重建了真实
+Core-only Pool。Production Launch Gate 返回 `blocking: false` 后，Edition `2026` 通过 Audited
+Transition 进入 ACTIVE。该 Reset 例外至此耗尽；未来真实 Vote、Ranking 与 Audit History 必须用
+Forward Migration 和已批准 Backup Policy 保留。
 
 <table>
 <colgroup>

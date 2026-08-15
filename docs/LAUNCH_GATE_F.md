@@ -10,9 +10,10 @@ Edition from `DRAFT` to `ACTIVE`.
 - [x] Owner authorized M10 repository preparation on 2026-08-14.
 - [x] The read-only `launch:check` command and regression coverage exist.
 - [x] The one-database, in-place production reset strategy was approved on 2026-08-14 (ADR 0006).
-- [ ] The final backup/restore/R2 evidence has been recorded and the reset has been performed.
-- [ ] Real 2026 Candidate Pool data has been imported and approved.
-- [ ] A real Edition has been activated.
+- [x] The final backup/restore/R2 evidence has been recorded and the reset was performed on
+      2026-08-15.
+- [x] The real Core-only 2026 Candidate Pool data was imported and approved on 2026-08-15.
+- [x] Real Edition `2026` was activated on 2026-08-15 after a blocking-free launch report.
 - [ ] Closed beta has started.
 - [ ] Gate F has Owner sign-off.
 
@@ -62,36 +63,81 @@ Additional independent evidence on 2026-08-15 (still not production sign-off):
       update workflow card. It does not replace source approval, draft execution, proposal review,
       or Owner decisions.
 
-The current Railway environment is named `production`, but its database contains the explicitly
-fictional M9 staging Edition `2026`, test players, SKIPs, and audit history. It remains staging. Do
-not rename those records into production data or bootstrap the reset database with
-`db:seed`/`db:seed:staging`. ADR 0006 permits one documented pre-launch reset only after the final
-verified backup and explicit reset approval; that exception expires as soon as meaningful real data
-exists.
+The Railway environment named `production` was converted from fictional M9 staging to the real
+Core-only beta on 2026-08-15. The fictional rows were not renamed or reused. ADR 0006's one-time
+reset exception is now consumed: all future database work must preserve real history through forward
+migrations and the approved backup policy.
+
+## Production cutover evidence — 2026-08-15
+
+- Exact target: workspace `yfeng's Projects`, project `observant-empathy`
+  (`d3599e57-0191-4265-9cd2-04c9978ac665`), environment `production`
+  (`30a211bc-4e19-4067-8a38-a1485f6e0f0b`), database service `Postgres`
+  (`fbdf66a0-9727-4064-9802-4f0dd3659beb`), database `railway`.
+- Final fictional-staging dump:
+  `backups/final-fictional-staging-2026-08-15T1037CST.dump`, 146,259 bytes, SHA-256
+  `cf3efa880c4c666076571bb5371dd5a773e51c390b32ed080da1d9b58dd44d16`. Its 486-byte
+  manifest has SHA-256 `60c1fb5bc50e225f63042dd243f541d653157bf897ed76dc57d4ab033e3c44c8`.
+  The Railway-side and local dump checksums matched; a PostgreSQL 18 scratch restore succeeded and
+  all 14 critical-table counts matched. The Owner confirmed both final artifacts were uploaded to
+  private R2 bucket `cs-community-ranking-backups`.
+- Web and all six cron deployments were stopped and all six cron schedules were temporarily cleared
+  before reset. `public` and the stale `drizzle` journal schema were removed; committed migrations
+  then recreated 29 public tables and four migration-journal rows. The surviving journal was caught
+  by post-reset verification before any canonical data was inserted.
+- Active Admin `owner` was recreated as ID 1 by copying only its password hash from the verified
+  backup. The password itself was not read or printed. Canonical manifest SHA-256
+  `c9eadfa1d609f5d5dd96df050b0841afc73be06b05fc70f6d5cb36f967c010f7` created one DRAFT
+  Edition, 14 Teams, 70 Players, 70 starter memberships, and 239 bootstrap audits.
+- Reviewed HLTV snapshot ID 1 covers the August 10 exact top 12; official Valve VRS snapshot ID 2
+  covers 396 Teams from August 3. Both were explicitly approved by `owner`. The production draft
+  generated proposal IDs 1–14 with no conflicts, no removals, and the same ten documented warnings;
+  all 14 were approved through the guarded review service.
+- The pre-activation report returned `blocking: false`, 14 Core Teams, 70 pairing-enabled Players,
+  2,415 pairs, healthy integrity, fresh sources, and two warnings: provisional asset rights and 70
+  missing optional stat snapshots. The audited transition then moved Edition ID 1 from DRAFT to
+  ACTIVE with the same gate rerun inside the activation command.
+- A password printed by an earlier tunnel helper was treated as exposed. The PostgreSQL role and
+  Railway `PGPASSWORD` were rotated, `Postgres.DATABASE_URL` was converted to a same-service
+  reference, and Web plus all six jobs now use `${{Postgres.DATABASE_URL}}` rather than copied
+  credentials. New authentication and Web reference resolution were verified without printing the
+  secret.
+- Read-only production smoke passed HTTPS liveness/readiness, `/`, `/ranking`, the 70-Player ranking
+  API, and all six required security headers. It deliberately created no test Ballot or Vote.
+- The dedicated post-activation integrity job reported `healthy: true`, zero Votes, zero score sum,
+  and no violations. Running the pre-activation gate after activation correctly returns only its
+  designed `EDITION_REQUIRES_DRAFT_REVIEW` blocker while every substantive check still passes.
+- Web deployment `20341852-01ad-4568-940c-ef1fdff7db6f` and cron deployments
+  `08c3604c-dd2a-43b8-9dfa-6d6e1614b3b1`, `3b7b40da-22e7-4e4a-a066-f9e4f4aadecc`,
+  `967c0a6b-ce09-468a-9d60-95dc4036bdf2`, `408d254f-5e29-4898-b01a-db925be2fe93`,
+  `c2c038ba-b2a9-41ac-ac51-5b4a8aac0be9`, and `1b831cdf-25c5-46f2-9fe8-4a3c87d24693`
+  reached `SUCCESS`. All six exact UTC schedules and future next-run timestamps were verified.
 
 ## 1. Production environment decision
 
 - [x] Owner chose the lowest-cost, one-database in-place reset; no second Railway DB is planned.
-- [ ] Record the final backup, restore verification, R2 copy, exact reset target, and explicit
+- [x] Record the final backup, restore verification, R2 copy, exact reset target, and explicit
       destructive-action approval before resetting the application schema.
-- [ ] Confirm Singapore placement, private DB networking, exact Railway hostname, variables,
+- [x] Confirm Singapore placement, private DB networking, exact Railway hostname, variables,
       spending controls, alert recipients, and `RISK_ENFORCEMENT_MODE=observe`.
-- [ ] Apply committed migrations only; verify that the product tables start empty.
-- [ ] Create the production Admin through `admin:create`; never expose web registration.
-- [ ] Create the real DRAFT Edition through audited Admin mutation. Do not activate it yet.
+- [x] Apply committed migrations only; verify that the product tables start empty.
+- [x] Create the production Admin through a trusted operator path; never expose web registration.
+- [x] Create the real DRAFT Edition through the audited canonical bootstrap. Activation remained a
+      separate action.
 - [ ] Establish the daily logical-backup cadence and private R2 second-copy procedure before the
       first meaningful beta Vote.
 
-Why a clean state: Edition code is unique, the M9 `2026` Edition is already ACTIVE, and its rows must
-not be disguised as production history. Because all current rows are documented fictional fixtures
-and there are no real users, the owner approved resetting the existing PostgreSQL service rather
-than paying for a second one. The verified final dump/R2 copy preserves the staging evidence.
+Why a clean state was required: Edition code is unique, the M9 `2026` Edition was ACTIVE, and its
+rows could not be disguised as production history. Because all pre-cutover rows were documented
+fictional fixtures and there were no real users, the owner approved resetting the existing
+PostgreSQL service rather than paying for a second one. The verified final dump/R2 copy preserves
+that staging evidence.
 
-Lowest-cost sequence: do the initial canonical-data/source/conflict rehearsal in a separate clean
-local PostgreSQL database, with Docker running only for the work window. This has no Railway cost
-and must not use the fictional seed. Perform the Railway reset only when the proposed Pool is close
-to Owner approval, then repeat the sync/draft/readiness flow there with still-fresh sources. The
-local report is preparation, not production evidence.
+The completed lowest-cost sequence used a separate clean local PostgreSQL database for the initial
+canonical-data/source/conflict rehearsal, with Docker running only for the work window. It used no
+fictional seed. Railway was reset only after the Pool was close to Owner approval, then repeated the
+sync/draft/readiness flow with fresh-enough sources. The local report remained preparation rather
+than production evidence.
 
 The approved low-cost sequence keeps the existing Railway Web, six cron services, generated domain,
 and PostgreSQL service. Pause Web/crons, take and independently verify the final staging recovery
@@ -111,35 +157,40 @@ database cost. See ADR 0006.
       `docs/CANONICAL_DATA_REVIEW_2026-08-14.md`.
 - [x] Owner decided on 2026-08-14 that HLTV is authoritative for the current roster whenever an
       approved VRS snapshot disagrees; the disagreement remains review evidence and is not hidden.
-- [ ] Enter canonical Teams, Players, optional verified HLTV profile URLs, aliases/identities,
-      exactly five current formal starters per
-      eligible Team, completed-2026 T1 whitelist, and relevant event results.
-- [ ] Verify every admitted Team and Player has an unambiguous HLTV identity.
-- [ ] Run fresh official Valve VRS and deliberate low-frequency HLTV ranking syncs.
-- [ ] Owner reviews and approves both immutable source snapshots with source URL, published time,
+- [x] Enter canonical Teams, Players, verified HLTV profile URLs, aliases/identities, and exactly
+      five current formal starters per eligible Core Team. The completed-2026 T1 whitelist is
+      intentionally deferred for the Core-only launch.
+- [x] Verify every admitted Team and Player has an unambiguous HLTV identity.
+- [x] Run a fresh official Valve VRS sync and import the checksum-locked reviewed HLTV ranking.
+- [x] Owner reviews and approves both immutable source snapshots with source URL, published time,
       parser version, record count, and checksum.
-- [ ] Run `pnpm job:build-pool-draft -- --edition 2026`.
-- [ ] Resolve missing/ambiguous identities, stale inputs, roster disagreement, and all pending
+- [x] Run `pnpm job:build-pool-draft -- --edition 2026`.
+- [x] Resolve missing/ambiguous identities, stale inputs, roster disagreement, and all pending
       proposals. Re-run the draft after a newer source or canonical-data correction.
-- [ ] Record possible removals but never apply them automatically.
+- [x] Record possible removals but never apply them automatically. The final draft had none.
 
 ## 3. Owner Candidate Pool approval
 
 Record the final counts and the reason/evidence for every non-Core entry. Admission category never
 changes pairing probability or score.
 
-| Category        | Teams | Players | Owner-reviewed evidence | Approved by/date |
-| --------------- | ----: | ------: | ----------------------- | ---------------- |
-| Core            |       |         | Latest qualifying rank  |                  |
-| Review Auto     |       |         | Rank/event rule result  |                  |
-| Review Manual   |       |         | Public manual reason    |                  |
-| Special players |   n/a |         | Public special reason   |                  |
+| Category        | Teams | Players | Owner-reviewed evidence | Approved by/date   |
+| --------------- | ----: | ------: | ----------------------- | ------------------ |
+| Core            |    14 |      70 | Approved HLTV/VRS rank  | owner / 2026-08-15 |
+| Review Auto     |     0 |       0 | Deferred for beta       | owner / 2026-08-15 |
+| Review Manual   |     0 |       0 | Deferred for beta       | owner / 2026-08-15 |
+| Special players |   n/a |       0 | Deferred for beta       | owner / 2026-08-15 |
 
-- [ ] Every pairing-enabled Team-derived Player is still a current formal starter for its source
+Initial-beta scope decision on 2026-08-15: launch Core-only with the rehearsed 14 Teams and 70
+current starters. Review Auto, Review Manual, the 2026 T1 whitelist, and Special admissions are
+explicitly deferred. Their zero launch counts are intentional scope, not incomplete evidence.
+
+- [x] Every pairing-enabled Team-derived Player is still a current formal starter for its source
       Team.
-- [ ] Former starters are preserved historically and explicitly pairing-disabled when applicable.
-- [ ] Every current Pool admission has immutable `pool_change_log` and general Admin audit evidence.
-- [ ] Total enabled Players: **TBD**. Total possible pairs `n(n-1)/2`: **TBD**.
+- [x] No former starter is present in the initial clean Pool; later changes must preserve history and
+      pairing-disable former starters.
+- [x] Every current Pool admission has immutable `pool_change_log` and general Admin audit evidence.
+- [x] Total enabled Players: **70**. Total possible pairs `n(n-1)/2`: **2,415**.
 
 ## 4. Assets and early-community policy
 
@@ -180,11 +231,11 @@ Pool audit coverage. Placeholder images or missing optional stats are explicit w
 The Admin `DRAFT` → `ACTIVE` action re-runs the same checks and refuses activation on any blocker;
 the operational rows and Owner sign-off below remain human approvals that code cannot infer.
 
-- [ ] `blocking: false`; warnings individually reviewed and recorded.
-- [ ] Zero Player scores/wins/losses/skips before activation.
+- [x] `blocking: false`; two warnings individually reviewed and recorded.
+- [x] Zero Player scores/wins/losses/skips before activation.
 - [ ] Vote correctness suite passes against production-like staging data.
 - [ ] Migration/build/release commit is frozen and recorded: **TBD**.
-- [ ] Owner authorizes exactly one audited `DRAFT` → `ACTIVE` transition: **TBD**.
+- [x] Owner authorized exactly one audited `DRAFT` → `ACTIVE` transition on 2026-08-15.
 
 ## 6. Closed-beta window
 

@@ -2,36 +2,23 @@
 
 ## Current position
 
-- **Milestone:** 10 — Candidate Pool V1, closed beta, and launch (**in progress; preparation only**)
-- **Status:** Owner Review Gate E was approved on 2026-08-14. Railway direct-host staging is deployed
-  and healthy; fictional bootstrap, all six cron
-  jobs, owner Admin login/logout, the minimum direct load window, failed-job email delivery,
-  Singapore Web/PostgreSQL placement, a current structured request-log review, China Mobile 4G/Wi-Fi
-  reachability, and a measured Wi-Fi load window pass. The owner selected Hobby logical backups and
-  explicitly deferred a custom domain/Cloudflare edge layer; the first retained local dump, its full
-  restore verification, and its independent private R2 copy pass. The owner explicitly waived an
-  artificial failed-deployment drill against the sole active staging service and deliberate spend
-  solely to trigger the $10 alert. M10 repository preparation now adds a read-only, fail-closed
-  launch-readiness report and a Gate F evidence/sign-off workflow. The Owner then approved ADR 0006:
-  rehearse locally and reset the existing fictional Railway database in place after final verified
-  backup evidence, with no second Railway database. The isolated local real-data rehearsal has now
-  applied the approved canonical manifest, approved the official August 3 VRS plus audited reviewed
-  August 10 HLTV evidence, and admitted the Owner-approved 14-Team/70-Player Core Pool through Gate
-  D. Its pre-asset local readiness report passes with only optional asset/stat warnings. The
-  repository's later asset passes now provide all 14 attributed local Team logos and all 70
-  identity-verified local Player portraits. M10 now also exposes the governed Pool-update next step
-  in Admin, accepts explicitly labeled reviewed HLTV top-20 evidence, and has rehearsed an exact
-  70-identity stats bundle without filling unavailable values. The canonical rehearsal remains
-  DRAFT and zeroed; a separate clone is ACTIVE only for local UI inspection. Railway was not
-  mutated. Production Edition activation, database reset, and closed beta have not started.
-- **Review boundary:** The owner-approved Hobby baseline contains PostgreSQL, Web, and six cron
-  services. The Railway-generated environment is still named `production`, but it is being treated
-  only as staging until M10 deliberately creates production data. No real Candidate Pool or
-  closed-beta launch has happened yet. The existing rows cannot become production by relabeling:
-  they contain an ACTIVE fictional `2026` Edition and test history. Because no meaningful real data
-  exists, ADR 0006 approves a documented one-time reset of the existing PostgreSQL service after the
-  final verified backup/restore/R2 evidence and explicit destructive-action approval. The current
-  Web/cron/domain/database stack remains and no second Railway database is planned.
+- **Milestone:** 10 — Candidate Pool V1, closed beta, and launch (**in progress; production beta
+  active, final Gate F sign-off pending**)
+- **Status:** The Owner-approved ADR 0006 cutover was executed on 2026-08-15. A final fictional-
+  staging dump matched Railway and local SHA-256, restored with all critical counts, and was copied
+  to private R2. The existing Railway database was reset in place with Web/crons stopped, committed
+  migrations recreated a clean schema, and the real canonical manifest created 14 Teams, 70
+  Players, and the DRAFT `2026 Beta Edition`. Reviewed August 10 HLTV top-12 snapshot ID 1 and live
+  official August 3 Valve VRS snapshot ID 2 were approved; proposal IDs 1–14 admitted the exact
+  Core-only Pool with no conflicts or removals. Production `launch:check` returned `blocking: false`,
+  2,415 possible pairs, healthy integrity, and only provisional-rights/missing-optional-stats
+  warnings. Edition ID 1 is ACTIVE. The read-only direct-host smoke passed liveness, readiness,
+  public routes, 70-player ranking data, and six security headers without creating a test Vote.
+- **Review boundary:** The one-time pre-user reset exception is consumed. Railway now contains real
+  beta data, so future work must preserve history with forward migrations and retained backups. The
+  initial launch scope is Core-only; Review Auto, Review Manual, the 2026 T1 whitelist, Special
+  Players, and complete optional stats are deferred. Closed-beta observation and final Owner Gate F
+  sign-off remain.
 - **Last updated:** 2026-08-15
 
 ## Completed in the repository
@@ -291,11 +278,14 @@ this verification window.
 
 ## Next task
 
-Owner reviews the candidate packet, supplies or approves exact permitted HLTV ranks 13–20 evidence,
-and decides the completed-2026 T1 whitelist plus any Manual/Special entries. Optional Player stats
-can be completed gradually from the generated exact-identity template; missing values do not block
-voting. Once the proposed Pool is final, prepare the approved in-place Railway cutover by collecting
-final backup/restore/R2 evidence and explicit reset approval, pausing services, rebuilding the
-existing database from migrations, and repeating with fresh sources. Do not reset the cloud
-database, activate a production Edition, enable production Pool entries, or start closed beta
-without the explicit Gate F approvals.
+Before inviting meaningful beta Votes, establish and evidence the daily logical-backup cadence and
+private R2 second-copy procedure required by ADR 0004. Then have the Owner confirm the existing
+Admin password still signs in after the hash-only account restoration, begin the small closed-beta
+observation window, and record traffic, latency, errors, resource usage, integrity, and backup
+recovery evidence for final Gate F sign-off. China Telecom/Unicom and an evening-peak China Mobile
+window remain useful observations when available, not route blockers.
+
+Review Auto, Review Manual, the 2026 T1 whitelist, Special Players, a permitted low-frequency HLTV
+adapter, complete optional Player stats, final branding, custom domain, and Cloudflare edge remain
+deliberate later follow-ups. The ADR 0006 reset is consumed and must never be repeated against the
+real beta history.

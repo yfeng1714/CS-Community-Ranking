@@ -68,3 +68,17 @@ cutover and returns to fictional staging.
 - The reset target is recorded explicitly and the migrated production tables are verified empty
   before any Admin or product data is created.
 - Smoke, integrity, and `launch:check` pass against the rebuilt Railway database before activation.
+
+## Execution record
+
+Executed once on 2026-08-15 against the exact Railway target recorded in
+`docs/LAUNCH_GATE_F.md`. The 146,259-byte final fictional-staging dump matched its Railway-side
+SHA-256, restored successfully into isolated PostgreSQL 18, and was Owner-confirmed in private R2.
+The application and cron deployments were stopped, cron schedules were cleared, and both `public`
+and the separate Drizzle journal schema were reset before committed migrations recreated 29 public
+tables and four journal entries.
+
+The real Core-only dataset was then rebuilt from the approved canonical manifest and fresh approved
+source evidence, the 14 exact proposals were audited and approved, and `launch:check` passed before
+Edition `2026` became ACTIVE. The exception in this ADR is therefore consumed. Future work must not
+repeat an in-place history reset; use forward migrations and retained recovery points.

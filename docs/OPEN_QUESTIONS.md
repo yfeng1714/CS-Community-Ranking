@@ -23,30 +23,27 @@ are not missing M9 inputs.
 
 ## Milestone 10 inputs and approvals
 
-- Final Candidate Pool, Manual Review teams, Special players, and completed-2026 T1 whitelist. The
-  completed IEM Cologne Major Top 8 has been checked as an Owner review packet; all eight Teams are
-  already Core, so it adds no Review Auto entry by itself.
+- The initial beta Candidate Pool is resolved as Core-only: 14 Teams and their 70 current starters.
+  On 2026-08-15 the Owner explicitly deferred Review Auto, Review Manual, the completed-2026 T1
+  whitelist, and Special Players. They can be reopened through audited Admin updates after launch
+  and are not Gate F blockers for this Core-only scope.
 - Image acquisition is complete for the current canonical 14 Teams/70 Players. External rights
   clearance no longer blocks the small community beta; exact sources are recorded, and
   Owner-accepted pending-rights assets remain visible warnings until cleared or replaced.
 - Final eligible-Ballot quota after closed-beta data.
-- Final execution evidence for the approved ADR 0006 in-place reset: verified backup/restore/R2
-  copy, exact target, cutover window, and explicit destructive-action approval. No second Railway DB
-  is planned, and the fictional `2026` records must not be relabeled as production.
-- Low-frequency HLTV sync window. The identifying User-Agent points to the deployed project URL, but
-  the bounded August 10 rehearsal request received HTTP 403. The reviewed, checksum-locked top-12
-  fallback proves the manual audited path without pretending automated retrieval succeeded. Retry a
-  fresh low-frequency live sync near cutover and require new Owner-reviewed fallback evidence if it
-  remains blocked. The reviewed importer now accepts and labels exact top-20 coverage, but permitted
-  reliable extraction of August 10 ranks 13–20 remains open; top 12 must not be treated as complete
-  Review Auto evidence. The start date, HLTV-over-VRS roster policy, exact identities, and 14-Team
-  union are resolved; any future proposals and Edition activation remain separate approvals.
-- Final Player-stat capture remains operational work near launch. The August 15 direct Player-stats
+- The ADR 0006 one-time reset is resolved and consumed. Final dump/restore/private-R2 evidence, exact
+  target, clean migrations, source approval, 14 proposal approvals, activation, credential rotation,
+  and production smoke are recorded in `docs/LAUNCH_GATE_F.md`.
+- Automated HLTV retrieval remains deliberately disabled after bounded requests returned HTTP 403.
+  The active Core Pool uses the reviewed, checksum-locked August 10 top-12 fallback without
+  overstating it as top-20 Review Auto evidence. Revisit a permitted low-frequency adapter only when
+  Review Auto or a later refresh needs it; do not bypass provider controls.
+- Complete Player-stat capture remains optional post-launch presentation work. The August 15 direct Player-stats
   probe also returned HTTP 403, and browser inspection showed that the current page structure has
   drifted from the saved parser fixture. A checksum-locked, exact-identity reviewed import now exists,
   plus a no-overwrite template generator. One isolated 70-identity rehearsal imported only one
-  observed recent metric and left every unavailable value null; a complete final capture remains
-  optional operational work.
+  observed recent metric and left every unavailable value null. No partial stats bundle was imported
+  into Railway, so the public UI honestly shows missing values for all 70 Players.
 
 Resolved on 2026-08-14: the working launch label is `2026 Beta Edition`. The Owner later removed the
 personal email and dedicated privacy/contact page for the small community beta; reconsider both when
