@@ -70,7 +70,11 @@ export function RankingTable({ players }: { players: PublicRankingPlayer[] }) {
                 <td>
                   <Link className="ranking-player" href={`/player/${player.slug}`}>
                     <div className="ranking-player__portrait">
-                      <PlayerPortrait nickname={player.nickname} photoUrl={player.photoUrl} />
+                      <PlayerPortrait
+                        nickname={player.nickname}
+                        photoUrl={player.photoUrl}
+                        variant="ranking"
+                      />
                     </div>
                     <span>
                       <strong>{player.nickname}</strong>

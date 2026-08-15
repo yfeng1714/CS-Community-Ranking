@@ -53,7 +53,12 @@ export function VotePlayerCard({
           <span className="vote-card__selection-label">
             {selected ? "你的选择" : resultChoice === "SKIP" ? "已跳过" : "本轮对手"}
           </span>
-          <PlayerPortrait nickname={player.nickname} photoUrl={player.photoUrl} priority />
+          <PlayerPortrait
+            nickname={player.nickname}
+            photoUrl={player.photoUrl}
+            priority
+            variant="vote"
+          />
           <PlayerIdentity player={player} />
         </div>
       ) : (
@@ -67,7 +72,12 @@ export function VotePlayerCard({
           <span className="vote-card__selection-label">
             选择 {position === "left" ? "左" : "右"}
           </span>
-          <PlayerPortrait nickname={player.nickname} photoUrl={player.photoUrl} priority />
+          <PlayerPortrait
+            nickname={player.nickname}
+            photoUrl={player.photoUrl}
+            priority
+            variant="vote"
+          />
           <PlayerIdentity player={player} />
         </button>
       )}

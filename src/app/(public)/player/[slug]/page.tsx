@@ -59,7 +59,12 @@ export default async function PlayerPage({ params }: { params: Promise<{ slug: s
       </Link>
       <section className="player-profile">
         <div className="player-profile__portrait">
-          <PlayerPortrait nickname={player.nickname} photoUrl={player.photoUrl} priority />
+          <PlayerPortrait
+            nickname={player.nickname}
+            photoUrl={player.photoUrl}
+            priority
+            variant="profile"
+          />
         </div>
         <div className="player-profile__identity">
           <span className="eyebrow">

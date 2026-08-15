@@ -927,13 +927,20 @@ button:disabled {
 .vote-card__main {
   position: relative;
   display: grid;
+  grid-template-columns: 7rem minmax(0, 1fr);
+  grid-template-areas:
+    "label label"
+    "photo identity";
+  align-items: center;
   width: 100%;
-  min-height: 360px;
-  padding: 0;
+  min-height: 0;
+  padding: 1rem 1.15rem 1.05rem;
   border: 0;
   background: transparent;
   color: inherit;
   text-align: left;
+  column-gap: 1rem;
+  row-gap: 0.7rem;
 }
 
 .vote-card__choice {
@@ -950,42 +957,49 @@ button:disabled {
 }
 
 .vote-card__selection-label {
-  position: absolute;
-  z-index: 4;
-  top: 1rem;
-  left: 1rem;
-  padding: 0.38rem 0.6rem;
-  border: 1px solid color-mix(in srgb, white 28%, transparent);
+  grid-area: label;
+  justify-self: start;
+  padding: 0.32rem 0.55rem;
+  border: 1px solid var(--border);
   border-radius: 999px;
-  background: color-mix(in srgb, #0d1627 78%, transparent);
-  color: white;
+  background: var(--surface-soft);
+  color: var(--muted-strong);
   font-size: 0.68rem;
   font-weight: 800;
   letter-spacing: 0.05em;
 }
 
 .vote-card[data-selected="true"] .vote-card__selection-label {
+  border-color: color-mix(in srgb, var(--brand) 45%, var(--border));
   background: var(--brand);
+  color: white;
 }
 
 .player-portrait {
   position: relative;
   overflow: hidden;
-  min-height: 270px;
-  background: linear-gradient(
-    145deg,
-    color-mix(in srgb, var(--brand) 20%, var(--surface-soft)),
-    var(--surface-soft)
-  );
+  width: 7rem;
+  height: 7rem;
+  border: 1px solid var(--border);
+  border-radius: 0.95rem;
+  background: color-mix(in srgb, var(--brand) 12%, var(--surface-soft));
 }
 
-.player-portrait::after {
-  position: absolute;
-  inset: auto 0 0;
-  height: 40%;
-  background: linear-gradient(transparent, rgba(8, 14, 26, 0.28));
-  content: "";
-  pointer-events: none;
+.player-portrait--vote {
+  grid-area: photo;
+}
+
+.player-portrait--profile {
+  width: 12.5rem;
+  height: 12.5rem;
+  border-radius: 1.15rem;
+}
+
+.player-portrait--ranking {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  border-radius: 0;
 }
 
 .player-portrait img {
@@ -1000,7 +1014,7 @@ button:disabled {
   background-image:
     linear-gradient(color-mix(in srgb, var(--brand) 10%, transparent) 1px, transparent 1px),
     linear-gradient(90deg, color-mix(in srgb, var(--brand) 10%, transparent) 1px, transparent 1px);
-  background-size: 28px 28px;
+  background-size: 16px 16px;
   mask-image: linear-gradient(to bottom, black, transparent 80%);
 }
 
@@ -1010,11 +1024,15 @@ button:disabled {
   display: grid;
   place-items: center;
   color: color-mix(in srgb, var(--brand) 75%, var(--foreground));
-  font-size: clamp(4rem, 10vw, 8rem);
+  font-size: 1.7rem;
   font-weight: 950;
   letter-spacing: -0.09em;
   line-height: 1;
   transition: transform 220ms ease;
+}
+
+.player-portrait--profile .player-portrait__monogram {
+  font-size: 3.1rem;
 }
 
 .team-logo {
@@ -1050,19 +1068,14 @@ button:disabled {
 }
 
 .vote-card__identity {
-  position: absolute;
-  z-index: 3;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  padding: 3.5rem 1.4rem 1.25rem;
-  color: white;
-  background: linear-gradient(transparent, rgba(8, 14, 26, 0.9) 58%);
+  grid-area: identity;
+  min-width: 0;
+  color: var(--foreground);
 }
 
 .vote-card__identity h2 {
   margin: 0;
-  font-size: clamp(2rem, 4.5vw, 3.3rem);
+  font-size: clamp(1.45rem, 3.2vw, 2.15rem);
   font-weight: 950;
   letter-spacing: -0.065em;
   line-height: 0.95;
@@ -1072,8 +1085,8 @@ button:disabled {
   display: flex;
   flex-wrap: wrap;
   gap: 0.38rem;
-  margin: 0.6rem 0 0;
-  color: rgba(255, 255, 255, 0.78);
+  margin: 0.45rem 0 0;
+  color: var(--muted-strong);
   font-size: 0.82rem;
   font-weight: 650;
 }
@@ -1341,7 +1354,7 @@ button:disabled {
 }
 
 .vote-loading__cards div {
-  height: 520px;
+  height: 11.5rem;
   border-radius: 1.4rem;
   background: var(--surface);
   box-shadow: var(--shadow-soft);
@@ -1599,19 +1612,22 @@ button:disabled {
 
 .player-profile {
   display: grid;
-  grid-template-columns: minmax(230px, 0.7fr) 1.2fr minmax(170px, 0.45fr);
-  align-items: stretch;
+  grid-template-columns: auto minmax(0, 1.2fr) minmax(170px, 0.45fr);
+  align-items: center;
   overflow: hidden;
-  min-height: 390px;
   border: 1px solid var(--border);
   border-radius: 1.6rem;
   background: var(--surface);
   box-shadow: var(--shadow);
 }
 
+.player-profile__portrait {
+  padding: 1.25rem;
+}
+
 .player-profile__portrait .player-portrait {
-  height: 100%;
-  min-height: 390px;
+  height: 12.5rem;
+  min-height: 0;
 }
 
 .player-profile__identity {
@@ -1936,11 +1952,7 @@ button:disabled {
 
 @media (max-width: 900px) {
   .vote-card__main {
-    min-height: 320px;
-  }
-
-  .player-portrait {
-    min-height: 240px;
+    min-height: 0;
   }
 
   .result-panel {
@@ -1956,7 +1968,7 @@ button:disabled {
   }
 
   .player-profile {
-    grid-template-columns: minmax(210px, 0.75fr) 1.25fr;
+    grid-template-columns: auto minmax(0, 1fr);
   }
 
   .player-profile__rank {
@@ -2030,7 +2042,7 @@ button:disabled {
 
   .versus-mark {
     position: absolute;
-    top: 9rem;
+    top: 4.75rem;
     left: 50%;
     width: 2.8rem;
     height: 2.8rem;
@@ -2046,26 +2058,26 @@ button:disabled {
   }
 
   .vote-card__main {
-    min-height: 250px;
+    grid-template-columns: 5.75rem minmax(0, 1fr);
+    min-height: 0;
+    padding: 0.8rem;
+    column-gap: 0.7rem;
+    row-gap: 0.55rem;
   }
 
-  .player-portrait {
-    min-height: 210px;
+  .player-portrait--vote {
+    width: 5.75rem;
+    height: 5.75rem;
+    border-radius: 0.8rem;
   }
 
   .vote-card__selection-label {
-    top: 0.55rem;
-    left: 0.55rem;
-    padding: 0.3rem 0.45rem;
+    padding: 0.28rem 0.45rem;
     font-size: 0.56rem;
   }
 
-  .vote-card__identity {
-    padding: 3rem 0.75rem 0.8rem;
-  }
-
   .vote-card__identity h2 {
-    font-size: clamp(1.45rem, 7vw, 2.3rem);
+    font-size: clamp(1.15rem, 5.5vw, 1.55rem);
   }
 
   .vote-card__identity p {
@@ -2120,7 +2132,7 @@ button:disabled {
   }
 
   .vote-loading__cards div {
-    height: 410px;
+    height: 9.5rem;
   }
 
   .page-hero {
@@ -2176,8 +2188,15 @@ button:disabled {
     grid-template-columns: 1fr;
   }
 
+  .player-profile__portrait {
+    justify-self: center;
+    padding: 1.15rem 1.15rem 0;
+  }
+
   .player-profile__portrait .player-portrait {
-    min-height: 310px;
+    width: 10rem;
+    height: 10rem;
+    min-height: 0;
   }
 
   .player-profile__identity {
@@ -2224,11 +2243,17 @@ button:disabled {
   }
 
   .vote-card__main {
-    min-height: 220px;
+    grid-template-columns: 5.25rem minmax(0, 1fr);
+    min-height: 0;
   }
 
-  .player-portrait {
-    min-height: 190px;
+  .player-portrait--vote {
+    width: 5.25rem;
+    height: 5.25rem;
+  }
+
+  .versus-mark {
+    top: 4.35rem;
   }
 
   .vote-card__identity p span:nth-child(2) {
