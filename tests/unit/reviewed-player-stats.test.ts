@@ -4,6 +4,7 @@ import canonicalManifest from "../../data/canonical/2026-beta.json";
 import { canonicalManifestSchema } from "@/domain/canonical/manifest";
 import {
   createReviewedHltvPlayerStatsTemplate,
+  mergeCapturedRecentStats,
   validateReviewedHltvPlayerStats,
 } from "@/domain/external-data/reviewed-player-stats";
 
@@ -13,11 +14,20 @@ interface TestBundle {
   periodStart: string;
   provider: "HLTV";
   records: Array<{
+    adr: number | null;
     career: { maps: number | null; rating: number } | null;
     careerSourceUrl: string | null;
     externalId: string;
     externalSlug: string;
-    recent: { maps: number; rating: number } | null;
+    firepower: number | null;
+    majorsWon: number | null;
+    mvpCount: number | null;
+    recent: {
+      adr: number | null;
+      firepower: number | null;
+      maps: number;
+      rating: number;
+    } | null;
     recentSourceUrl: string;
   }>;
   version: 1;
@@ -30,11 +40,15 @@ const validBundle = (): TestBundle => ({
   provider: "HLTV" as const,
   records: [
     {
+      adr: null,
       career: { maps: 1_200, rating: 1.02 },
       careerSourceUrl: "https://www.hltv.org/stats/players/429/karrigan",
       externalId: "429",
       externalSlug: "karrigan",
-      recent: { maps: 46, rating: 0.73 },
+      firepower: 2,
+      majorsWon: 2,
+      mvpCount: 32,
+      recent: { adr: null, firepower: 2, maps: 46, rating: 0.73 },
       recentSourceUrl:
         "https://www.hltv.org/stats/players/429/karrigan?startDate=2026-05-15&endDate=2026-08-14",
     },
@@ -104,5 +118,91 @@ describe("reviewed HLTV Player stats", () => {
     expect(() => validateReviewedHltvPlayerStats(bundle)).toThrow(
       "both career data and its source",
     );
+  });
+
+  it("fills observed recent metrics onto the exact 70-identity template", () => {
+    const template = createReviewedHltvPlayerStatsTemplate(
+      canonicalManifestSchema.parse(canonicalManifest),
+      {
+        capturedAt: "2026-08-16T03:00:00.000Z",
+        periodEnd: "2026-08-16",
+        periodStart: "2026-05-16",
+      },
+    );
+    const merged = mergeCapturedRecentStats(
+      template,
+      new Map([
+        [
+          "429",
+          {
+            adr: null,
+            careerRating: null,
+            firepower: 2,
+            majorsWon: 2,
+            maps: 43,
+            mvpCount: 32,
+            rating: 0.75,
+          },
+        ],
+        [
+          "11893",
+          {
+            adr: null,
+            careerRating: null,
+            firepower: 98,
+            majorsWon: 1,
+            maps: 40,
+            mvpCount: 21,
+            rating: 1.32,
+          },
+        ],
+      ]),
+    );
+    expect(merged.records).toHaveLength(70);
+    expect(merged.records.find((record) => record.externalId === "429")).toMatchObject({
+      firepower: 2,
+      majorsWon: 2,
+      mvpCount: 32,
+      recent: { adr: null, firepower: 2, maps: 43, rating: 0.75 },
+    });
+    expect(merged.records.find((record) => record.externalId === "11893")?.recent).toEqual({
+      adr: null,
+      firepower: 98,
+      maps: 40,
+      rating: 1.32,
+    });
+    expect(merged.records.filter((record) => record.recent === null)).toHaveLength(68);
+    expect(merged.records.every((record) => record.career === null)).toBe(true);
+    expect(validateReviewedHltvPlayerStats(merged).records).toHaveLength(70);
+  });
+
+  it("rejects a capture for an identity that is not in the template", () => {
+    const template = createReviewedHltvPlayerStatsTemplate(
+      canonicalManifestSchema.parse(canonicalManifest),
+      {
+        capturedAt: "2026-08-16T03:00:00.000Z",
+        periodEnd: "2026-08-16",
+        periodStart: "2026-05-16",
+      },
+    );
+    expect(() =>
+      mergeCapturedRecentStats(
+        template,
+        new Map([
+          [
+            "7998",
+            {
+              adr: null,
+              careerRating: null,
+              firepower: 10,
+              majorsWon: 0,
+              maps: 10,
+              mvpCount: 0,
+              rating: 1.1,
+            },
+          ],
+        ]),
+      ),
+    ).toThrow("not in the reviewed template");
   });
 });

@@ -8,6 +8,17 @@ import {
 
 export const HLTV_RANKING_PARSER_VERSION = "hltv-ranking-html-v1";
 export const HLTV_PLAYER_STATS_PARSER_VERSION = "hltv-player-stats-html-v1";
+export const HLTV_PLAYER_PROFILE_STATS_PARSER_VERSION = "hltv-player-profile-stats-html-v2";
+
+export interface CapturedHltvProfileStats {
+  adr: number | null;
+  careerRating: number | null;
+  firepower: number | null;
+  majorsWon: number | null;
+  maps: number;
+  mvpCount: number | null;
+  rating: number;
+}
 
 function decodeHtml(value: string): string {
   return value
@@ -83,6 +94,110 @@ export function parseHltvTeamRankingHtml(
     );
   }
   return result.data;
+}
+
+export function isHltvAccessDeniedHtml(body: string): boolean {
+  const head = body.slice(0, 20_000);
+  return (
+    /just a moment/i.test(head) ||
+    /performing security verification/i.test(head) ||
+    /checking your browser before accessing/i.test(head) ||
+    /sorry, you have been blocked/i.test(head) ||
+    /enable javascript and cookies to continue/i.test(head)
+  );
+}
+
+function nonnegativeInt(value: string | undefined): number | null {
+  if (!value) return null;
+  const parsed = Number(value.replaceAll(",", ""));
+  return Number.isInteger(parsed) && parsed >= 0 ? parsed : null;
+}
+
+function highlightedCount(body: string, description: string): number | null {
+  const escaped = description.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const match = new RegExp(
+    `<div[^>]*class=["'][^"']*\\bhighlighted-stat\\b[^"']*["'][^>]*>\\s*<div[^>]*class=["']stat["'][^>]*>\\s*([0-9][0-9,]*)\\s*</div>\\s*<div[^>]*class=["']description["'][^>]*>\\s*${escaped}\\s*<`,
+    "i",
+  ).exec(body);
+  return nonnegativeInt(match?.[1]);
+}
+
+function majorWinnerCount(body: string): number | null {
+  const match =
+    /<div[^>]*class=["'][^"']*\bmajorWinner\b[^"']*["'][^>]*>\s*<b>\s*([0-9][0-9,]*)\s*<\/b>\s*x\s*Major winner/i.exec(
+      body,
+    );
+  return nonnegativeInt(match?.[1]);
+}
+
+function mvpBadgeCount(body: string): number | null {
+  const match = /<div[^>]*class=["'][^"']*\bmvp-count\b[^"']*["'][^>]*>\s*([0-9][0-9,]*)/i.exec(
+    body,
+  );
+  return nonnegativeInt(match?.[1]);
+}
+
+function parseFirepower(body: string): number | null {
+  const match =
+    /<b>\s*Firepower\s*<\/b>[\s\S]{0,240}?<span[^>]*class=["'][^"']*\bstatsVal\b[^"']*["'][^>]*>\s*<p>\s*<b>\s*([0-9]{1,3})\s*<\/b>/i.exec(
+      body,
+    );
+  const value = match?.[1] ? Number(match[1]) : NaN;
+  return Number.isInteger(value) && value >= 0 && value <= 100 ? value : null;
+}
+
+function parseAdr(body: string): number | null {
+  const container =
+    /<div[^>]*class=["'][^"']*\bplayerpage-container\b[^"']*["'][^>]*>([\s\S]{0,8000})/i.exec(
+      body,
+    )?.[1] ?? "";
+  const match = /<b>\s*ADR\s*<\/b>[\s\S]{0,160}?<p>\s*([0-9]{1,3}(?:\.[0-9]+)?)/i.exec(container);
+  const value = match?.[1] ? Number(match[1]) : NaN;
+  return Number.isFinite(value) && value >= 0 && value <= 200 ? value : null;
+}
+
+export function parseHltvPlayerProfileStatsHtml(body: string): CapturedHltvProfileStats {
+  if (isHltvAccessDeniedHtml(body)) {
+    throw new DomainError(
+      "HLTV_ACCESS_DENIED",
+      "HLTV HTML is a Cloudflare challenge or block page",
+    );
+  }
+
+  const decoded = decodeHtml(body)
+    .replaceAll("&bull;", "•")
+    .replaceAll("&#8226;", "•")
+    .replaceAll("&#x2022;", "•");
+  const mapsMatch = /\(\s*Past 3 months\s*[•·*\-–—]\s*([0-9]{1,5})\s*maps\s*\)/i.exec(decoded);
+  const ratingMatch =
+    /<div[^>]*class=["'][^"']*\bplayer-stat\b[^"']*["'][^>]*>\s*<b>\s*Rating 3\.0\s*<\/b>\s*<span[^>]*class=["'][^"']*\bstatsVal\b[^"']*["'][^>]*>\s*<p>\s*([0-9]+(?:\.[0-9]+)?)/i.exec(
+      decoded,
+    );
+  const maps = mapsMatch?.[1] ? Number(mapsMatch[1]) : NaN;
+  const rating = ratingMatch?.[1] ? Number(ratingMatch[1]) : NaN;
+  if (!Number.isInteger(maps) || maps < 0 || !Number.isFinite(rating) || rating < 0 || rating > 5) {
+    throw new DomainError(
+      "HLTV_PLAYER_PROFILE_STATS_PARSE_FAILED",
+      "HLTV player profile HTML did not expose Past 3 months maps and Rating 3.0",
+    );
+  }
+  return {
+    adr: parseAdr(decoded),
+    careerRating: null,
+    firepower: parseFirepower(decoded),
+    majorsWon: highlightedCount(decoded, "Majors won") ?? majorWinnerCount(decoded),
+    maps,
+    mvpCount: highlightedCount(decoded, "Total MVPs") ?? mvpBadgeCount(decoded),
+    rating,
+  };
+}
+
+export function parseHltvPlayerProfileRecentStatsHtml(body: string): {
+  maps: number;
+  rating: number;
+} {
+  const parsed = parseHltvPlayerProfileStatsHtml(body);
+  return { maps: parsed.maps, rating: parsed.rating };
 }
 
 function labeledNumber(body: string, label: string): number | null {

@@ -6,10 +6,13 @@ import { writeAdminAudit } from "../audit.ts";
 import type { AppDatabase } from "../database.ts";
 import { DomainError, requireNonBlank } from "../error.ts";
 import type { CanonicalManifest } from "../canonical/manifest.ts";
+import type { CapturedHltvProfileStats } from "./providers/hltv.ts";
 
 export const REVIEWED_HLTV_PLAYER_STATS_VERSION = "hltv-reviewed-player-stats-json-v1";
 
 const datedMetricSchema = z.strictObject({
+  adr: z.number().nonnegative().max(200).nullable(),
+  firepower: z.number().int().min(0).max(100).nullable(),
   maps: z.number().int().nonnegative(),
   rating: z.number().nonnegative().max(5),
 });
@@ -27,6 +30,7 @@ const reviewedPlayerStatsSchema = z.strictObject({
   records: z
     .array(
       z.strictObject({
+        adr: z.number().nonnegative().max(200).nullable(),
         career: careerMetricSchema.nullable(),
         careerSourceUrl: z.url().nullable(),
         externalId: z
@@ -39,6 +43,9 @@ const reviewedPlayerStatsSchema = z.strictObject({
           .min(1)
           .max(500)
           .regex(/^[^/?#]+$/),
+        firepower: z.number().int().min(0).max(100).nullable(),
+        majorsWon: z.number().int().nonnegative().nullable(),
+        mvpCount: z.number().int().nonnegative().nullable(),
         recent: datedMetricSchema.nullable(),
         recentSourceUrl: z.url(),
       }),
@@ -62,10 +69,14 @@ export function createReviewedHltvPlayerStatsTemplate(
       provider: "HLTV",
       records: manifest.teams.flatMap((team) =>
         team.players.map((player) => ({
+          adr: null,
           career: null,
           careerSourceUrl: null,
           externalId: player.hltvIdentity.externalId,
           externalSlug: player.hltvIdentity.externalSlug,
+          firepower: null,
+          majorsWon: null,
+          mvpCount: null,
           recent: null,
           recentSourceUrl: `https://www.hltv.org/stats/players/${player.hltvIdentity.externalId}/${player.hltvIdentity.externalSlug}?startDate=${input.periodStart}&endDate=${input.periodEnd}`,
         })),
@@ -164,6 +175,7 @@ function validateReviewedHltvPlayerStatsBundle(
     }
     if (record.recent) availableMetrics += 1;
     if (record.career) availableMetrics += 1;
+    if (record.majorsWon !== null || record.mvpCount !== null) availableMetrics += 1;
   }
 
   if (requireAvailableMetric && availableMetrics === 0) {
@@ -177,6 +189,50 @@ function validateReviewedHltvPlayerStatsBundle(
 
 export function validateReviewedHltvPlayerStats(input: unknown): ReviewedHltvPlayerStats {
   return validateReviewedHltvPlayerStatsBundle(input, true);
+}
+
+export function mergeCapturedRecentStats(
+  template: ReviewedHltvPlayerStats,
+  captures: ReadonlyMap<string, CapturedHltvProfileStats>,
+): ReviewedHltvPlayerStats {
+  const knownIds = new Set(template.records.map((record) => record.externalId));
+  for (const externalId of captures.keys()) {
+    if (!knownIds.has(externalId)) {
+      throw new DomainError(
+        "REVIEWED_HLTV_STATS_IDENTITY_MISMATCH",
+        `Captured HLTV Player ${externalId} is not in the reviewed template`,
+      );
+    }
+  }
+
+  return {
+    ...template,
+    records: template.records.map((record) => {
+      const captured = captures.get(record.externalId);
+      if (!captured) return record;
+      return {
+        ...record,
+        adr: captured.adr,
+        career:
+          captured.careerRating === null
+            ? record.career
+            : { maps: null, rating: captured.careerRating },
+        careerSourceUrl:
+          captured.careerRating === null
+            ? record.careerSourceUrl
+            : `https://www.hltv.org/stats/players/${record.externalId}/${record.externalSlug}`,
+        firepower: captured.firepower,
+        majorsWon: captured.majorsWon,
+        mvpCount: captured.mvpCount,
+        recent: {
+          adr: captured.adr,
+          firepower: captured.firepower,
+          maps: captured.maps,
+          rating: captured.rating,
+        },
+      };
+    }),
+  };
 }
 
 export async function importReviewedHltvPlayerStats(
@@ -251,6 +307,10 @@ export async function importReviewedHltvPlayerStats(
     const values: Array<typeof playerStatSnapshots.$inferInsert> = [];
     const missingRecentExternalIds: string[] = [];
     let careerSnapshots = 0;
+    let firepowerSnapshots = 0;
+    let adrSnapshots = 0;
+    let majorsWonSnapshots = 0;
+    let mvpCountSnapshots = 0;
     let recentSnapshots = 0;
     for (const record of input.bundle.records) {
       const identity = identityByExternalId.get(record.externalId)!;
@@ -268,6 +328,36 @@ export async function importReviewedHltvPlayerStats(
           value: String(record.recent.rating),
         });
         recentSnapshots += 1;
+        if (record.recent.firepower !== null) {
+          values.push({
+            capturedAt,
+            maps: record.recent.maps,
+            metric: "firepower",
+            periodEnd: input.bundle.periodEnd,
+            periodStart: input.bundle.periodStart,
+            periodType: "LAST_3_MONTHS",
+            playerId: identity.playerId,
+            provider: "HLTV",
+            sourceUrl: record.recentSourceUrl,
+            value: String(record.recent.firepower),
+          });
+          firepowerSnapshots += 1;
+        }
+        if (record.recent.adr !== null) {
+          values.push({
+            capturedAt,
+            maps: record.recent.maps,
+            metric: "adr",
+            periodEnd: input.bundle.periodEnd,
+            periodStart: input.bundle.periodStart,
+            periodType: "LAST_3_MONTHS",
+            playerId: identity.playerId,
+            provider: "HLTV",
+            sourceUrl: record.recentSourceUrl,
+            value: String(record.recent.adr),
+          });
+          adrSnapshots += 1;
+        }
       } else {
         missingRecentExternalIds.push(record.externalId);
       }
@@ -284,14 +374,50 @@ export async function importReviewedHltvPlayerStats(
         });
         careerSnapshots += 1;
       }
+      if (record.majorsWon !== null) {
+        values.push({
+          capturedAt,
+          maps: null,
+          metric: "majors_won",
+          periodType: "CAREER",
+          playerId: identity.playerId,
+          provider: "HLTV",
+          sourceUrl: `https://www.hltv.org/player/${record.externalId}/${record.externalSlug}`,
+          value: String(record.majorsWon),
+        });
+        majorsWonSnapshots += 1;
+      }
+      if (record.mvpCount !== null) {
+        values.push({
+          capturedAt,
+          maps: null,
+          metric: "mvp_count",
+          periodType: "CAREER",
+          playerId: identity.playerId,
+          provider: "HLTV",
+          sourceUrl: `https://www.hltv.org/player/${record.externalId}/${record.externalSlug}`,
+          value: String(record.mvpCount),
+        });
+        mvpCountSnapshots += 1;
+      }
+    }
+    if (values.length === 0) {
+      throw new DomainError(
+        "REVIEWED_HLTV_STATS_EMPTY",
+        "Reviewed HLTV stats bundle contains no available metric",
+      );
     }
     await transaction.insert(playerStatSnapshots).values(values);
 
     const result = {
+      adrSnapshots,
       capturedAt: input.bundle.capturedAt,
       careerSnapshots,
       checksum,
+      firepowerSnapshots,
+      majorsWonSnapshots,
       missingRecentExternalIds: missingRecentExternalIds.sort(),
+      mvpCountSnapshots,
       periodEnd: input.bundle.periodEnd,
       periodStart: input.bundle.periodStart,
       playersReviewed: input.bundle.records.length,

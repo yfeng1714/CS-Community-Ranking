@@ -31,11 +31,15 @@ const sourceBytes = await readFile(sourceFile);
 const bundle = validateReviewedHltvPlayerStats(JSON.parse(sourceBytes.toString("utf8")));
 const checksum = createHash("sha256").update(sourceBytes).digest("hex");
 const summary = {
+  adrSnapshots: bundle.records.filter((record) => record.recent?.adr !== null).length,
   capturedAt: bundle.capturedAt,
   careerSnapshots: bundle.records.filter((record) => record.career !== null).length,
   checksum,
   file: sourceFile,
+  firepowerSnapshots: bundle.records.filter((record) => record.recent?.firepower !== null).length,
+  majorsWonSnapshots: bundle.records.filter((record) => record.majorsWon !== null).length,
   missingRecent: bundle.records.filter((record) => record.recent === null).length,
+  mvpCountSnapshots: bundle.records.filter((record) => record.mvpCount !== null).length,
   periodEnd: bundle.periodEnd,
   periodStart: bundle.periodStart,
   playersReviewed: bundle.records.length,

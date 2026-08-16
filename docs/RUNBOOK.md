@@ -105,6 +105,7 @@ commands and never run inside the web request path.
 pnpm job:sync-vrs
 pnpm job:sync-hltv -- --rankingUrl <official-ranking-url> --published <ISO-timestamp>
 pnpm job:sync-hltv -- --start YYYY-MM-DD --end YYYY-MM-DD
+pnpm source:capture-reviewed-hltv-stats -- --start YYYY-MM-DD --end YYYY-MM-DD --output <ignored-reviewed-json>
 pnpm source:create-reviewed-hltv-stats-template -- --captured <ISO-time> --start YYYY-MM-DD --end YYYY-MM-DD --output <ignored-reviewed-json>
 pnpm source:import-reviewed-hltv-stats -- --file <ignored-reviewed-json>
 pnpm job:build-pool-draft -- --edition 2026
@@ -121,16 +122,22 @@ been reviewed. Never respond to blocking by bypassing access controls. A failed 
 Admin under **Sync runs / parser failures** and leaves stale snapshots intact.
 
 If the bounded Player-stat adapter is blocked or its saved fixture no longer matches the live page,
-create an exact 70-identity template before reviewing ordinary browser-visible official pages:
+follow `docs/HLTV_PLAYER_STATS.md`. Capture official player-profile HTML locally instead of typing
+70 rows:
 
 ```bash
-pnpm source:create-reviewed-hltv-stats-template -- \
-  --captured 2026-08-15T01:05:00+08:00 --start 2026-05-15 --end 2026-08-14 \
+pnpm source:capture-reviewed-hltv-stats -- \
+  --start 2026-05-16 --end 2026-08-16 \
   --output data/reviewed-sources/hltv-player-stats-local.json
 ```
 
-The command refuses overwrite and leaves every metric `null`. Fill only observed values, then
-validate the bundle first:
+The command uses Playwright Chromium, one profile at a time, with an 8s default delay, one
+retry after an access denial, and a stop after three consecutive denials so a Cloudflare block
+cannot turn into 70 failed requests. `--resume` fills only missing identities in an existing
+current-schema ignored JSON. `--force` is required after a parser/schema bump (v1 Rating/maps-only
+files cannot be resumed). Career Rating and ADR stay `null` unless the profile actually exposes
+them. Firepower, Majors won, and Total MVPs are captured from the same profile. It does not enable
+`HLTV_SYNC_ENABLED`, does not call `/stats/players/`, and must not run in CI. Then validate:
 
 ```bash
 pnpm source:import-reviewed-hltv-stats -- --file data/reviewed-sources/hltv-player-stats-local.json
@@ -145,10 +152,12 @@ pnpm source:import-reviewed-hltv-stats -- --file data/reviewed-sources/hltv-play
   --apply --confirm-reviewed-stats
 ```
 
-The bundle must cover every configured HLTV Player identity exactly once, but may explicitly record
-missing recent or career metrics. Never substitute a three-month Rating for career Rating. The input
-file is ignored and should be retained only as private operational evidence; the database stores each
-accepted metric with its exact official source URL and capture timestamp.
+Production apply uses the same flags through `railway run --service web` so the ignored JSON never
+leaves the operator machine. The bundle must cover every configured HLTV Player identity exactly
+once, but may explicitly record missing recent or career metrics. Never substitute a three-month
+Rating for career Rating. The input file is ignored and should be retained only as private
+operational evidence; the database stores each accepted metric with its exact official source URL
+and capture timestamp.
 
 The safe operating order is: sync → inspect and approve each source snapshot → generate Pool draft
 → inspect conflicts/freshness/JSON → approve or reject individual proposals. The generator reports

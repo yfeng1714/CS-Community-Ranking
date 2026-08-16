@@ -36,7 +36,9 @@ See `docs/IMPLEMENTATION_REVIEW_2026-08-12.md` for Gate D,
 `docs/STAGING_GATE_E.md` for the M9 evidence boundary, and `docs/PROGRESS.md` for current status.
 Use `docs/LAUNCH_GATE_F.md` for all M10 production-data, beta, and launch evidence.
 
-Always trust the latest `docs/PROGRESS.md` over this summary if they ever differ.
+Always trust the latest `docs/PROGRESS.md` over this summary if they ever differ. For updating
+public HLTV player Rating / Firepower / honors, follow `docs/HLTV_PLAYER_STATS.md`. Do not enable
+live HLTV sync.
 
 ## Non-negotiable product boundaries
 

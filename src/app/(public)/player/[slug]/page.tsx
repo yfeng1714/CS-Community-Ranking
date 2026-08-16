@@ -5,6 +5,13 @@ import { notFound } from "next/navigation";
 import { ArrowRightIcon } from "@/components/icons";
 import { ProductPageView } from "@/components/analytics/page-view";
 import { PlayerPortrait } from "@/components/player-portrait";
+import {
+  formatAdr,
+  formatFirepower,
+  formatInteger,
+  formatPlayerHonors,
+  formatRating,
+} from "@/components/player-stat-format";
 import { TeamLogo } from "@/components/team-logo";
 import { getDatabase } from "@/db/client";
 import { getEnv } from "@/config/env";
@@ -33,10 +40,6 @@ function formatPercent(value: number | null): string {
   return value === null ? "—" : `${Math.round(value * 100)}%`;
 }
 
-function formatMetric(value: number | null): string {
-  return value === null ? "—" : value.toFixed(2);
-}
-
 export default async function PlayerPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const player = await getPublicPlayer(
@@ -48,6 +51,8 @@ export default async function PlayerPage({ params }: { params: Promise<{ slug: s
   if (!player) {
     notFound();
   }
+
+  const honors = formatPlayerHonors(player.majorsWon, player.mvpCount);
 
   return (
     <main className="public-page player-page" id="main-content">
@@ -79,6 +84,7 @@ export default async function PlayerPage({ params }: { params: Promise<{ slug: s
             </span>
             <span>{player.country ?? "国籍待补"}</span>
           </div>
+          {honors ? <p className="player-profile__honors">{honors}</p> : null}
         </div>
         <div className="player-profile__rank">
           <span>社区排名</span>
@@ -128,21 +134,30 @@ export default async function PlayerPage({ params }: { params: Promise<{ slug: s
         <div className="player-data-grid">
           <article>
             <span>近三月 HLTV Rating</span>
-            <strong>{formatMetric(player.recentRating)}</strong>
+            <strong>{formatRating(player.recentRating)}</strong>
           </article>
           <article>
-            <span>统计地图</span>
-            <strong>{player.recentMaps ?? "—"}</strong>
+            <span>近三月 Firepower</span>
+            <strong>{formatFirepower(player.firepower)}</strong>
           </article>
           <article>
             <span>生涯 HLTV Rating</span>
-            <strong>{formatMetric(player.careerRating)}</strong>
+            <strong>{formatRating(player.careerRating)}</strong>
+          </article>
+          <article>
+            <span>ADR</span>
+            <strong>{formatAdr(player.adr)}</strong>
+          </article>
+          <article>
+            <span>统计地图</span>
+            <strong>{formatInteger(player.recentMaps)}</strong>
           </article>
         </div>
         <p className="data-note">
           {player.statsCapturedAt
             ? `最近抓取：${new Intl.DateTimeFormat("zh-CN", { dateStyle: "long", timeZone: "Asia/Shanghai" }).format(new Date(player.statsCapturedAt))}`
             : "尚无经过审核的外部数据。缺失值显示为“—”。"}
+          生涯 Rating 与 ADR 仅在官方资料页实际暴露时写入；当前 HLTV 选手页没有这些字段，因此保持“—”。
         </p>
         {player.hltvProfileUrl && (
           <p className="data-note">

@@ -3,6 +3,8 @@ import path from "node:path";
 
 import { describe, expect, it } from "vitest";
 import {
+  parseHltvPlayerProfileRecentStatsHtml,
+  parseHltvPlayerProfileStatsHtml,
   parseHltvPlayerStatsHtml,
   parseHltvTeamRankingHtml,
 } from "@/domain/external-data/providers/hltv";
@@ -72,6 +74,53 @@ describe("Milestone 7 provider parsers", () => {
       career: { maps: 912, rating: 1.17 },
       recent: { maps: 42, rating: 1.24 },
     });
+  });
+
+  it("reads Past 3 months maps and Rating 3.0 from the live player-profile markup", async () => {
+    const parsed = parseHltvPlayerProfileRecentStatsHtml(
+      await fixture("hltv/player-profile-recent-stats.html"),
+    );
+    expect(parsed).toEqual({ maps: 43, rating: 0.75 });
+  });
+
+  it("reads Firepower, Majors won, and Total MVPs without inventing career Rating or ADR", async () => {
+    const parsed = parseHltvPlayerProfileStatsHtml(
+      await fixture("hltv/player-profile-recent-stats.html"),
+    );
+    expect(parsed).toEqual({
+      adr: null,
+      careerRating: null,
+      firepower: 2,
+      majorsWon: 2,
+      maps: 43,
+      mvpCount: 32,
+      rating: 0.75,
+    });
+  });
+
+  it("falls back to the profile Major-winner line and MVP trophy badge", () => {
+    const parsed = parseHltvPlayerProfileStatsHtml(`
+      <span class="stats-window">(Past 3 months • 10 maps)</span>
+      <div class="playerpage-container">
+        <div class="player-stat"><b>Rating 3.0</b><span class="statsVal"><p>1.10</p></span></div>
+      </div>
+      <div class="majorWinner"><b>4</b> x Major winner</div>
+      <div class="mvp-count">19</div>
+    `);
+    expect(parsed).toMatchObject({ majorsWon: 4, mvpCount: 19, rating: 1.1 });
+  });
+
+  it("refuses Cloudflare challenge HTML instead of inventing HLTV Rating", async () => {
+    const html = await fixture("hltv/cloudflare-challenge.html");
+    expect(() => parseHltvPlayerProfileRecentStatsHtml(html)).toThrow(/Cloudflare challenge/);
+  });
+
+  it("fails closed when the live player profile no longer exposes recent Rating 3.0", () => {
+    expect(() =>
+      parseHltvPlayerProfileRecentStatsHtml(
+        '<html><body><div class="player-stat"><b>Firepower</b><span class="statsVal"><p>2</p></span></div></body></html>',
+      ),
+    ).toThrow("Past 3 months maps and Rating 3.0");
   });
 
   it("fails closed when the HLTV structure drifts", () => {

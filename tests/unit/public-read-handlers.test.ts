@@ -11,10 +11,14 @@ const ranking: PublicRanking = {
 };
 
 const player: PublicPlayerProfile = {
+  adr: null,
   careerRating: null,
   country: "CN",
+  firepower: null,
   freshness: "MISSING",
   hltvProfileUrl: null,
+  majorsWon: null,
+  mvpCount: null,
   nickname: "Player",
   photoUrl: null,
   professionalStatus: "ACTIVE",

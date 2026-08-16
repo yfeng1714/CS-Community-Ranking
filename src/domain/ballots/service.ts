@@ -26,8 +26,12 @@ export interface ActivePoolSource {
 }
 
 export interface BallotPlayerCard {
+  adr: number | null;
   careerRating: number | null;
   country: string | null;
+  firepower: number | null;
+  majorsWon: number | null;
+  mvpCount: number | null;
   nickname: string;
   photoUrl: string | null;
   recentMaps: number | null;
@@ -384,8 +388,12 @@ export class BallotIssuanceService {
     );
 
     return {
+      adr: stats.adr,
       careerRating: stats.careerRating,
       country: found.country,
+      firepower: stats.firepower,
+      majorsWon: stats.majorsWon,
+      mvpCount: stats.mvpCount,
       nickname: found.nickname,
       photoUrl: found.photoUrl,
       recentMaps: stats.recentMaps,

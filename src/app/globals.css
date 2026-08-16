@@ -1060,6 +1060,14 @@ button:disabled {
   font-weight: 650;
 }
 
+.vote-card__honors {
+  margin: 0.32rem 0 0;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 750;
+  letter-spacing: 0.01em;
+}
+
 .vote-card__stats {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1636,6 +1644,13 @@ button:disabled {
 
 .player-profile__meta .team-logo {
   margin: -0.2rem 0 -0.2rem -0.35rem;
+}
+
+.player-profile__honors {
+  margin: 0.85rem 0 0;
+  color: var(--muted-strong);
+  font-size: 0.82rem;
+  font-weight: 750;
 }
 
 .player-profile__rank {
@@ -2223,8 +2238,8 @@ button:disabled {
     flex-direction: column;
   }
 
-  .vote-card__details dl div:nth-child(n + 2) {
-    display: none;
+  .vote-card__honors {
+    font-size: 0.68rem;
   }
 
   .vote-controls p {

@@ -189,10 +189,14 @@ export async function getPublicPlayer(
   const ranking = presentRankingRows(rankingRows).find((row) => row.slug === slug) ?? null;
 
   return {
+    adr: stats.adr,
     careerRating: stats.careerRating,
     country: player.country,
+    firepower: stats.firepower,
     freshness: stats.freshness,
     hltvProfileUrl: player.hltvProfileUrl,
+    majorsWon: stats.majorsWon,
+    mvpCount: stats.mvpCount,
     nickname: player.nickname,
     photoUrl: player.photoUrl,
     professionalStatus: player.professionalStatus,
@@ -227,7 +231,14 @@ export async function getPublicPlayerStats(
       and(
         eq(playerStatSnapshots.playerId, playerId),
         eq(playerStatSnapshots.provider, "HLTV"),
-        inArray(playerStatSnapshots.metric, ["rating_3_0", "career_rating"]),
+        inArray(playerStatSnapshots.metric, [
+          "adr",
+          "career_rating",
+          "firepower",
+          "majors_won",
+          "mvp_count",
+          "rating_3_0",
+        ]),
       ),
     )
     .orderBy(desc(playerStatSnapshots.capturedAt));
@@ -237,11 +248,30 @@ export async function getPublicPlayerStats(
   const career = statRows.find(
     (row) => row.metric === "career_rating" && row.periodType === "CAREER",
   );
-  const capturedAt = recent?.capturedAt ?? career?.capturedAt ?? null;
+  const firepower = statRows.find(
+    (row) => row.metric === "firepower" && row.periodType === "LAST_3_MONTHS",
+  );
+  const adr = statRows.find((row) => row.metric === "adr" && row.periodType === "LAST_3_MONTHS");
+  const majorsWon = statRows.find(
+    (row) => row.metric === "majors_won" && row.periodType === "CAREER",
+  );
+  const mvpCount = statRows.find((row) => row.metric === "mvp_count" && row.periodType === "CAREER");
+  const capturedAt =
+    recent?.capturedAt ??
+    firepower?.capturedAt ??
+    adr?.capturedAt ??
+    career?.capturedAt ??
+    majorsWon?.capturedAt ??
+    mvpCount?.capturedAt ??
+    null;
 
   return {
+    adr: toPublicMetric(adr?.value),
     careerRating: toPublicMetric(career?.value),
+    firepower: toPublicMetric(firepower?.value),
     freshness: dataFreshness(capturedAt, now, staleAfterHours * 60 * 60 * 1_000),
+    majorsWon: toPublicMetric(majorsWon?.value),
+    mvpCount: toPublicMetric(mvpCount?.value),
     recentMaps: recent?.maps ?? null,
     recentRating: toPublicMetric(recent?.value),
     statsCapturedAt: capturedAt?.toISOString() ?? null,

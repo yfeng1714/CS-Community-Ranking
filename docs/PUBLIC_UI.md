@@ -17,9 +17,11 @@ materially broader use. `CS 野榜` is a working identity pending the final name
 ## Vote interaction
 
 Before resolution, each complete Player card is a choice target. Keyboard shortcuts are `1` for the
-left player, `2` for the right player, and `S` for Skip. Details remain separately expandable and
-show recent three-month Rating/maps, career Rating, deliberate placeholders for unsupported fields,
-and an honest freshness label.
+left player, `2` for the right player, and `S` for Skip. The default card shows recent three-month
+HLTV Rating and Firepower (`N/100`). Majors won and Total MVPs sit under the identity line when
+captured (`2 Major · 32 MVP`; zeros are shown; the line is omitted only when both values are
+missing). Details expand career Rating, ADR, and maps, plus an honest freshness label. Unsupported
+or unexposed fields remain `—`; KAST is not shown.
 
 After resolution, the same two cards remain in place and show the user's selection plus both current
 rank/score records. The result panel reports a counted-style confirmation for ordinary and
@@ -69,11 +71,13 @@ is configured. The neutral charcoal container keeps both dark and light marks le
 theme. A missing path removes only the mark and keeps the Team text, so older databases and
 unconfigured Teams degrade without a broken-image state.
 
-The latest HLTV recent `rating_3_0 / LAST_3_MONTHS` and `career_rating / CAREER` snapshots are used
-and labeled as HLTV Rating. Other providers' metrics remain isolated and cannot silently fill those
-fields. Stats are `MISSING` when absent, `CURRENT` through the configured freshness window, and
-`STALE` afterward. `EXTERNAL_STATS_STALE_AFTER_HOURS` defaults to 48 hours. Provider failure keeps
-stale data visible and never breaks the Vote page.
+The latest HLTV snapshots for `rating_3_0` / `LAST_3_MONTHS`, `firepower` / `LAST_3_MONTHS`,
+`adr` / `LAST_3_MONTHS`, `career_rating` / `CAREER`, `majors_won` / `CAREER`, and `mvp_count` /
+`CAREER` are used. Rating fields are labeled as HLTV Rating. Other providers' metrics remain
+isolated and cannot silently fill those fields. Stats are `MISSING` when absent, `CURRENT` through
+the configured freshness window, and `STALE` afterward. `EXTERNAL_STATS_STALE_AFTER_HOURS` defaults
+to 48 hours. Provider failure keeps stale data visible and never breaks the Vote page. Career Rating
+and ADR currently stay `—` because official player profiles do not expose them; do not invent them.
 
 ## Theme, responsive behavior, and accessibility
 

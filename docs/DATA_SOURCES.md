@@ -76,14 +76,41 @@ also requires an active Admin, reason, `--apply`, and `--confirm-reviewed-stats`
 requires exact coverage of every configured HLTV Player identity, rejects ID/slug drift and duplicate
 capture timestamps, writes only the metrics actually observed, and records one Admin audit. Recent
 and career evidence are separate: missing career data remains `—` rather than being inferred from a
-three-month page. This fallback does not make the browser export automatic or bypass HLTV controls.
+three-month page. This fallback does not make the live `HLTV_SYNC_ENABLED` adapter succeed or bypass
+HLTV Cloudflare controls.
 
-Start a review pass without hand-copying 70 identities or URLs by running
-`pnpm source:create-reviewed-hltv-stats-template -- --captured <ISO-time> --start YYYY-MM-DD --end
-YYYY-MM-DD --output <ignored-json>`. It creates one exact record for every canonical HLTV identity,
-with all metrics explicitly `null` and the exact period-specific official URL. It refuses to
-overwrite an existing file. Fill only values actually observed, retain `null` for unavailable data,
-then use the guarded importer above. The template is convenience, not evidence by itself.
+Fill the ignored JSON without hand-copying 70 identities, URLs, or Rating/maps values. The current
+operator playbook is `docs/HLTV_PLAYER_STATS.md`.
+
+```bash
+pnpm source:capture-reviewed-hltv-stats -- \
+  --start YYYY-MM-DD --end YYYY-MM-DD \
+  --output data/reviewed-sources/hltv-player-stats-local.json
+```
+
+The capture CLI uses local Playwright Chromium, one request at a time, against each official
+`/player/{id}/{slug}` profile. Those pages currently expose HLTV's own `Past 3 months • N maps`
+window, Rating 3.0, Firepower (`N/100`), **Majors won**, and **Total MVPs**. Direct `/stats/players/`
+URLs and the gigobyte/HLTV scraper remain Cloudflare-blocked from Node; this path does not retry
+them, spoof a challenge, or enable `HLTV_SYNC_ENABLED`. Default delay is 8 seconds. A single retry
+waits 20 seconds after HTTP 403/429, and three consecutive denials stop the rest of the batch.
+`--resume` continues an interrupted **current-schema** file without re-fetching identities that
+already have recent metrics. A v1 Rating/maps-only JSON cannot be resumed; recapture with `--force`
+and a new `capturedAt`. Career Rating and ADR stay `null` because the profile does not expose them.
+Do not substitute **Majors played** or **Major MVPs**. The stored `recentSourceUrl` remains the
+official dated stats URL so the importer's identity/period contract is unchanged; the capture page
+is the profile that actually loaded. Parser version `hltv-player-profile-stats-html-v2` fails closed
+on Cloudflare HTML or missing Past 3 months Rating 3.0 / maps. The command refuses to overwrite an
+existing file unless `--force` or `--resume` is passed. `--player-id` is debug-only. Never run this
+capture from CI.
+
+This capture is a deliberate local refresh, not an automatic roster hook. Adding or replacing a
+Pool player does not recapture HLTV stats. After the configured HLTV identity set changes, re-run
+capture (or `--resume` for only the new IDs once the template covers them) and the guarded importer.
+Keep `HLTV_SYNC_ENABLED=false`; public requests never fetch HLTV.
+
+`pnpm source:create-reviewed-hltv-stats-template` remains available if a review pass must start from
+an empty 70-identity file. It is convenience, not evidence by itself.
 
 ## Canonical bootstrap boundary
 
@@ -103,8 +130,9 @@ requires newly synchronized and approved evidence close to the actual cutover.
 
 The Gate D receiving boundary remains unchanged:
 
-- public recent/career Rating projections select only `HLTV` snapshots and label them as HLTV
-  Rating; metrics from `OTHER`, BO3, PandaScore, or Liquipedia cannot silently occupy that field;
+- public recent Rating, Firepower, ADR, career Rating, Majors won, and Total MVPs projections select
+  only `HLTV` snapshots and label Rating fields as HLTV Rating; metrics from `OTHER`, BO3,
+  PandaScore, or Liquipedia cannot silently occupy those fields;
 - imported identity, entity, roster, Event/result, and Pool proposals use the exact version-1
   contract in `docs/ADMIN_CONSOLE.md`;
 - automatic Pool Team proposals include ranking/event evidence and are re-evaluated on approval;

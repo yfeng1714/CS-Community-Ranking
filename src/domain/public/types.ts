@@ -31,10 +31,14 @@ export interface PublicRanking {
 }
 
 export interface PublicPlayerProfile {
+  adr: number | null;
   careerRating: number | null;
   country: string | null;
+  firepower: number | null;
   freshness: DataFreshness;
   hltvProfileUrl: string | null;
+  majorsWon: number | null;
+  mvpCount: number | null;
   nickname: string;
   photoUrl: string | null;
   professionalStatus: "ACTIVE" | "INACTIVE" | "RETIRED";
@@ -50,8 +54,12 @@ export interface PublicPlayerProfile {
 }
 
 export interface PublicPlayerStats {
+  adr: number | null;
   careerRating: number | null;
+  firepower: number | null;
   freshness: DataFreshness;
+  majorsWon: number | null;
+  mvpCount: number | null;
   recentMaps: number | null;
   recentRating: number | null;
   statsCapturedAt: string | null;

@@ -5,11 +5,14 @@ import type { RankingResult, ResolutionChoice } from "@/domain/votes/presentatio
 
 import { ChevronDownIcon } from "../icons";
 import { PlayerPortrait } from "../player-portrait";
+import {
+  formatAdr,
+  formatFirepower,
+  formatInteger,
+  formatPlayerHonors,
+  formatRating,
+} from "../player-stat-format";
 import { TeamLogo } from "../team-logo";
-
-function metric(value: number | null, digits = 2): string {
-  return value === null ? "—" : value.toFixed(digits);
-}
 
 function freshness(value: string | null): string {
   if (!value) {
@@ -85,11 +88,11 @@ export function VotePlayerCard({
       <dl className="vote-card__stats" aria-label={`${player.nickname} 默认数据`}>
         <div>
           <dt>近三月 HLTV Rating</dt>
-          <dd>{metric(player.recentRating)}</dd>
+          <dd>{formatRating(player.recentRating)}</dd>
         </div>
         <div>
-          <dt>地图数</dt>
-          <dd>{player.recentMaps ?? "—"}</dd>
+          <dt>近三月 Firepower</dt>
+          <dd>{formatFirepower(player.firepower)}</dd>
         </div>
         {ranking ? (
           <>
@@ -113,15 +116,15 @@ export function VotePlayerCard({
         <dl>
           <div>
             <dt>生涯 HLTV Rating</dt>
-            <dd>{metric(player.careerRating)}</dd>
+            <dd>{formatRating(player.careerRating)}</dd>
           </div>
           <div>
             <dt>ADR</dt>
-            <dd>—</dd>
+            <dd>{formatAdr(player.adr)}</dd>
           </div>
           <div>
-            <dt>KAST</dt>
-            <dd>—</dd>
+            <dt>统计地图</dt>
+            <dd>{formatInteger(player.recentMaps)}</dd>
           </div>
         </dl>
         <p>{freshness(player.statsCapturedAt)}</p>
@@ -132,6 +135,7 @@ export function VotePlayerCard({
 }
 
 function PlayerIdentity({ player }: { player: BallotPlayerCard }) {
+  const honors = formatPlayerHonors(player.majorsWon, player.mvpCount);
   return (
     <div className="vote-card__identity">
       <h2>{player.nickname}</h2>
@@ -143,6 +147,7 @@ function PlayerIdentity({ player }: { player: BallotPlayerCard }) {
         <span aria-hidden="true">·</span>
         <span>{player.country ?? "国籍待补"}</span>
       </p>
+      {honors ? <p className="vote-card__honors">{honors}</p> : null}
     </div>
   );
 }

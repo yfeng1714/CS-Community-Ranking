@@ -19,9 +19,28 @@
   initial launch scope is Core-only; Review Auto, Review Manual, the 2026 T1 whitelist, Special
   Players, and complete optional stats are deferred. Closed-beta observation and final Owner Gate F
   sign-off remain.
-- **Last updated:** 2026-08-15
+- **Last updated:** 2026-08-16
 
 ## Completed in the repository
+
+- Player-stat capture, Vote cards, and Player pages now use the profile fields HLTV actually
+  exposes. Default Vote cards show past-3-month Rating + Firepower; details show career Rating,
+  ADR, and maps. Majors won and Total MVPs sit under the identity line. Career Rating and ADR remain
+  honest `—` because `/player/{id}/{slug}` does not expose them and `/stats/players/` is still
+  Cloudflare-blocked. Operator playbook: `docs/HLTV_PLAYER_STATS.md`. Parser
+  `hltv-player-profile-stats-html-v2`. Recapture requires `--force` and a new `capturedAt`; do not
+  resume a v1 Rating/maps-only JSON. The 2026-08-16 local capture filled all 70 recent Rating 3.0
+  and Firepower rows, 67 Majors won, and 27 Total MVP badges (period 2026-05-16 → 2026-08-16).
+  Dry-run checksum
+  `fed76691ff25295acac84585489e6796ee99f73e68a619530436d87c55fea847`. The ignored JSON is imported
+  to Railway with `railway run --service web`; it is never committed.
+
+- Local HLTV Player-stat capture no longer requires typing 70 Rating/maps rows. Official
+  `/player/{id}/{slug}` profiles load in Playwright Chromium and expose HLTV's own
+  `Past 3 months • N maps` plus Rating 3.0, Firepower, Majors won, and Total MVPs.
+  `pnpm source:capture-reviewed-hltv-stats` writes the ignored reviewed JSON, and the existing
+  guarded importer still requires Admin confirmation. Direct `/stats/players/` and gigobyte/HLTV
+  stay unused; `HLTV_SYNC_ENABLED` stays false. Tests use saved fixtures only.
 
 - Public Vote headlines are `二选一投票箱` / `社区投票结果`, slightly smaller than the previous
   poster-sized type. Vote cards and Player pages display the local 200×200 portraits at native-friendly
@@ -30,8 +49,7 @@
   non-counting result for `THROTTLED` votes. Backend issuance and resolution still apply the Edition
   quota; `SUSPICIOUS` votes can still be presented as non-counting.
 - Owner raised the daily full-weight Ballot default from 50 to 150. Ordered migration
-  `0004_edition_daily_quota_150` updates the column default and existing Edition rows that still used
-  50. Canonical `2026-beta.json`, seed, and `DEFAULT_FULL_WEIGHT_BALLOTS_PER_DAY` match. After deploy,
+  `0004_edition_daily_quota_150` updates the column default and existing Edition rows that still used 50. Canonical `2026-beta.json`, seed, and `DEFAULT_FULL_WEIGHT_BALLOTS_PER_DAY` match. After deploy,
   confirm the live Edition row is 150 and set the Railway env var to 150 so Admin create defaults
   match.
 

@@ -20,9 +20,9 @@
 </tbody>
 </table>
 
-**版本** V0.1.21
+**版本** V0.1.23
 
-**日期** 2026-08-15
+**日期** 2026-08-16
 
 **施工规范复核** 2026-08-10（V0.1.1；未改变冻结的产品决定）
 
@@ -65,6 +65,10 @@
 **Owner M10 Production Cutover** 2026-08-15（V0.1.20；一次性 Reset 已执行，Core Beta 已激活）
 
 **Owner 投票页与日额度修订** 2026-08-15（V0.1.21；公开 UI 不再展示额度/THROTTLED，每日 Full-weight Ballot 默认 150）
+
+**Owner HLTV 资料自动采集** 2026-08-16（V0.1.22；本地 Playwright 采集官方选手页 Past 3 months Rating 3.0 / maps，不再手填 70 行；career 仍诚实缺失）
+
+**Owner 选手卡数据与荣誉** 2026-08-16（V0.1.23；默认近三月 Rating + Firepower，详细生涯 Rating + ADR + 地图数；卡片展示 Majors won 与 Total MVPs；career/ADR 仍诚实缺失）
 
 **定位** 产品背景、决策记录与后续 Review Context
 
@@ -247,6 +251,12 @@ Canonical Manifest、两份 Approved Ranking Source 与 14 个逐条 Proposal Ap
 Core-only Pool。Production Launch Gate 返回 `blocking: false` 后，Edition `2026` 通过 Audited
 Transition 进入 ACTIVE。该 Reset 例外至此耗尽；未来真实 Vote、Ranking 与 Audit History 必须用
 Forward Migration 和已批准 Backup Policy 保留。
+
+Owner 随后要求把选手卡默认数据从近三月 Rating + 地图数改为 Rating + Firepower，详细数据改为
+生涯 Rating + ADR + 地图数，并在卡片上展示 Major 夺冠次数与 MVP 次数。HLTV 选手资料页可以稳定
+读出 Past 3 months Rating 3.0、Firepower、Majors won 与 Total MVPs；生涯 Rating 3.0 与 ADR 仍不
+在该页，官方 `/stats/players/` 仍被 Cloudflare 拦截，因此继续显示 `—`，而不是用 KDR 或其他来源
+填补。采集/导入步骤收敛为 `docs/HLTV_PLAYER_STATS.md`，供后续代理按同一边界更新选手数据。
 
 <table>
 <colgroup>

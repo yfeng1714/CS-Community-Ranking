@@ -116,6 +116,8 @@ If port `5432` is already occupied, set `POSTGRES_PORT` to another host port in
 | `pnpm assets:import-hltv-portraits -- --capture <file> --bundles <dir,...>` | Identity-check and import reviewed local HLTV portrait bundles |
 | `pnpm source:approve-ranking -- --snapshot <id> [...]` | Review an immutable ranking snapshot; explicit actor, reason, apply, and confirmation inputs are required to approve it |
 | `pnpm source:import-reviewed-hltv [-- ...]` | Validate the checksum-locked reviewed HLTV top-12 fallback; guarded apply records and approves it when live retrieval is blocked |
+| `pnpm source:capture-reviewed-hltv-stats [-- ...]` | Local Playwright capture of official HLTV player profiles into the ignored reviewed-stats JSON; see `docs/HLTV_PLAYER_STATS.md` |
+| `pnpm source:preview-reviewed-hltv-stats [-- ...]` | Write a local HTML table of a captured reviewed-stats JSON for Owner spot-check |
 | `pnpm job:build-pool-draft -- --edition <code>` | Build review-only Pool proposals from the latest approved HLTV/VRS snapshots |
 | `pnpm pending:review -- --id <id>[,<id>...] [...]` | Preview exact pending proposals; guarded apply reviews each through the ordinary audited Gate D service |
 | `pnpm job:integrity-check -- --edition <code>` | Check ranking, Pool, Vote, aggregate, and risk-key integrity |

@@ -36,6 +36,8 @@
     "source:import-reviewed-hltv": "node --env-file-if-exists=.env --import ./scripts/register-path-aliases.mjs scripts/import-reviewed-hltv-ranking.ts",
     "source:import-reviewed-hltv-stats": "node --env-file-if-exists=.env --import ./scripts/register-path-aliases.mjs scripts/import-reviewed-hltv-player-stats.ts",
     "source:create-reviewed-hltv-stats-template": "node --env-file-if-exists=.env --import ./scripts/register-path-aliases.mjs scripts/create-reviewed-hltv-player-stats-template.ts",
+    "source:capture-reviewed-hltv-stats": "node --env-file-if-exists=.env --import ./scripts/register-path-aliases.mjs scripts/capture-reviewed-hltv-player-stats.ts",
+    "source:preview-reviewed-hltv-stats": "node --env-file-if-exists=.env --import ./scripts/register-path-aliases.mjs scripts/preview-reviewed-hltv-player-stats.ts",
     "source:approve-ranking": "node --env-file-if-exists=.env --import ./scripts/register-path-aliases.mjs scripts/approve-ranking-source.ts",
     "pending:review": "node --env-file-if-exists=.env --import ./scripts/register-path-aliases.mjs scripts/review-pending-imports.ts",
     "job:build-pool-draft": "node --env-file-if-exists=.env --import ./scripts/register-path-aliases.mjs scripts/job-build-pool-draft.ts",

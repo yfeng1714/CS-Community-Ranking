@@ -10,8 +10,12 @@ import type { IssuedBallotResponse } from "@/domain/ballots/service";
 
 function issued(id: string, reusedOpenBallot: boolean, dailyOrdinal = 1): IssuedBallotResponse {
   const player = {
+    adr: null,
     careerRating: null,
     country: null,
+    firepower: null,
+    majorsWon: null,
+    mvpCount: null,
     nickname: "Player",
     photoUrl: null,
     recentMaps: null,

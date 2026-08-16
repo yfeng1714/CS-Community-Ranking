@@ -46,11 +46,15 @@ describe("reviewed HLTV Player stats import", () => {
     provider: "HLTV",
     records: [
       {
+        adr: null,
         career: null,
         careerSourceUrl: null,
         externalId: "429",
         externalSlug: "karrigan",
-        recent: { maps: 46, rating: 0.73 },
+        firepower: 2,
+        majorsWon: 2,
+        mvpCount: 32,
+        recent: { adr: null, firepower: 2, maps: 46, rating: 0.73 },
         recentSourceUrl:
           "https://www.hltv.org/stats/players/429/karrigan?startDate=2026-05-15&endDate=2026-08-14",
       },
@@ -65,11 +69,24 @@ describe("reviewed HLTV Player stats import", () => {
       checksum: "fixture-checksum",
       reason: "Reviewed official HLTV page",
     });
-    expect(result).toMatchObject({ careerSnapshots: 0, playersReviewed: 1, recentSnapshots: 1 });
+    expect(result).toMatchObject({
+      careerSnapshots: 0,
+      firepowerSnapshots: 1,
+      majorsWonSnapshots: 1,
+      mvpCountSnapshots: 1,
+      playersReviewed: 1,
+      recentSnapshots: 1,
+    });
 
     const rows = await database.select().from(schema.playerStatSnapshots);
-    expect(rows).toHaveLength(1);
-    expect(rows[0]).toMatchObject({ maps: 46, metric: "rating_3_0", value: "0.73" });
+    expect(rows).toHaveLength(4);
+    expect(rows.find((row) => row.metric === "rating_3_0")).toMatchObject({
+      maps: 46,
+      value: "0.73",
+    });
+    expect(rows.find((row) => row.metric === "firepower")).toMatchObject({ value: "2" });
+    expect(rows.find((row) => row.metric === "majors_won")).toMatchObject({ value: "2" });
+    expect(rows.find((row) => row.metric === "mvp_count")).toMatchObject({ value: "32" });
     const audits = await database
       .select()
       .from(schema.adminAuditLogs)
