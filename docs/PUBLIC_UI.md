@@ -17,13 +17,15 @@ materially broader use. `CS 野榜` is a working identity pending the final name
 ## Vote interaction
 
 Before resolution, each complete Player card is a choice target. Keyboard shortcuts are `1` for the
-left player, `2` for the right player, and `S` for Skip. The default card shows recent three-month
-Rating 3.0 and 火力值 (`N/100`). Majors won and Total MVPs sit under the identity line when
+left player, `2` for the right player, and `S` for Skip. The default card shows recent three-month Rating 3.0 and 火力值 (`N/100`). When the three-month
+Rating is missing, an Owner-reviewed career Rating may occupy that same slot as **生涯 Rating**.
+If both are missing, the slot stays **近三月 Rating 3.0** / `—`. Majors won and Total MVPs sit under the identity line when
 captured (`🏆 2 Major` / `🏅 32 MVP` chips; zeros are shown; the line is omitted only when both
 values are missing). Nationality is a mini flag from the stored ISO-2 `country` code, or `国籍待补`.
 Details expand highest HLTV Top 20 (peak rank plus every year at that rank) and maps, plus an honest
 freshness label.
-Unsupported or unexposed fields remain `—`; KAST, Round Swing, career Rating, and ADR are not shown.
+Unsupported or unexposed fields remain `—`; KAST, Round Swing, and ADR are not shown. Career Rating
+appears in the headline slot only when the three-month Rating is missing.
 
 After resolution, the same two cards remain in place and show the user's selection plus both current
 rank/score records. A counted Left/Right vote uses the heading `这一票已计入社区榜`. Skip uses
@@ -78,11 +80,13 @@ unconfigured Teams degrade without a broken-image state.
 The latest HLTV snapshots for `rating_3_0` / `LAST_3_MONTHS`, `firepower` / `LAST_3_MONTHS`,
 `adr` / `LAST_3_MONTHS`, `career_rating` / `CAREER`, `majors_won` / `CAREER`, `mvp_count` /
 `CAREER`, and `top20_rank` / `CAREER` are used. Public labels are **近三月 Rating 3.0** and
-**火力值**. Other providers' metrics remain isolated and cannot silently fill those fields. Stats
+**火力值**, except that a missing three-month Rating may fall back to **生涯 Rating** from
+`career_rating` / `CAREER`. Other providers' metrics remain isolated and cannot silently fill those fields. Stats
 are `MISSING` when absent, `CURRENT` through the configured freshness window, and `STALE` afterward.
 `EXTERNAL_STATS_STALE_AFTER_HOURS` defaults to 48 hours. Provider failure keeps stale data visible
-and never breaks the Vote page. Career Rating, ADR, and Round Swing stay off the public UI because
-official player profiles do not expose them; do not invent them. Highest Top 20 is aggregated from
+and never breaks the Vote page. Career Rating is not auto-captured from Cloudflare-blocked
+`/stats/players/`; do not invent it from Liquipedia or BO3. An Owner-reviewed career Rating may be
+imported for inactive/special players who have no Past 3 months Rating. Highest Top 20 is aggregated from
 the latest `top20_rank` year rows (peak rank, every year at that rank). Nationality is
 `player.country_code`.
 

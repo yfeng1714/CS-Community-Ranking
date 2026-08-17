@@ -1,12 +1,15 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  CAREER_RATING_LABEL,
   formatAdr,
   formatFirepower,
   formatInteger,
   formatPlayerHonors,
   formatRating,
   formatTop20Peak,
+  headlineRating,
+  RECENT_RATING_LABEL,
 } from "@/components/player-stat-format";
 
 describe("player stat formatters", () => {
@@ -30,5 +33,20 @@ describe("player stat formatters", () => {
       "#1 · 2019, 2020, 2023, 2025",
     );
     expect(formatTop20Peak({ rank: 3, years: [2023] })).toBe("#3 · 2023");
+  });
+
+  it("uses career Rating only when the three-month Rating is missing", () => {
+    expect(headlineRating({ careerRating: 0.78, recentRating: 1.14 })).toEqual({
+      label: RECENT_RATING_LABEL,
+      value: 1.14,
+    });
+    expect(headlineRating({ careerRating: 0.78, recentRating: null })).toEqual({
+      label: CAREER_RATING_LABEL,
+      value: 0.78,
+    });
+    expect(headlineRating({ careerRating: null, recentRating: null })).toEqual({
+      label: RECENT_RATING_LABEL,
+      value: null,
+    });
   });
 });

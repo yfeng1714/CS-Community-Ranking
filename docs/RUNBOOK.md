@@ -108,6 +108,7 @@ pnpm job:sync-hltv -- --start YYYY-MM-DD --end YYYY-MM-DD
 pnpm source:capture-reviewed-hltv-stats -- --start YYYY-MM-DD --end YYYY-MM-DD --output <ignored-reviewed-json>
 pnpm source:create-reviewed-hltv-stats-template -- --captured <ISO-time> --start YYYY-MM-DD --end YYYY-MM-DD --output <ignored-reviewed-json>
 pnpm source:import-reviewed-hltv-stats -- --file <ignored-reviewed-json>
+pnpm source:import-reviewed-career-rating -- --file data/review-manual/career-ratings-2026-08-17.json
 pnpm job:build-pool-draft -- --edition 2026
 pnpm job:snapshot-ranking -- --edition 2026 --date YYYY-MM-DD
 pnpm assets:check
@@ -162,6 +163,11 @@ substitute a three-month Rating for career Rating, and never infer nationality f
 The input file is ignored and should be retained only as private operational evidence; accepted
 metrics land in `player_stat_snapshot`, and parsed flags land in `player.country_code`, with the
 exact official source URL and capture timestamp.
+
+Owner-reviewed career Rating for inactive/special players without Past 3 months activity is
+`pnpm source:import-reviewed-career-rating` (`data/review-manual/career-ratings-2026-08-17.json`).
+Apply requires `--actor`, `--apply`, and `--confirm-reviewed-career-rating`. Do not invent that
+value from Liquipedia or BO3.
 
 Admin Team/Player create may show **Operation is temporarily unavailable** after the server already
 committed the row (the form used to treat a post-success page refresh as failure). That is not a

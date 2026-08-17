@@ -10,13 +10,18 @@ Public requests never fetch HLTV. Keep `HLTV_SYNC_ENABLED=false`. Never run this
 
 Vote cards:
 
-- default: past-3-month **Rating 3.0** labeled **近三月 Rating 3.0**, plus **火力值** (`N/100`);
+- default: past-3-month **Rating 3.0** labeled **近三月 Rating 3.0**, plus **火力值** (`N/100`).
+  If that Rating is missing and an Owner-reviewed **生涯 Rating** exists, the same slot uses that
+  label and value. If both are missing, the slot stays **近三月 Rating 3.0** / `—`;
 - identity line: **Majors won** and **Total MVPs** when captured (`2 Major · 32 MVP`; zeros are
   shown; omit the line only when both values are missing);
 - nationality from `player.country_code` (ISO-2 from the profile flag; missing stays `国籍待补`);
 - details: **highest HLTV Top 20** (peak rank and every year at that rank) + **maps**.
 
-Player pages show the same fields. Missing values render as `—`.
+Player pages show the same fields. Missing values render as `—`. Do not invent career Rating from
+Liquipedia or BO3. Inactive/special players without Past 3 months activity may receive an
+Owner-reviewed `career_rating` / `CAREER` snapshot via `pnpm source:import-reviewed-career-rating`
+(`data/review-manual/career-ratings-2026-08-17.json` currently has MachineWJQ `0.78`).
 
 Skip on the Vote result panel uses the heading **已跳过**, not “这一票已计入社区榜”.
 
@@ -155,8 +160,18 @@ DATABASE_URL=<tunnel-url> pnpm source:import-reviewed-hltv-stats -- \
 ```
 
 Node `--env-file-if-exists=.env` does **not** override an already-set `DATABASE_URL`. The Admin
-actor username is `owner`. Close the tunnel when the import finishes. Do not commit the JSON, `.env`,
-or captured HTML.
+actor username is `owner`. Close the tunnel when the import finishes. Do not commit the ignored
+capture JSON, `.env`, or captured HTML.
+
+Owner-reviewed career Rating for players without Past 3 months activity (currently MachineWJQ
+`0.78`) is a separate committed file. Dry-run then apply with the same tunnel:
+
+```bash
+pnpm source:import-reviewed-career-rating
+DATABASE_URL=<tunnel-url> pnpm source:import-reviewed-career-rating -- \
+  --actor owner --reason "Owner-reviewed career Rating 3.0 for inactive/special player" \
+  --apply --confirm-reviewed-career-rating
+```
 
 ## Snapshot metrics written on import
 

@@ -20,7 +20,7 @@
 </tbody>
 </table>
 
-**版本** V0.1.26
+**版本** V0.1.27
 
 **日期** 2026-08-17
 
@@ -75,6 +75,8 @@
 **Owner 公开身份与 Admin 分页** 2026-08-17（V0.1.25；国籍改为迷你国旗；Major/MVP 使用奖杯/奖牌筹码；Vote moderation 默认 10 条并可 Load more）
 
 **Owner Review Manual 四队** 2026-08-17（V0.1.26；Admin 新建 Team/Player 返回 generic unavailable，不阻断投票；Vote 卡放大国旗与 Major/MVP；文案改为「近三月 Rating 3.0」与「火力值」；以 Review Manual 纳入 BC.Game、100 Thieves、TYLOO、Lynn Vision）
+
+**Owner 生涯 Rating 回退** 2026-08-17（V0.1.27；无近三月 Rating 时，若有审核的生涯 Rating 则改标「生涯 Rating」；MachineWJQ Owner 查阅为 0.78，因 Cloudflare 不自动采集）
 
 **定位** 产品背景、决策记录与后续 Review Context
 
@@ -278,6 +280,10 @@ MachineWJQ：mutate 先提交再返回 JSON，表单曾把成功后的 `router.r
 这不阻断产品使用，并要求记录；在 Admin 不可用时把 BC.Game、100 Thieves、TYLOO、Lynn Vision（LVG）
 以 Review Manual 纳入 2026 候选池。该纳入走已有 `admitManualTeam` 与公开理由，不重置数据库、不启用
 live HLTV sync、不为这 20 人编造 Rating。Review Auto 与 Special 仍后置。
+
+同日 Owner 确认：无近三月活动的 Special/退役选手（如测试写入的 MachineWJQ）可以把可空的生涯
+Rating 作为回退；有近三月 Rating 时仍显示「近三月 Rating 3.0」。生涯 Rating 因 Cloudflare 无法
+自动采集，MachineWJQ 由 Owner 查阅后记为 0.78。两者都缺则仍显示 —。
 
 <table>
 <colgroup>

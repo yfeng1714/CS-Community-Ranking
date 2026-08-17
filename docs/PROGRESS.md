@@ -24,7 +24,9 @@
 ## Completed in the repository
 
 - Vote cards slightly enlarge the nationality flag and Major/MVP chips. Public labels are
-  **近三月 Rating 3.0** and **火力值** (no longer “近三月 HLTV Rating” / “近三月 Firepower”).
+  **近三月 Rating 3.0** and **火力值**. If the three-month Rating is missing, an Owner-reviewed
+  **生涯 Rating** occupies that slot (MachineWJQ `0.78` via
+  `pnpm source:import-reviewed-career-rating`); if both are missing the slot stays `—`.
   Admin Team/Player create can show **Operation is temporarily unavailable** after Postgres already
   saved the row: mutate commits first, then the form used to treat `router.refresh()` as part of the
   same failure catch. Owner's test `tyloo` / `machinewjq` rows are that case (see

@@ -12,6 +12,7 @@ import {
   formatInteger,
   formatRating,
   formatTop20Peak,
+  headlineRating,
 } from "../player-stat-format";
 import { TeamLogo } from "../team-logo";
 
@@ -44,6 +45,7 @@ export function VotePlayerCard({
 }) {
   const selected = resultChoice === choice;
   const resultVisible = resultChoice !== undefined;
+  const rating = headlineRating(player);
 
   return (
     <article
@@ -88,8 +90,8 @@ export function VotePlayerCard({
 
       <dl className="vote-card__stats" aria-label={`${player.nickname} 默认数据`}>
         <div>
-          <dt>近三月 Rating 3.0</dt>
-          <dd>{formatRating(player.recentRating)}</dd>
+          <dt>{rating.label}</dt>
+          <dd>{formatRating(rating.value)}</dd>
         </div>
         <div>
           <dt>火力值</dt>

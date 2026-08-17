@@ -1,0 +1,15 @@
+{
+  "capturedAt": "2026-08-17T14:20:00.000Z",
+  "notes": [
+    "Owner-reviewed career Rating 3.0 for a player without Past 3 months activity. Official /stats/players/ remains Cloudflare-blocked, so this value is not auto-captured."
+  ],
+  "provider": "HLTV",
+  "records": [
+    {
+      "rating": 0.78,
+      "slug": "machinewjq",
+      "sourceUrl": "https://www.hltv.org/player/16149/machinewjq"
+    }
+  ],
+  "version": 1
+}
