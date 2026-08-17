@@ -134,10 +134,12 @@ pnpm pool:admit-review-manual -- \
 ```
 
 The 2026-08-17 set is `data/review-manual/2026-08-17.json`: BC.Game, 100 Thieves, TYLOO, and Lynn
-Vision (short name LVG). Logos/portraits are omitted; HLTV stats stay missing until a later
-recapture of the expanded identity set. Production reused the Owner's earlier Admin `tyloo` Team
-row (no roster at the time) and left the unpooled `machinewjq` Player out of the Candidate Pool
-because that player is not on TYLOO's current official starting five.
+Vision (short name LVG). Logos/portraits are omitted. Official HLTV stats for the expanded 90-player
+set were recaptured 2026-08-17 (`capturedAt` `2026-08-17T13:18:41.536Z`; checksum
+`2dc1b4b5ada7bada9350865e1740b1ce0f36c0bf89f21cbc51e670fb52b6a84c`) and wait on the Railway tunnel
+import. Production reused the Owner's earlier Admin `tyloo` Team row (no roster at the time) and
+left the unpooled `machinewjq` Player out of the Candidate Pool because that player is not on
+TYLOO's current official starting five.
 
 ## Lifecycle boundaries
 
