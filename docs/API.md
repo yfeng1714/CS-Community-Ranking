@@ -91,7 +91,8 @@ detail-free `503 RANKING_UNAVAILABLE` with `no-store`.
 ### `GET /api/v1/players/{slug}`
 
 Returns the public player identity, current roster, active-Edition ranking, latest approved recent
-and career Rating snapshots, and an explicit `CURRENT`, `STALE`, or `MISSING` freshness state.
+Rating / Firepower / honors / Top 20 snapshots, `player.country_code`, and an explicit `CURRENT`,
+`STALE`, or `MISSING` freshness state.
 Slugs must be lower-case URL-safe identifiers. Successful responses use `Cache-Control: public,
 max-age=30, stale-while-revalidate=90`; invalid slugs return `400`, missing players return `404`, and
 unexpected failures return a detail-free `503`, all with `no-store`.

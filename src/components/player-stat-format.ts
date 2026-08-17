@@ -26,3 +26,8 @@ export function formatPlayerHonors(
   if (mvpCount !== null) parts.push(`${Math.round(mvpCount)} MVP`);
   return parts.join(" · ");
 }
+
+export function formatTop20Peak(peak: { rank: number; years: number[] } | null): string {
+  if (!peak || peak.years.length === 0) return "—";
+  return `#${peak.rank} · ${peak.years.join(", ")}`;
+}

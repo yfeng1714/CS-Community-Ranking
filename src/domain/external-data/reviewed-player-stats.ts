@@ -1,12 +1,13 @@
 import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 
-import { playerExternalIdentities, playerStatSnapshots } from "../../db/schema/index.ts";
+import { playerExternalIdentities, players, playerStatSnapshots } from "../../db/schema/index.ts";
 import { writeAdminAudit } from "../audit.ts";
 import type { AppDatabase } from "../database.ts";
 import { DomainError, requireNonBlank } from "../error.ts";
 import type { CanonicalManifest } from "../canonical/manifest.ts";
 import type { CapturedHltvProfileStats } from "./providers/hltv.ts";
+import { top20YearPeriod } from "./top20.ts";
 
 export const REVIEWED_HLTV_PLAYER_STATS_VERSION = "hltv-reviewed-player-stats-json-v1";
 
@@ -22,6 +23,11 @@ const careerMetricSchema = z.strictObject({
   rating: z.number().nonnegative().max(5),
 });
 
+const top20PlacementSchema = z.strictObject({
+  rank: z.number().int().min(1).max(20),
+  year: z.number().int().min(2010).max(2099),
+});
+
 const reviewedPlayerStatsSchema = z.strictObject({
   capturedAt: z.iso.datetime({ offset: true }),
   periodEnd: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
@@ -33,6 +39,11 @@ const reviewedPlayerStatsSchema = z.strictObject({
         adr: z.number().nonnegative().max(200).nullable(),
         career: careerMetricSchema.nullable(),
         careerSourceUrl: z.url().nullable(),
+        countryCode: z
+          .string()
+          .trim()
+          .regex(/^[A-Z]{2}$/)
+          .nullable(),
         externalId: z
           .string()
           .trim()
@@ -48,6 +59,7 @@ const reviewedPlayerStatsSchema = z.strictObject({
         mvpCount: z.number().int().nonnegative().nullable(),
         recent: datedMetricSchema.nullable(),
         recentSourceUrl: z.url(),
+        top20Placements: z.array(top20PlacementSchema).max(30),
       }),
     )
     .min(1)
@@ -72,6 +84,7 @@ export function createReviewedHltvPlayerStatsTemplate(
           adr: null,
           career: null,
           careerSourceUrl: null,
+          countryCode: null,
           externalId: player.hltvIdentity.externalId,
           externalSlug: player.hltvIdentity.externalSlug,
           firepower: null,
@@ -79,6 +92,7 @@ export function createReviewedHltvPlayerStatsTemplate(
           mvpCount: null,
           recent: null,
           recentSourceUrl: `https://www.hltv.org/stats/players/${player.hltvIdentity.externalId}/${player.hltvIdentity.externalSlug}?startDate=${input.periodStart}&endDate=${input.periodEnd}`,
+          top20Placements: [],
         })),
       ),
       version: 1,
@@ -173,9 +187,20 @@ function validateReviewedHltvPlayerStatsBundle(
         sourceUrl: record.careerSourceUrl,
       });
     }
+    const top20Years = new Set<number>();
+    for (const placement of record.top20Placements) {
+      if (top20Years.has(placement.year)) {
+        throw new DomainError(
+          "REVIEWED_HLTV_STATS_TOP20_DUPLICATE_YEAR",
+          `HLTV Player ${record.externalId} has more than one Top 20 rank for ${placement.year}`,
+        );
+      }
+      top20Years.add(placement.year);
+    }
     if (record.recent) availableMetrics += 1;
     if (record.career) availableMetrics += 1;
     if (record.majorsWon !== null || record.mvpCount !== null) availableMetrics += 1;
+    if (record.top20Placements.length > 0) availableMetrics += 1;
   }
 
   if (requireAvailableMetric && availableMetrics === 0) {
@@ -221,6 +246,7 @@ export function mergeCapturedRecentStats(
           captured.careerRating === null
             ? record.careerSourceUrl
             : `https://www.hltv.org/stats/players/${record.externalId}/${record.externalSlug}`,
+        countryCode: captured.countryCode,
         firepower: captured.firepower,
         majorsWon: captured.majorsWon,
         mvpCount: captured.mvpCount,
@@ -230,6 +256,7 @@ export function mergeCapturedRecentStats(
           maps: captured.maps,
           rating: captured.rating,
         },
+        top20Placements: captured.top20Placements,
       };
     }),
   };
@@ -251,11 +278,13 @@ export async function importReviewedHltvPlayerStats(
   return database.transaction(async (transaction) => {
     const identities = await transaction
       .select({
+        countryCode: players.countryCode,
         externalId: playerExternalIdentities.externalId,
         externalSlug: playerExternalIdentities.externalSlug,
         playerId: playerExternalIdentities.playerId,
       })
       .from(playerExternalIdentities)
+      .innerJoin(players, eq(players.id, playerExternalIdentities.playerId))
       .where(eq(playerExternalIdentities.provider, "HLTV"));
     const identityByExternalId = new Map(
       identities.map((identity) => [identity.externalId, identity]),
@@ -306,14 +335,17 @@ export async function importReviewedHltvPlayerStats(
 
     const values: Array<typeof playerStatSnapshots.$inferInsert> = [];
     const missingRecentExternalIds: string[] = [];
+    const countryUpdates: Array<{ countryCode: string; externalId: string }> = [];
     let careerSnapshots = 0;
     let firepowerSnapshots = 0;
     let adrSnapshots = 0;
     let majorsWonSnapshots = 0;
     let mvpCountSnapshots = 0;
     let recentSnapshots = 0;
+    let top20RankSnapshots = 0;
     for (const record of input.bundle.records) {
       const identity = identityByExternalId.get(record.externalId)!;
+      const profileUrl = `https://www.hltv.org/player/${record.externalId}/${record.externalSlug}`;
       if (record.recent) {
         values.push({
           capturedAt,
@@ -400,6 +432,32 @@ export async function importReviewedHltvPlayerStats(
         });
         mvpCountSnapshots += 1;
       }
+      for (const placement of record.top20Placements) {
+        const period = top20YearPeriod(placement.year);
+        values.push({
+          capturedAt,
+          maps: null,
+          metric: "top20_rank",
+          periodEnd: period.periodEnd,
+          periodStart: period.periodStart,
+          periodType: "CAREER",
+          playerId: identity.playerId,
+          provider: "HLTV",
+          sourceUrl: profileUrl,
+          value: String(placement.rank),
+        });
+        top20RankSnapshots += 1;
+      }
+      if (record.countryCode && record.countryCode !== identity.countryCode) {
+        await transaction
+          .update(players)
+          .set({ countryCode: record.countryCode, updatedAt: capturedAt })
+          .where(eq(players.id, identity.playerId));
+        countryUpdates.push({
+          countryCode: record.countryCode,
+          externalId: record.externalId,
+        });
+      }
     }
     if (values.length === 0) {
       throw new DomainError(
@@ -414,6 +472,7 @@ export async function importReviewedHltvPlayerStats(
       capturedAt: input.bundle.capturedAt,
       careerSnapshots,
       checksum,
+      countryUpdates: countryUpdates.length,
       firepowerSnapshots,
       majorsWonSnapshots,
       missingRecentExternalIds: missingRecentExternalIds.sort(),
@@ -422,6 +481,8 @@ export async function importReviewedHltvPlayerStats(
       periodStart: input.bundle.periodStart,
       playersReviewed: input.bundle.records.length,
       recentSnapshots,
+      top20RankSnapshots,
+      updatedCountryCodes: countryUpdates,
       version: REVIEWED_HLTV_PLAYER_STATS_VERSION,
     };
     await writeAdminAudit(transaction, {

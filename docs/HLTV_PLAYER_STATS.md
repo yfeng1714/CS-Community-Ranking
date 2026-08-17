@@ -13,36 +13,58 @@ Vote cards:
 - default: past-3-month **Rating 3.0** + **Firepower** (`N/100`);
 - identity line: **Majors won** and **Total MVPs** when captured (`2 Major · 32 MVP`; zeros are
   shown; omit the line only when both values are missing);
-- details: **career Rating**, **ADR**, **maps**.
+- nationality from `player.country_code` (ISO-2 from the profile flag; missing stays `国籍待补`);
+- details: **highest HLTV Top 20** (peak rank and every year at that rank) + **maps**.
 
 Player pages show the same fields. Missing values render as `—`.
+
+Skip on the Vote result panel uses the heading **已跳过**, not “这一票已计入社区榜”.
 
 ## What HLTV player profiles currently expose
 
 Capture loads `https://www.hltv.org/player/{id}/{slug}` in local Playwright Chromium. Parser
-`hltv-player-profile-stats-html-v2` reads:
+`hltv-player-profile-stats-html-v3` reads:
 
-| Field | Source on `/player/{id}/{slug}` | Stored metric |
+| Field | Source on `/player/{id}/{slug}` | Stored as |
 | --- | --- | --- |
-| Past 3 months Rating 3.0 | `.player-stat` / `.statsVal` | `rating_3_0` / `LAST_3_MONTHS` |
+| Past 3 months Rating 3.0 | `.player-stat` / `.statsVal` | `player_stat_snapshot.metric = rating_3_0` / `LAST_3_MONTHS` |
 | Past 3 months maps | `(Past 3 months • N maps)` | `maps` on the rating snapshot |
 | Firepower | `.player-stat` Firepower `N` | `firepower` / `LAST_3_MONTHS` |
 | Majors won | `.highlighted-stat` **Majors won**, else `.majorWinner` (`N x Major winner`) | `majors_won` / `CAREER` |
 | Total MVPs | `.highlighted-stat` **Total MVPs** when present, else the visible `.mvp-count` trophy badge | `mvp_count` / `CAREER` |
+| Highest Top 20 | `Top 20 overview` table (`#N best player in YY` + year column) | one `top20_rank` / `CAREER` snapshot per year; UI peaks the latest capture |
+| Nationality | `.player-summary-stat-box-left-flag` `…/flags/30x20/XX.gif` | `player.country_code` (ISO-2) |
 
 Do **not** treat these as the same thing:
 
 - **Majors played** is not Majors won.
 - **Major MVPs** and EVPs are not Total MVPs.
 - The profile all-time block is matches / KDR / headshots, **not** career Rating 3.0.
-- ADR is not in `playerpage-container` on the live profile. Direct `/stats/players/` URLs remain
-  Cloudflare-blocked from Node.
+- ADR and **Round Swing** live on `/stats/players/`, which remains Cloudflare-blocked from Node.
+  Do not scrape that path, and do not invent either field. Detail stats are therefore Top 20 + maps.
+- Do not infer nationality from the current team country.
 
-If a field is not on the page, leave it `null`. Never infer career Rating from recent Rating, ADR
-from KDR, or honors from a different label.
+If a field is not on the page, leave it `null` / empty. Never infer career Rating from recent
+Rating, ADR from KDR, Top 20 from news headlines, or honors from a different label.
 
 The reviewed JSON still stores `recentSourceUrl` as the official dated `/stats/players/{id}/{slug}`
 URL so identity/period validation stays exact. The HTML that actually loaded is the player profile.
+
+## Storage contract (Railway Postgres)
+
+New fields use the same tables the rest of the product already uses. Do not add a parallel JSON
+column or a second stats table.
+
+- **Stats** (Rating, Firepower, honors, Top 20 years) → `player_stat_snapshot`, same as before.
+  `metric` is free text; `top20_rank` needs no migration. Each Top 20 year is one CAREER row with
+  `period_start = YYYY-01-01` and `period_end = YYYY-12-31`, `value` = that year's rank (1–20).
+  Public queries keep only `provider = HLTV`, take the latest `captured_at` group, then pick the
+  minimum rank and every year that equals it.
+- **Nationality** is identity, not a stat → `player.country_code`. The same import transaction
+  overwrites it when the profile flag parsed an ISO-2 code, and records the change on the existing
+  `IMPORT_REVIEWED_HLTV_PLAYER_STATS` audit. Missing flags do not clear a previously stored code.
+  Canonical `data/canonical/2026-beta.json` `countryCode` may still be null; live reads Postgres.
+  A later empty-database bootstrap would need this import again (or an Owner identity edit).
 
 ## Local commands
 
@@ -62,8 +84,9 @@ pnpm source:capture-reviewed-hltv-stats -- \
 Defaults: period end = today, period start = three months earlier, delay = 8s, one retry 20s after
 HTTP 403/429/503, stop after three consecutive denials.
 
-- `--resume` fills identities that still lack recent metrics. It cannot upgrade a v1 Rating/maps-only
-  file; that schema is rejected. Use `--force` for a full recapture after a parser/schema bump.
+- `--resume` fills identities that still lack recent metrics. It cannot upgrade a v1/v2 JSON that
+  is missing `top20Placements` / `countryCode`; that schema is rejected. Use `--force` for a full
+  recapture after a parser/schema bump.
 - `--force` overwrites the ignored JSON. Always use a **new** `capturedAt` (the default is `now`).
   Reusing a timestamp already imported into a database is refused.
 - `--player-id` is debug-only.
@@ -79,7 +102,7 @@ pnpm source:preview-reviewed-hltv-stats
 ```
 
 Writes ignored `data/reviewed-sources/hltv-player-stats-preview.html`. Spot-check Rating, Firepower,
-maps, Majors, MVPs, and honest `—` for career/ADR.
+maps, Top 20 peak + years, nationality, Majors, MVPs.
 
 ### 3. Dry-run import
 
@@ -104,35 +127,45 @@ pnpm source:import-reviewed-hltv-stats -- \
 ```
 
 Apply requires an active Admin, a reason, `--apply`, and `--confirm-reviewed-stats`. One transaction
-writes observed snapshots plus one Admin audit. Missing career/ADR stay missing.
+writes observed snapshots, updates parsed `player.country_code` values, and one Admin audit.
 
 ### 5. Apply to Railway (production)
 
-The JSON stays on the operator laptop. `railway run` injects production `DATABASE_URL`:
+The JSON stays on the operator laptop. `railway run` injects the **private**
+`postgres.railway.internal` URL, which does not work from the laptop. Open a private SSH tunnel
+instead, then point `DATABASE_URL` at that local URL in a **second** terminal. Do not paste the
+tunnel password into chat, commits, or docs.
 
 ```bash
-railway run --service web -- pnpm source:import-reviewed-hltv-stats -- \
+railway connect Postgres --environment production --ssh --tunnel-only
+```
+
+```bash
+DATABASE_URL=<tunnel-url> pnpm source:import-reviewed-hltv-stats -- \
   --file data/reviewed-sources/hltv-player-stats-local.json \
   --actor owner --reason "Reviewed official HLTV player profile stats" \
   --apply --confirm-reviewed-stats
 ```
 
-Do not commit the JSON, `.env`, or captured HTML. Code/docs may be committed; stats land only in
-PostgreSQL.
+Node `--env-file-if-exists=.env` does **not** override an already-set `DATABASE_URL`. The Admin
+actor username is `owner`. Close the tunnel when the import finishes. Do not commit the JSON, `.env`,
+or captured HTML.
 
 ## Snapshot metrics written on import
 
-| Bundle field | Snapshot `metric` | `period_type` |
+| Bundle field | Destination | `period_type` |
 | --- | --- | --- |
-| `recent.rating` + `recent.maps` | `rating_3_0` | `LAST_3_MONTHS` |
+| `recent.rating` + `recent.maps` | `player_stat_snapshot.metric = rating_3_0` | `LAST_3_MONTHS` |
 | `recent.firepower` | `firepower` | `LAST_3_MONTHS` |
 | `recent.adr` | `adr` | `LAST_3_MONTHS` |
 | `career.rating` | `career_rating` | `CAREER` |
 | `majorsWon` | `majors_won` | `CAREER` |
 | `mvpCount` | `mvp_count` | `CAREER` |
+| `top20Placements[]` | `top20_rank` (one row per year) | `CAREER` |
+| `countryCode` | `player.country_code` | identity, not a snapshot |
 
-Public queries select only `provider = HLTV` for these fields. Other providers cannot occupy HLTV
-Rating, Firepower, ADR, or honors.
+Public queries select only `provider = HLTV` for the snapshot fields. Other providers cannot occupy
+HLTV Rating, Firepower, ADR, honors, or Top 20.
 
 ## What not to do
 
@@ -142,6 +175,8 @@ Rating, Firepower, ADR, or honors.
 - Do not spoof Cloudflare challenges.
 - Do not copy Rating from Liquipedia, BO3, or PandaScore into HLTV fields.
 - Do not treat a three-month Rating as career Rating.
+- Do not invent Round Swing, career Rating, or ADR from adjacent numbers.
+- Do not infer nationality from the current team.
 - Do not run capture against production from a public request or GitHub Action.
 - Do not import the same `capturedAt` twice; capture again so the timestamp is new.
 

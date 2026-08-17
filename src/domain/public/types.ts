@@ -51,6 +51,7 @@ export interface PublicPlayerProfile {
   team: string | null;
   teamLogoUrl: string | null;
   teamShortName: string | null;
+  top20Peak: { rank: number; years: number[] } | null;
 }
 
 export interface PublicPlayerStats {
@@ -63,4 +64,5 @@ export interface PublicPlayerStats {
   recentMaps: number | null;
   recentRating: number | null;
   statsCapturedAt: string | null;
+  top20Peak: { rank: number; years: number[] } | null;
 }

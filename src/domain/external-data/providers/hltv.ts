@@ -8,16 +8,18 @@ import {
 
 export const HLTV_RANKING_PARSER_VERSION = "hltv-ranking-html-v1";
 export const HLTV_PLAYER_STATS_PARSER_VERSION = "hltv-player-stats-html-v1";
-export const HLTV_PLAYER_PROFILE_STATS_PARSER_VERSION = "hltv-player-profile-stats-html-v2";
+export const HLTV_PLAYER_PROFILE_STATS_PARSER_VERSION = "hltv-player-profile-stats-html-v3";
 
 export interface CapturedHltvProfileStats {
   adr: number | null;
   careerRating: number | null;
+  countryCode: string | null;
   firepower: number | null;
   majorsWon: number | null;
   maps: number;
   mvpCount: number | null;
   rating: number;
+  top20Placements: Array<{ rank: number; year: number }>;
 }
 
 function decodeHtml(value: string): string {
@@ -156,6 +158,47 @@ function parseAdr(body: string): number | null {
   return Number.isFinite(value) && value >= 0 && value <= 200 ? value : null;
 }
 
+function parseCountryCode(body: string): string | null {
+  const flag = /<div[^>]*class=["'][^"']*\bplayer-summary-stat-box-left-flag\b[^"']*["'][^>]*>\s*<img\b([^>]+)>/i.exec(
+    body,
+  )?.[1];
+  const code = flag
+    ? /\/flags\/\d+x\d+\/([A-Za-z]{2})\.gif/i.exec(flag)?.[1]
+    : null;
+  return code ? code.toUpperCase() : null;
+}
+
+function parseTop20Placements(body: string): Array<{ rank: number; year: number }> {
+  const section =
+    /<h2[^>]*>\s*Top 20 overview for[\s\S]*?<\/h2>\s*<table\b[\s\S]*?<\/table>/i.exec(body)?.[0];
+  if (!section) return [];
+
+  const placements = new Map<number, number>();
+  for (const row of section.matchAll(
+    /<tr[^>]*class=["'][^"']*\btrophy-row\b[^"']*["'][^>]*>([\s\S]*?)<\/tr>/gi,
+  )) {
+    const block = row[1] ?? "";
+    const rank = Number(/#(\d{1,2})\s+best player in/i.exec(block)?.[1]);
+    const year = Number(
+      /class=["'][^"']*\btrophy-rating-number\b[^"']*["'][^>]*>\s*(\d{4})/i.exec(block)?.[1],
+    );
+    if (
+      !Number.isInteger(rank) ||
+      rank < 1 ||
+      rank > 20 ||
+      !Number.isInteger(year) ||
+      year < 2010 ||
+      year > 2099
+    ) {
+      continue;
+    }
+    placements.set(year, rank);
+  }
+  return [...placements.entries()]
+    .map(([year, rank]) => ({ rank, year }))
+    .sort((left, right) => right.year - left.year);
+}
+
 export function parseHltvPlayerProfileStatsHtml(body: string): CapturedHltvProfileStats {
   if (isHltvAccessDeniedHtml(body)) {
     throw new DomainError(
@@ -184,11 +227,13 @@ export function parseHltvPlayerProfileStatsHtml(body: string): CapturedHltvProfi
   return {
     adr: parseAdr(decoded),
     careerRating: null,
+    countryCode: parseCountryCode(decoded),
     firepower: parseFirepower(decoded),
     majorsWon: highlightedCount(decoded, "Majors won") ?? majorWinnerCount(decoded),
     maps,
     mvpCount: highlightedCount(decoded, "Total MVPs") ?? mvpBadgeCount(decoded),
     rating,
+    top20Placements: parseTop20Placements(decoded),
   };
 }
 

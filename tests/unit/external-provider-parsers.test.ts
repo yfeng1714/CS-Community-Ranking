@@ -90,11 +90,31 @@ describe("Milestone 7 provider parsers", () => {
     expect(parsed).toEqual({
       adr: null,
       careerRating: null,
+      countryCode: "DK",
       firepower: 2,
       majorsWon: 2,
       maps: 43,
       mvpCount: 32,
       rating: 0.75,
+      top20Placements: [
+        { rank: 3, year: 2025 },
+        { rank: 18, year: 2024 },
+        { rank: 3, year: 2023 },
+      ],
+    });
+  });
+
+  it("keeps Top 20 and nationality missing when the profile has no overview or flag", () => {
+    const parsed = parseHltvPlayerProfileStatsHtml(`
+      <span class="stats-window">(Past 3 months • 10 maps)</span>
+      <div class="playerpage-container">
+        <div class="player-stat"><b>Rating 3.0</b><span class="statsVal"><p>1.10</p></span></div>
+      </div>
+    `);
+    expect(parsed).toMatchObject({
+      countryCode: null,
+      rating: 1.1,
+      top20Placements: [],
     });
   });
 

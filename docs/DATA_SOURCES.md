@@ -90,19 +90,21 @@ pnpm source:capture-reviewed-hltv-stats -- \
 
 The capture CLI uses local Playwright Chromium, one request at a time, against each official
 `/player/{id}/{slug}` profile. Those pages currently expose HLTV's own `Past 3 months • N maps`
-window, Rating 3.0, Firepower (`N/100`), **Majors won**, and **Total MVPs**. Direct `/stats/players/`
-URLs and the gigobyte/HLTV scraper remain Cloudflare-blocked from Node; this path does not retry
-them, spoof a challenge, or enable `HLTV_SYNC_ENABLED`. Default delay is 8 seconds. A single retry
-waits 20 seconds after HTTP 403/429, and three consecutive denials stop the rest of the batch.
-`--resume` continues an interrupted **current-schema** file without re-fetching identities that
-already have recent metrics. A v1 Rating/maps-only JSON cannot be resumed; recapture with `--force`
-and a new `capturedAt`. Career Rating and ADR stay `null` because the profile does not expose them.
-Do not substitute **Majors played** or **Major MVPs**. The stored `recentSourceUrl` remains the
-official dated stats URL so the importer's identity/period contract is unchanged; the capture page
-is the profile that actually loaded. Parser version `hltv-player-profile-stats-html-v2` fails closed
-on Cloudflare HTML or missing Past 3 months Rating 3.0 / maps. The command refuses to overwrite an
-existing file unless `--force` or `--resume` is passed. `--player-id` is debug-only. Never run this
-capture from CI.
+window, Rating 3.0, Firepower (`N/100`), **Majors won**, **Total MVPs**, the **Top 20 overview**
+table, and the profile flag (ISO-2). Direct `/stats/players/` URLs and the gigobyte/HLTV scraper
+remain Cloudflare-blocked from Node; this path does not retry them, spoof a challenge, or enable
+`HLTV_SYNC_ENABLED`. Round Swing, career Rating, and ADR stay missing because they are not on the
+player profile. Default delay is 8 seconds. A single retry waits 20 seconds after HTTP 403/429, and
+three consecutive denials stop the rest of the batch. `--resume` continues an interrupted
+**current-schema** file without re-fetching identities that already have recent metrics. A v1/v2
+JSON without `top20Placements` / `countryCode` cannot be resumed; recapture with `--force` and a new
+`capturedAt`. Do not substitute **Majors played** or **Major MVPs**, and do not infer nationality
+from the current team. The stored `recentSourceUrl` remains the official dated stats URL so the
+importer's identity/period contract is unchanged; the capture page is the profile that actually
+loaded. Parser version `hltv-player-profile-stats-html-v3` fails closed on Cloudflare HTML or missing
+Past 3 months Rating 3.0 / maps. Top 20 and nationality fail open to empty/null. The command refuses
+to overwrite an existing file unless `--force` or `--resume` is passed. `--player-id` is debug-only.
+Never run this capture from CI.
 
 This capture is a deliberate local refresh, not an automatic roster hook. Adding or replacing a
 Pool player does not recapture HLTV stats. After the configured HLTV identity set changes, re-run
@@ -130,9 +132,10 @@ requires newly synchronized and approved evidence close to the actual cutover.
 
 The Gate D receiving boundary remains unchanged:
 
-- public recent Rating, Firepower, ADR, career Rating, Majors won, and Total MVPs projections select
-  only `HLTV` snapshots and label Rating fields as HLTV Rating; metrics from `OTHER`, BO3,
-  PandaScore, or Liquipedia cannot silently occupy those fields;
+- public recent Rating, Firepower, ADR, career Rating, Majors won, Total MVPs, and Top 20 rank
+  projections select only `HLTV` snapshots and label Rating fields as HLTV Rating; metrics from
+  `OTHER`, BO3, PandaScore, or Liquipedia cannot silently occupy those fields. Nationality is
+  `player.country_code`, filled by the same reviewed import when the profile flag is present;
 - imported identity, entity, roster, Event/result, and Pool proposals use the exact version-1
   contract in `docs/ADMIN_CONSOLE.md`;
 - automatic Pool Team proposals include ranking/event evidence and are re-evaluated on approval;

@@ -17,6 +17,7 @@ interface TestBundle {
     adr: number | null;
     career: { maps: number | null; rating: number } | null;
     careerSourceUrl: string | null;
+    countryCode: string | null;
     externalId: string;
     externalSlug: string;
     firepower: number | null;
@@ -29,6 +30,7 @@ interface TestBundle {
       rating: number;
     } | null;
     recentSourceUrl: string;
+    top20Placements: Array<{ rank: number; year: number }>;
   }>;
   version: 1;
 }
@@ -43,6 +45,7 @@ const validBundle = (): TestBundle => ({
       adr: null,
       career: { maps: 1_200, rating: 1.02 },
       careerSourceUrl: "https://www.hltv.org/stats/players/429/karrigan",
+      countryCode: "DK",
       externalId: "429",
       externalSlug: "karrigan",
       firepower: 2,
@@ -51,6 +54,7 @@ const validBundle = (): TestBundle => ({
       recent: { adr: null, firepower: 2, maps: 46, rating: 0.73 },
       recentSourceUrl:
         "https://www.hltv.org/stats/players/429/karrigan?startDate=2026-05-15&endDate=2026-08-14",
+      top20Placements: [{ rank: 20, year: 2014 }],
     },
   ],
   version: 1 as const,
@@ -137,11 +141,13 @@ describe("reviewed HLTV Player stats", () => {
           {
             adr: null,
             careerRating: null,
+            countryCode: "DK",
             firepower: 2,
             majorsWon: 2,
             maps: 43,
             mvpCount: 32,
             rating: 0.75,
+            top20Placements: [],
           },
         ],
         [
@@ -149,27 +155,38 @@ describe("reviewed HLTV Player stats", () => {
           {
             adr: null,
             careerRating: null,
+            countryCode: "FR",
             firepower: 98,
             majorsWon: 1,
             maps: 40,
             mvpCount: 21,
             rating: 1.32,
+            top20Placements: [
+              { rank: 1, year: 2025 },
+              { rank: 3, year: 2024 },
+              { rank: 1, year: 2023 },
+            ],
           },
         ],
       ]),
     );
     expect(merged.records).toHaveLength(70);
     expect(merged.records.find((record) => record.externalId === "429")).toMatchObject({
+      countryCode: "DK",
       firepower: 2,
       majorsWon: 2,
       mvpCount: 32,
       recent: { adr: null, firepower: 2, maps: 43, rating: 0.75 },
+      top20Placements: [],
     });
-    expect(merged.records.find((record) => record.externalId === "11893")?.recent).toEqual({
-      adr: null,
-      firepower: 98,
-      maps: 40,
-      rating: 1.32,
+    expect(merged.records.find((record) => record.externalId === "11893")).toMatchObject({
+      countryCode: "FR",
+      recent: { adr: null, firepower: 98, maps: 40, rating: 1.32 },
+      top20Placements: [
+        { rank: 1, year: 2025 },
+        { rank: 3, year: 2024 },
+        { rank: 1, year: 2023 },
+      ],
     });
     expect(merged.records.filter((record) => record.recent === null)).toHaveLength(68);
     expect(merged.records.every((record) => record.career === null)).toBe(true);
@@ -194,11 +211,13 @@ describe("reviewed HLTV Player stats", () => {
             {
               adr: null,
               careerRating: null,
+              countryCode: null,
               firepower: 10,
               majorsWon: 0,
               maps: 10,
               mvpCount: 0,
               rating: 1.1,
+              top20Placements: [],
             },
           ],
         ]),

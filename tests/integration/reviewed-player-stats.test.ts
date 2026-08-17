@@ -49,6 +49,7 @@ describe("reviewed HLTV Player stats import", () => {
         adr: null,
         career: null,
         careerSourceUrl: null,
+        countryCode: "DK",
         externalId: "429",
         externalSlug: "karrigan",
         firepower: 2,
@@ -57,6 +58,10 @@ describe("reviewed HLTV Player stats import", () => {
         recent: { adr: null, firepower: 2, maps: 46, rating: 0.73 },
         recentSourceUrl:
           "https://www.hltv.org/stats/players/429/karrigan?startDate=2026-05-15&endDate=2026-08-14",
+        top20Placements: [
+          { rank: 20, year: 2014 },
+          { rank: 19, year: 2012 },
+        ],
       },
     ],
     version: 1,
@@ -71,15 +76,18 @@ describe("reviewed HLTV Player stats import", () => {
     });
     expect(result).toMatchObject({
       careerSnapshots: 0,
+      countryUpdates: 1,
       firepowerSnapshots: 1,
       majorsWonSnapshots: 1,
       mvpCountSnapshots: 1,
       playersReviewed: 1,
       recentSnapshots: 1,
+      top20RankSnapshots: 2,
+      updatedCountryCodes: [{ countryCode: "DK", externalId: "429" }],
     });
 
     const rows = await database.select().from(schema.playerStatSnapshots);
-    expect(rows).toHaveLength(4);
+    expect(rows).toHaveLength(6);
     expect(rows.find((row) => row.metric === "rating_3_0")).toMatchObject({
       maps: 46,
       value: "0.73",
@@ -87,6 +95,17 @@ describe("reviewed HLTV Player stats import", () => {
     expect(rows.find((row) => row.metric === "firepower")).toMatchObject({ value: "2" });
     expect(rows.find((row) => row.metric === "majors_won")).toMatchObject({ value: "2" });
     expect(rows.find((row) => row.metric === "mvp_count")).toMatchObject({ value: "32" });
+    expect(
+      rows
+        .filter((row) => row.metric === "top20_rank")
+        .map((row) => ({ periodStart: row.periodStart, value: row.value }))
+        .sort((left, right) => (left.periodStart ?? "").localeCompare(right.periodStart ?? "")),
+    ).toEqual([
+      { periodStart: "2012-01-01", value: "19" },
+      { periodStart: "2014-01-01", value: "20" },
+    ]);
+    const [player] = await database.select().from(schema.players);
+    expect(player?.countryCode).toBe("DK");
     const audits = await database
       .select()
       .from(schema.adminAuditLogs)

@@ -31,6 +31,7 @@ const player: PublicPlayerProfile = {
   team: null,
   teamLogoUrl: null,
   teamShortName: null,
+  top20Peak: null,
 };
 
 describe("public read API handlers", () => {

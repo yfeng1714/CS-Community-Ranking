@@ -40,6 +40,7 @@ export interface BallotPlayerCard {
   statsCapturedAt: string | null;
   team: string | null;
   teamLogoUrl: string | null;
+  top20Peak: { rank: number; years: number[] } | null;
 }
 
 export interface IssuedBallotResponse {
@@ -402,6 +403,7 @@ export class BallotIssuanceService {
       statsCapturedAt: stats.statsCapturedAt,
       team: found.team,
       teamLogoUrl: found.teamLogoUrl,
+      top20Peak: stats.top20Peak,
     };
   }
 }

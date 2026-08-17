@@ -2,6 +2,7 @@ import { access, mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { parseArgs } from "node:util";
 
+import "./playwright-browser-path.ts";
 import { chromium, type Browser, type Page } from "@playwright/test";
 
 import { loadCanonicalManifest } from "../src/domain/canonical/manifest.ts";
@@ -18,6 +19,7 @@ import {
   validateReviewedHltvPlayerStats,
   type ReviewedHltvPlayerStats,
 } from "../src/domain/external-data/reviewed-player-stats.ts";
+import { peakHltvTop20 } from "../src/domain/external-data/top20.ts";
 import { cliArgs } from "./cli-args.ts";
 
 const CONSECUTIVE_DENIAL_LIMIT = 3;
@@ -45,13 +47,6 @@ const args = parseArgs({
   },
   strict: true,
 }).values;
-
-function releaseCursorSandboxBrowserPath(): void {
-  const configured = process.env.PLAYWRIGHT_BROWSERS_PATH;
-  if (!configured) return;
-  if (!configured.includes("cursor-sandbox-cache")) return;
-  delete process.env.PLAYWRIGHT_BROWSERS_PATH;
-}
 
 function integerOption(value: string | undefined, fallback: number, name: string): number {
   if (value === undefined) return fallback;
@@ -86,11 +81,13 @@ function captureFromRecord(
   return {
     adr: record.adr ?? record.recent.adr,
     careerRating: record.career?.rating ?? null,
+    countryCode: record.countryCode,
     firepower: record.firepower ?? record.recent.firepower,
     majorsWon: record.majorsWon,
     maps: record.recent.maps,
     mvpCount: record.mvpCount,
     rating: record.recent.rating,
+    top20Placements: record.top20Placements,
   };
 }
 
@@ -98,7 +95,10 @@ function formatCaptureLine(captured: CapturedHltvProfileStats): string {
   const firepower = captured.firepower === null ? "—" : String(captured.firepower);
   const majors = captured.majorsWon === null ? "—" : String(captured.majorsWon);
   const mvps = captured.mvpCount === null ? "—" : String(captured.mvpCount);
-  return `${captured.rating} / ${captured.maps} maps / fp ${firepower} / ${majors} major / ${mvps} mvp`;
+  const country = captured.countryCode ?? "—";
+  const peak = peakHltvTop20(captured.top20Placements);
+  const top20 = peak ? `#${peak.rank} ${peak.years.join(",")}` : "—";
+  return `${captured.rating} / ${captured.maps} maps / fp ${firepower} / ${majors} major / ${mvps} mvp / ${top20} / ${country}`;
 }
 
 async function loadExistingBundle(file: string): Promise<ReviewedHltvPlayerStats | null> {
@@ -165,8 +165,6 @@ if (!args.force && !args.resume) {
     if (error instanceof DomainError) throw error;
   }
 }
-
-releaseCursorSandboxBrowserPath();
 
 const failures: Array<{ externalId: string; externalSlug: string; reason: string }> = [];
 const PLAYER_CAPTURE_TIMEOUT_MS = 45_000;
@@ -299,7 +297,9 @@ process.stdout.write(
       capturedFirepower: bundle.records.filter((record) => record.firepower !== null).length,
       capturedMajorsWon: bundle.records.filter((record) => record.majorsWon !== null).length,
       capturedMvpCount: bundle.records.filter((record) => record.mvpCount !== null).length,
+      capturedNationality: bundle.records.filter((record) => record.countryCode !== null).length,
       capturedRecent: captures.size,
+      capturedTop20: bundle.records.filter((record) => record.top20Placements.length > 0).length,
       circuitStopped: failures.some((failure) => failure.reason.includes("skipped after")),
       delayMs,
       failures,

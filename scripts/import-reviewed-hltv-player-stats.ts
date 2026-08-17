@@ -40,10 +40,15 @@ const summary = {
   majorsWonSnapshots: bundle.records.filter((record) => record.majorsWon !== null).length,
   missingRecent: bundle.records.filter((record) => record.recent === null).length,
   mvpCountSnapshots: bundle.records.filter((record) => record.mvpCount !== null).length,
+  nationalityUpdates: bundle.records.filter((record) => record.countryCode !== null).length,
   periodEnd: bundle.periodEnd,
   periodStart: bundle.periodStart,
   playersReviewed: bundle.records.length,
   recentSnapshots: bundle.records.filter((record) => record.recent !== null).length,
+  top20RankSnapshots: bundle.records.reduce(
+    (total, record) => total + record.top20Placements.length,
+    0,
+  ),
 };
 
 if (!args.apply) {

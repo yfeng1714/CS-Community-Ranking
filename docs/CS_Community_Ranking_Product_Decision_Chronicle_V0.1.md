@@ -20,9 +20,9 @@
 </tbody>
 </table>
 
-**版本** V0.1.23
+**版本** V0.1.24
 
-**日期** 2026-08-16
+**日期** 2026-08-17
 
 **施工规范复核** 2026-08-10（V0.1.1；未改变冻结的产品决定）
 
@@ -69,6 +69,8 @@
 **Owner HLTV 资料自动采集** 2026-08-16（V0.1.22；本地 Playwright 采集官方选手页 Past 3 months Rating 3.0 / maps，不再手填 70 行；career 仍诚实缺失）
 
 **Owner 选手卡数据与荣誉** 2026-08-16（V0.1.23；默认近三月 Rating + Firepower，详细生涯 Rating + ADR + 地图数；卡片展示 Majors won 与 Total MVPs；career/ADR 仍诚实缺失）
+
+**Owner Top 20 / 国籍 / Skip 文案** 2026-08-17（V0.1.24；详细数据改为最高 HLTV Top 20 + 地图数；国籍写入 `player.country_code`；Skip 结果标题为「已跳过」；Round Swing 因不在选手主页而放弃）
 
 **定位** 产品背景、决策记录与后续 Review Context
 
@@ -257,6 +259,13 @@ Owner 随后要求把选手卡默认数据从近三月 Rating + 地图数改为 
 读出 Past 3 months Rating 3.0、Firepower、Majors won 与 Total MVPs；生涯 Rating 3.0 与 ADR 仍不
 在该页，官方 `/stats/players/` 仍被 Cloudflare 拦截，因此继续显示 `—`，而不是用 KDR 或其他来源
 填补。采集/导入步骤收敛为 `docs/HLTV_PLAYER_STATS.md`，供后续代理按同一边界更新选手数据。
+
+Owner 随后确认选手主页没有稳定的生涯 Rating 3.0 与 ADR，并要求用主页上容易读取的 **最高 HLTV
+Top 20**（峰值名次，以及所有达到该名次的年份）替换详细数据里的这两项；Round Swing 若同样容易读取
+则一并收录，否则详细数据只保留最高 Top 20 与地图数。现场核对后，Round Swing 只出现在
+Cloudflare 拦截的 `/stats/players/`，选手主页没有该字段，因此保持不采集、不展示。国籍来自同一
+资料页的国旗文件名（ISO-2），写入已有的 `player.country_code`，与 Rating 等字段一样走审核导入
+进入 Railway Postgres，而不是另开一张表。Skip 后的结果标题从「这一票已计入社区榜」改为「已跳过」。
 
 <table>
 <colgroup>

@@ -134,10 +134,11 @@ pnpm source:capture-reviewed-hltv-stats -- \
 The command uses Playwright Chromium, one profile at a time, with an 8s default delay, one
 retry after an access denial, and a stop after three consecutive denials so a Cloudflare block
 cannot turn into 70 failed requests. `--resume` fills only missing identities in an existing
-current-schema ignored JSON. `--force` is required after a parser/schema bump (v1 Rating/maps-only
-files cannot be resumed). Career Rating and ADR stay `null` unless the profile actually exposes
-them. Firepower, Majors won, and Total MVPs are captured from the same profile. It does not enable
-`HLTV_SYNC_ENABLED`, does not call `/stats/players/`, and must not run in CI. Then validate:
+current-schema ignored JSON. `--force` is required after a parser/schema bump (v1/v2 files without
+Top 20 / nationality cannot be resumed). Career Rating, ADR, and Round Swing stay `null` unless the
+profile actually exposes them. Firepower, Majors won, Total MVPs, Top 20 overview years, and the
+profile flag are captured from the same page. It does not enable `HLTV_SYNC_ENABLED`, does not call
+`/stats/players/`, and must not run in CI. Then validate:
 
 ```bash
 pnpm source:import-reviewed-hltv-stats -- --file data/reviewed-sources/hltv-player-stats-local.json
@@ -152,12 +153,15 @@ pnpm source:import-reviewed-hltv-stats -- --file data/reviewed-sources/hltv-play
   --apply --confirm-reviewed-stats
 ```
 
-Production apply uses the same flags through `railway run --service web` so the ignored JSON never
+Production apply uses the same flags against a private Railway SSH tunnel (`railway connect Postgres
+--environment production --ssh --tunnel-only`), not `railway run`, because `railway run` injects the
+private `postgres.railway.internal` hostname which the laptop cannot reach. The ignored JSON never
 leaves the operator machine. The bundle must cover every configured HLTV Player identity exactly
-once, but may explicitly record missing recent or career metrics. Never substitute a three-month
-Rating for career Rating. The input file is ignored and should be retained only as private
-operational evidence; the database stores each accepted metric with its exact official source URL
-and capture timestamp.
+once, but may explicitly record missing recent, career, Top 20, or nationality values. Never
+substitute a three-month Rating for career Rating, and never infer nationality from the current team.
+The input file is ignored and should be retained only as private operational evidence; accepted
+metrics land in `player_stat_snapshot`, and parsed flags land in `player.country_code`, with the
+exact official source URL and capture timestamp.
 
 The safe operating order is: sync → inspect and approve each source snapshot → generate Pool draft
 → inspect conflicts/freshness/JSON → approve or reject individual proposals. The generator reports
@@ -322,11 +326,25 @@ at least 32 characters for `VISITOR_TOKEN_HASH_PEPPER`, `IP_HMAC_SECRET`, and
 
 ```text
 NODE_ENV=production
-APP_ORIGIN=https://<exact-staging-host>
+APP_ORIGIN=https://<exact-public-host>
 CLIENT_IP_MODE=railway
 TRUST_PROXY_HEADERS=true
 RISK_ENFORCEMENT_MODE=observe
 ```
+
+`APP_ORIGIN` must be the exact public origin the browser uses, with no path or trailing slash.
+Renaming a Railway-generated hostname (for example
+`cs-community-ranking-production.up.railway.app` → `yebangtv.up.railway.app`) does not update this
+variable. Ranking and About keep working because they are GET pages; Vote POSTs `/api/v1/ballots/next`
+and is rejected with `403 ORIGIN_REJECTED` / `Request rejected` until `APP_ORIGIN` matches. After
+changing the hostname, set the web service variable and wait for the triggered redeploy:
+
+```bash
+railway variable set APP_ORIGIN=https://<new-host> --service CS-Community-Ranking --environment production
+```
+
+Do not add a second allowed origin. Cookies are `__Host-` scoped, so visitors on the new host start
+clean identities; that is expected.
 
 The web config runs committed migrations as a pre-deploy command from the newly built image. A
 nonzero migration exit blocks the release. Confirm this once with a temporary staging-only branch

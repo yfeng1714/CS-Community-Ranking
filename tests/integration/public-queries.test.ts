@@ -65,6 +65,39 @@ beforeAll(async () => {
       value: "1.14",
     },
     {
+      capturedAt: new Date("2026-08-12T10:00:00.000Z"),
+      metric: "top20_rank",
+      periodEnd: "2023-12-31",
+      periodStart: "2023-01-01",
+      periodType: "CAREER",
+      playerId: aceId,
+      provider: "HLTV",
+      sourceUrl: "https://example.invalid/player/sample-ace",
+      value: "3",
+    },
+    {
+      capturedAt: new Date("2026-08-12T10:00:00.000Z"),
+      metric: "top20_rank",
+      periodEnd: "2025-12-31",
+      periodStart: "2025-01-01",
+      periodType: "CAREER",
+      playerId: aceId,
+      provider: "HLTV",
+      sourceUrl: "https://example.invalid/player/sample-ace",
+      value: "3",
+    },
+    {
+      capturedAt: new Date("2026-08-12T10:00:00.000Z"),
+      metric: "top20_rank",
+      periodEnd: "2024-12-31",
+      periodStart: "2024-01-01",
+      periodType: "CAREER",
+      playerId: aceId,
+      provider: "HLTV",
+      sourceUrl: "https://example.invalid/player/sample-ace",
+      value: "18",
+    },
+    {
       capturedAt: new Date("2026-08-12T11:00:00.000Z"),
       maps: 99,
       metric: "rating_3_0",
@@ -116,6 +149,7 @@ describe("Milestone 5 public queries", () => {
       team: "Sample Alpha",
       teamLogoUrl: "/images/teams/sample-alpha.webp",
       teamShortName: "ALPHA",
+      top20Peak: { rank: 3, years: [2023, 2025] },
     });
     await expect(getPublicPlayer(database, "not-a-player")).resolves.toBeNull();
   });

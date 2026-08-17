@@ -6,11 +6,11 @@ import { ArrowRightIcon } from "@/components/icons";
 import { ProductPageView } from "@/components/analytics/page-view";
 import { PlayerPortrait } from "@/components/player-portrait";
 import {
-  formatAdr,
   formatFirepower,
   formatInteger,
   formatPlayerHonors,
   formatRating,
+  formatTop20Peak,
 } from "@/components/player-stat-format";
 import { TeamLogo } from "@/components/team-logo";
 import { getDatabase } from "@/db/client";
@@ -141,12 +141,8 @@ export default async function PlayerPage({ params }: { params: Promise<{ slug: s
             <strong>{formatFirepower(player.firepower)}</strong>
           </article>
           <article>
-            <span>生涯 HLTV Rating</span>
-            <strong>{formatRating(player.careerRating)}</strong>
-          </article>
-          <article>
-            <span>ADR</span>
-            <strong>{formatAdr(player.adr)}</strong>
+            <span>最高 HLTV Top 20</span>
+            <strong>{formatTop20Peak(player.top20Peak)}</strong>
           </article>
           <article>
             <span>统计地图</span>
@@ -157,7 +153,8 @@ export default async function PlayerPage({ params }: { params: Promise<{ slug: s
           {player.statsCapturedAt
             ? `最近抓取：${new Intl.DateTimeFormat("zh-CN", { dateStyle: "long", timeZone: "Asia/Shanghai" }).format(new Date(player.statsCapturedAt))}`
             : "尚无经过审核的外部数据。缺失值显示为“—”。"}
-          生涯 Rating 与 ADR 仅在官方资料页实际暴露时写入；当前 HLTV 选手页没有这些字段，因此保持“—”。
+          最高 Top 20 来自 HLTV 选手页的 Top 20 overview；同一名次跨多年时会列出全部年份。Round Swing
+          与生涯 Rating / ADR 不在该页，因此不展示。
         </p>
         {player.hltvProfileUrl && (
           <p className="data-note">

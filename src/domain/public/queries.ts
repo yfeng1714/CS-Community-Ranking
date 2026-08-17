@@ -10,6 +10,7 @@ import {
   teams,
 } from "../../db/schema/index.ts";
 import type { AppDatabase } from "../database.ts";
+import { peakHltvTop20 } from "../external-data/top20.ts";
 import { calculateWinRate, dataFreshness, toPublicCount, toPublicMetric } from "./presentation.ts";
 import type {
   PublicEdition,
@@ -209,6 +210,7 @@ export async function getPublicPlayer(
     team: player.team,
     teamLogoUrl: player.teamLogoUrl,
     teamShortName: player.teamShortName,
+    top20Peak: stats.top20Peak,
   };
 }
 
@@ -223,6 +225,7 @@ export async function getPublicPlayerStats(
       capturedAt: playerStatSnapshots.capturedAt,
       maps: playerStatSnapshots.maps,
       metric: playerStatSnapshots.metric,
+      periodStart: playerStatSnapshots.periodStart,
       periodType: playerStatSnapshots.periodType,
       value: playerStatSnapshots.value,
     })
@@ -238,6 +241,7 @@ export async function getPublicPlayerStats(
           "majors_won",
           "mvp_count",
           "rating_3_0",
+          "top20_rank",
         ]),
       ),
     )
@@ -256,6 +260,25 @@ export async function getPublicPlayerStats(
     (row) => row.metric === "majors_won" && row.periodType === "CAREER",
   );
   const mvpCount = statRows.find((row) => row.metric === "mvp_count" && row.periodType === "CAREER");
+  const latestTop20CapturedAt = statRows.find(
+    (row) => row.metric === "top20_rank" && row.periodType === "CAREER",
+  )?.capturedAt;
+  const top20Peak = peakHltvTop20(
+    latestTop20CapturedAt
+      ? statRows
+          .filter(
+            (row) =>
+              row.metric === "top20_rank" &&
+              row.periodType === "CAREER" &&
+              row.capturedAt.getTime() === latestTop20CapturedAt.getTime(),
+          )
+          .flatMap((row) => {
+            const rank = Number(row.value);
+            const year = row.periodStart ? Number(row.periodStart.slice(0, 4)) : Number.NaN;
+            return Number.isInteger(rank) && Number.isInteger(year) ? [{ rank, year }] : [];
+          })
+      : [],
+  );
   const capturedAt =
     recent?.capturedAt ??
     firepower?.capturedAt ??
@@ -263,6 +286,7 @@ export async function getPublicPlayerStats(
     career?.capturedAt ??
     majorsWon?.capturedAt ??
     mvpCount?.capturedAt ??
+    latestTop20CapturedAt ??
     null;
 
   return {
@@ -275,5 +299,6 @@ export async function getPublicPlayerStats(
     recentMaps: recent?.maps ?? null,
     recentRating: toPublicMetric(recent?.value),
     statsCapturedAt: capturedAt?.toISOString() ?? null,
+    top20Peak,
   };
 }

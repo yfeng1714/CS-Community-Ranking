@@ -24,6 +24,7 @@ function issued(id: string, reusedOpenBallot: boolean, dailyOrdinal = 1): Issued
     statsCapturedAt: null,
     team: null,
     teamLogoUrl: null,
+    top20Peak: null,
   };
   return {
     ballot: {

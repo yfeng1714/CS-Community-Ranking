@@ -262,14 +262,18 @@ function ResultPanel({
         </span>
         <div>
           <h2 ref={headingRef} tabIndex={-1}>
-            {result.resolution.counted || result.resolution.voteStatus === "THROTTLED"
-              ? "这一票已计入社区榜"
-              : "选择已记录，但本次不计榜"}
+            {result.resolution.choice === "SKIP"
+              ? "已跳过"
+              : result.resolution.counted || result.resolution.voteStatus === "THROTTLED"
+                ? "这一票已计入社区榜"
+                : "选择已记录，但本次不计榜"}
           </h2>
           <p>
-            {result.resolution.counted || result.resolution.voteStatus === "THROTTLED"
-              ? "胜者 +1，败者 -1。"
-              : "这次选择保留在记录中，但不会改变双方分数。"}
+            {result.resolution.choice === "SKIP"
+              ? "双方均记录一次 Skip 出场，分数不变。"
+              : result.resolution.counted || result.resolution.voteStatus === "THROTTLED"
+                ? "胜者 +1，败者 -1。"
+                : "这次选择保留在记录中，但不会改变双方分数。"}
           </p>
         </div>
       </div>

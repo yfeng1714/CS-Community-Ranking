@@ -1777,10 +1777,12 @@ Rules:
 - Use saved HTML fixtures in tests.
 - When the live `/stats/players/` adapter is Cloudflare-blocked, a local Playwright capture of
   official `/player/{id}/{slug}` profiles may fill the reviewed-stats JSON from the profile's own
-  Past-3-month Rating 3.0, maps, Firepower, Majors won, and Total MVPs. Do not hand-copy 70 rows, do
-  not infer HLTV Rating from Liquipedia/BO3, do not enable the live adapter to bypass the block, and
-  never run that capture in CI. Career Rating and ADR stay explicitly missing until an official
-  career/stats page can be parsed.
+  Past-3-month Rating 3.0, maps, Firepower, Majors won, Total MVPs, Top 20 overview years, and the
+  profile flag (ISO-2). Do not hand-copy 70 rows, do not infer HLTV Rating from Liquipedia/BO3, do
+  not enable the live adapter to bypass the block, and never run that capture in CI. Career Rating,
+  ADR, and Round Swing stay explicitly missing until an official stats page can be parsed. Top 20
+  years are stored as `top20_rank` CAREER snapshots on the existing `player_stat_snapshot` table;
+  nationality updates `player.country_code` in the same audited import.
 
 ### Valve VRS
 

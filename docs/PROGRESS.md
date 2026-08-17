@@ -19,21 +19,30 @@
   initial launch scope is Core-only; Review Auto, Review Manual, the 2026 T1 whitelist, Special
   Players, and complete optional stats are deferred. Closed-beta observation and final Owner Gate F
   sign-off remain.
-- **Last updated:** 2026-08-16
+- **Last updated:** 2026-08-17
 
 ## Completed in the repository
 
-- Player-stat capture, Vote cards, and Player pages now use the profile fields HLTV actually
-  exposes. Default Vote cards show past-3-month Rating + Firepower; details show career Rating,
-  ADR, and maps. Majors won and Total MVPs sit under the identity line. Career Rating and ADR remain
-  honest `—` because `/player/{id}/{slug}` does not expose them and `/stats/players/` is still
-  Cloudflare-blocked. Operator playbook: `docs/HLTV_PLAYER_STATS.md`. Parser
-  `hltv-player-profile-stats-html-v2`. Recapture requires `--force` and a new `capturedAt`; do not
-  resume a v1 Rating/maps-only JSON. The 2026-08-16 local capture filled all 70 recent Rating 3.0
-  and Firepower rows, 67 Majors won, and 27 Total MVP badges (period 2026-05-16 → 2026-08-16).
+- Vote details and Player pages now show highest HLTV Top 20 (peak rank plus every year at that
+  rank) and maps instead of career Rating / ADR. Nationality is written to `player.country_code`
+  from the profile flag in the same reviewed import. Round Swing is not on `/player/{id}/{slug}`
+  (it lives on Cloudflare-blocked `/stats/players/`), so it is not captured. Parser
+  `hltv-player-profile-stats-html-v3`. Recapture requires `--force` and a new `capturedAt`.
+  Operator playbook: `docs/HLTV_PLAYER_STATS.md`. Skip results use the heading `已跳过`.
+  The 2026-08-17 recapture filled 70/70 recent Rating + Firepower + nationality, 67 Majors won,
+  27 Total MVPs, and 29 players with Top 20 history (91 year-rows; period 2026-05-17 → 2026-08-17).
   Dry-run checksum
-  `fed76691ff25295acac84585489e6796ee99f73e68a619530436d87c55fea847`. The ignored JSON is imported
-  to Railway with `railway run --service web`; it is never committed.
+  `0730202265b8bd8fd0f3969f883489f2acb2bc0c466e8c604ce5a710fed4c37d`.
+
+- Player-stat capture, Vote cards, and Player pages use the profile fields HLTV actually
+  exposes. Default Vote cards show past-3-month Rating + Firepower; Majors won and Total MVPs sit
+  under the identity line. Career Rating, ADR, and Round Swing remain honest absences because
+  `/player/{id}/{slug}` does not expose them and `/stats/players/` is still Cloudflare-blocked.
+  The 2026-08-16 local capture filled all 70 recent Rating 3.0 and Firepower rows, 67 Majors won,
+  and 27 Total MVP badges (period 2026-05-16 → 2026-08-16). Dry-run checksum
+  `fed76691ff25295acac84585489e6796ee99f73e68a619530436d87c55fea847`. Later captures overwrite with a
+  new `capturedAt`. The ignored JSON is imported to Railway through a private SSH tunnel; it is
+  never committed.
 
 - Local HLTV Player-stat capture no longer requires typing 70 Rating/maps rows. Official
   `/player/{id}/{slug}` profiles load in Playwright Chromium and expose HLTV's own

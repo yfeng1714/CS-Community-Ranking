@@ -6,11 +6,11 @@ import type { RankingResult, ResolutionChoice } from "@/domain/votes/presentatio
 import { ChevronDownIcon } from "../icons";
 import { PlayerPortrait } from "../player-portrait";
 import {
-  formatAdr,
   formatFirepower,
   formatInteger,
   formatPlayerHonors,
   formatRating,
+  formatTop20Peak,
 } from "../player-stat-format";
 import { TeamLogo } from "../team-logo";
 
@@ -115,12 +115,8 @@ export function VotePlayerCard({
         </summary>
         <dl>
           <div>
-            <dt>生涯 HLTV Rating</dt>
-            <dd>{formatRating(player.careerRating)}</dd>
-          </div>
-          <div>
-            <dt>ADR</dt>
-            <dd>{formatAdr(player.adr)}</dd>
+            <dt>最高 HLTV Top 20</dt>
+            <dd>{formatTop20Peak(player.top20Peak)}</dd>
           </div>
           <div>
             <dt>统计地图</dt>

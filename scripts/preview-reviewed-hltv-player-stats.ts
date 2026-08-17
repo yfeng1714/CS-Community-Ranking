@@ -4,6 +4,7 @@ import { parseArgs } from "node:util";
 
 import { loadCanonicalManifest } from "../src/domain/canonical/manifest.ts";
 import { validateReviewedHltvPlayerStats } from "../src/domain/external-data/reviewed-player-stats.ts";
+import { peakHltvTop20 } from "../src/domain/external-data/top20.ts";
 import { cliArgs } from "./cli-args.ts";
 
 const args = parseArgs({
@@ -37,8 +38,7 @@ const rows = bundle.records
   .map((record) => {
     const player = players.get(record.externalId);
     return {
-      adr: record.adr,
-      career: record.career,
+      countryCode: record.countryCode,
       firepower: record.firepower,
       majorsWon: record.majorsWon,
       maps: record.recent?.maps ?? null,
@@ -48,6 +48,7 @@ const rows = bundle.records
       rating: record.recent?.rating ?? null,
       slug: player?.slug ?? record.externalSlug,
       team: player?.team ?? "—",
+      top20: peakHltvTop20(record.top20Placements),
     };
   })
   .sort((left, right) => (right.rating ?? -1) - (left.rating ?? -1));
@@ -74,20 +75,20 @@ const html = `<!doctype html>
   </head>
   <body>
     <h1>HLTV 选手资料预览</h1>
-    <p>周期 ${escape(bundle.periodStart)} → ${escape(bundle.periodEnd)}，采集 ${escape(bundle.capturedAt)}。生涯 Rating 与 ADR 仅在官方页实际暴露时填写。本地选手页：<code>/player/{slug}</code></p>
+    <p>周期 ${escape(bundle.periodStart)} → ${escape(bundle.periodEnd)}，采集 ${escape(bundle.capturedAt)}。最高 Top 20 列出峰值名次及全部达到该名次的年份。Round Swing / 生涯 Rating / ADR 不在选手主页，保持空白。本地选手页：<code>/player/{slug}</code></p>
     <table>
       <thead>
         <tr>
           <th>#</th>
           <th>选手</th>
           <th>战队</th>
+          <th>国籍</th>
           <th class="num">Rating 3.0</th>
           <th class="num">Firepower</th>
           <th class="num">Maps</th>
+          <th>最高 Top 20</th>
           <th class="num">Major</th>
           <th class="num">MVP</th>
-          <th class="num">ADR</th>
-          <th class="num">Career</th>
           <th>HLTV</th>
         </tr>
       </thead>
@@ -96,21 +97,21 @@ const html = `<!doctype html>
           .map((row, index) => {
             const rating =
               row.rating === null ? '<span class="missing">—</span>' : row.rating.toFixed(2);
-            const career =
-              row.career === null
+            const top20 =
+              row.top20 === null
                 ? '<span class="missing">—</span>'
-                : row.career.rating.toFixed(2);
+                : `#${row.top20.rank} · ${row.top20.years.join(", ")}`;
             return `<tr>
           <td class="num">${index + 1}</td>
           <td><a href="http://localhost:3000/player/${encodeURIComponent(row.slug)}">${escape(row.nickname)}</a></td>
           <td>${escape(row.team)}</td>
+          <td>${row.countryCode ? escape(row.countryCode) : '<span class="missing">—</span>'}</td>
           <td class="num">${rating}</td>
           <td class="num">${missing(row.firepower)}</td>
           <td class="num">${missing(row.maps)}</td>
+          <td>${top20}</td>
           <td class="num">${missing(row.majorsWon)}</td>
           <td class="num">${missing(row.mvpCount)}</td>
-          <td class="num">${missing(row.adr)}</td>
-          <td class="num">${career}</td>
           <td><a href="${escape(row.profileUrl)}" target="_blank" rel="noreferrer">profile</a></td>
         </tr>`;
           })

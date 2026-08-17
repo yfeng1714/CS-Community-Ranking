@@ -22,7 +22,7 @@ test("votes, keeps the result visible, advances explicitly, and treats reload as
 
   await page.locator('button[aria-keyshortcuts="1"]').click();
   await expect(
-    page.getByRole("heading", { name: /这一票已计入社区榜|选择已记录，但本次不计榜/ }),
+    page.getByRole("heading", { name: /已跳过|这一票已计入社区榜|选择已记录，但本次不计榜/ }),
   ).toBeVisible();
   await expect(page.getByRole("button", { name: "下一组" })).toBeVisible();
   await page.waitForTimeout(400);

@@ -20,14 +20,17 @@ Before resolution, each complete Player card is a choice target. Keyboard shortc
 left player, `2` for the right player, and `S` for Skip. The default card shows recent three-month
 HLTV Rating and Firepower (`N/100`). Majors won and Total MVPs sit under the identity line when
 captured (`2 Major · 32 MVP`; zeros are shown; the line is omitted only when both values are
-missing). Details expand career Rating, ADR, and maps, plus an honest freshness label. Unsupported
-or unexposed fields remain `—`; KAST is not shown.
+missing). Nationality is the stored ISO-2 `country` code, or `国籍待补`. Details expand highest
+HLTV Top 20 (peak rank plus every year at that rank) and maps, plus an honest freshness label.
+Unsupported or unexposed fields remain `—`; KAST, Round Swing, career Rating, and ADR are not shown.
 
 After resolution, the same two cards remain in place and show the user's selection plus both current
-rank/score records. The result panel reports a counted-style confirmation for ordinary and
-post-quota votes, current counted H2H percentages, counted decisions/Skips, and a small-sample
-warning below 30 decisions. Zero-decision percentages are displayed as unavailable rather than `0%`.
-There is no timer and no automatic Next.
+rank/score records. A counted Left/Right vote uses the heading `这一票已计入社区榜`. Skip uses
+`已跳过` (both players still record a Skip appearance; scores do not change). `SUSPICIOUS` votes
+can still be presented as non-counting (`选择已记录，但本次不计榜`). The panel also shows current
+counted H2H percentages, counted decisions/Skips, and a small-sample warning below 30 decisions.
+Zero-decision percentages are displayed as unavailable rather than `0%`. There is no timer and no
+automatic Next.
 
 The public Vote page does not show remaining daily quota, post-quota warnings, or a distinct
 "did not count" state for `THROTTLED` votes. Daily full-weight quota remains backend-only: issuance
@@ -72,12 +75,15 @@ theme. A missing path removes only the mark and keeps the Team text, so older da
 unconfigured Teams degrade without a broken-image state.
 
 The latest HLTV snapshots for `rating_3_0` / `LAST_3_MONTHS`, `firepower` / `LAST_3_MONTHS`,
-`adr` / `LAST_3_MONTHS`, `career_rating` / `CAREER`, `majors_won` / `CAREER`, and `mvp_count` /
-`CAREER` are used. Rating fields are labeled as HLTV Rating. Other providers' metrics remain
-isolated and cannot silently fill those fields. Stats are `MISSING` when absent, `CURRENT` through
-the configured freshness window, and `STALE` afterward. `EXTERNAL_STATS_STALE_AFTER_HOURS` defaults
-to 48 hours. Provider failure keeps stale data visible and never breaks the Vote page. Career Rating
-and ADR currently stay `—` because official player profiles do not expose them; do not invent them.
+`adr` / `LAST_3_MONTHS`, `career_rating` / `CAREER`, `majors_won` / `CAREER`, `mvp_count` /
+`CAREER`, and `top20_rank` / `CAREER` are used. Rating fields are labeled as HLTV Rating. Other
+providers' metrics remain isolated and cannot silently fill those fields. Stats are `MISSING` when
+absent, `CURRENT` through the configured freshness window, and `STALE` afterward.
+`EXTERNAL_STATS_STALE_AFTER_HOURS` defaults to 48 hours. Provider failure keeps stale data visible
+and never breaks the Vote page. Career Rating, ADR, and Round Swing stay off the public UI because
+official player profiles do not expose them; do not invent them. Highest Top 20 is aggregated from
+the latest `top20_rank` year rows (peak rank, every year at that rank). Nationality is
+`player.country_code`.
 
 ## Theme, responsive behavior, and accessibility
 
