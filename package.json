@@ -29,6 +29,7 @@
     "db:check": "node --env-file=.env node_modules/drizzle-kit/bin.cjs check",
     "admin:create": "node --env-file-if-exists=.env --import ./scripts/register-path-aliases.mjs scripts/admin-create.ts",
     "pool:add-player": "node --env-file-if-exists=.env --import ./scripts/register-path-aliases.mjs scripts/pool-add-player.ts",
+    "pool:admit-review-manual": "node --env-file-if-exists=.env --import ./scripts/register-path-aliases.mjs scripts/pool-admit-review-manual-teams.ts",
     "pool:disable-player": "node --env-file-if-exists=.env --import ./scripts/register-path-aliases.mjs scripts/pool-disable-player.ts",
     "score:check": "node --env-file-if-exists=.env --import ./scripts/register-path-aliases.mjs scripts/score-check.ts",
     "job:sync-vrs": "node --env-file-if-exists=.env --import ./scripts/register-path-aliases.mjs scripts/job-sync-vrs.ts",

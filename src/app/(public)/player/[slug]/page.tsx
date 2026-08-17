@@ -132,11 +132,11 @@ export default async function PlayerPage({ params }: { params: Promise<{ slug: s
         </div>
         <div className="player-data-grid">
           <article>
-            <span>近三月 HLTV Rating</span>
+            <span>近三月 Rating 3.0</span>
             <strong>{formatRating(player.recentRating)}</strong>
           </article>
           <article>
-            <span>近三月 Firepower</span>
+            <span>火力值</span>
             <strong>{formatFirepower(player.firepower)}</strong>
           </article>
           <article>
@@ -152,8 +152,8 @@ export default async function PlayerPage({ params }: { params: Promise<{ slug: s
           {player.statsCapturedAt
             ? `最近抓取：${new Intl.DateTimeFormat("zh-CN", { dateStyle: "long", timeZone: "Asia/Shanghai" }).format(new Date(player.statsCapturedAt))}`
             : "尚无经过审核的外部数据。缺失值显示为“—”。"}
-          最高 Top 20 来自 HLTV 选手页的 Top 20 overview；同一名次跨多年时会列出全部年份。Round Swing
-          与生涯 Rating / ADR 不在该页，因此不展示。
+          最高 Top 20 来自 HLTV 选手页的 Top 20 overview；同一名次跨多年时会列出全部年份。Round
+          Swing 与生涯 Rating / ADR 不在该页，因此不展示。
         </p>
         {player.hltvProfileUrl && (
           <p className="data-note">

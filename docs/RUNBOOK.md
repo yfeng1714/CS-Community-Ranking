@@ -163,6 +163,12 @@ The input file is ignored and should be retained only as private operational evi
 metrics land in `player_stat_snapshot`, and parsed flags land in `player.country_code`, with the
 exact official source URL and capture timestamp.
 
+Admin Team/Player create may show **Operation is temporarily unavailable** after the server already
+committed the row (the form used to treat a post-success page refresh as failure). That is not a
+voting outage and is not a rollback. Check Audit before retrying the same slug. To add Review Manual
+Teams with a reviewed roster, dry-run then apply `pnpm pool:admit-review-manual` against the
+same private SSH tunnel. Do not use `pool:add-player` (Special path) and do not reset the database.
+
 The safe operating order is: sync → inspect and approve each source snapshot → generate Pool draft
 → inspect conflicts/freshness/JSON → approve or reject individual proposals. The generator reports
 possible removals but deliberately cannot remove live Pool entries.

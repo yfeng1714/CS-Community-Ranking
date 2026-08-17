@@ -18,7 +18,7 @@ materially broader use. `CS 野榜` is a working identity pending the final name
 
 Before resolution, each complete Player card is a choice target. Keyboard shortcuts are `1` for the
 left player, `2` for the right player, and `S` for Skip. The default card shows recent three-month
-HLTV Rating and Firepower (`N/100`). Majors won and Total MVPs sit under the identity line when
+Rating 3.0 and 火力值 (`N/100`). Majors won and Total MVPs sit under the identity line when
 captured (`🏆 2 Major` / `🏅 32 MVP` chips; zeros are shown; the line is omitted only when both
 values are missing). Nationality is a mini flag from the stored ISO-2 `country` code, or `国籍待补`.
 Details expand highest HLTV Top 20 (peak rank plus every year at that rank) and maps, plus an honest
@@ -77,9 +77,9 @@ unconfigured Teams degrade without a broken-image state.
 
 The latest HLTV snapshots for `rating_3_0` / `LAST_3_MONTHS`, `firepower` / `LAST_3_MONTHS`,
 `adr` / `LAST_3_MONTHS`, `career_rating` / `CAREER`, `majors_won` / `CAREER`, `mvp_count` /
-`CAREER`, and `top20_rank` / `CAREER` are used. Rating fields are labeled as HLTV Rating. Other
-providers' metrics remain isolated and cannot silently fill those fields. Stats are `MISSING` when
-absent, `CURRENT` through the configured freshness window, and `STALE` afterward.
+`CAREER`, and `top20_rank` / `CAREER` are used. Public labels are **近三月 Rating 3.0** and
+**火力值**. Other providers' metrics remain isolated and cannot silently fill those fields. Stats
+are `MISSING` when absent, `CURRENT` through the configured freshness window, and `STALE` afterward.
 `EXTERNAL_STATS_STALE_AFTER_HOURS` defaults to 48 hours. Provider failure keeps stale data visible
 and never breaks the Vote page. Career Rating, ADR, and Round Swing stay off the public UI because
 official player profiles do not expose them; do not invent them. Highest Top 20 is aggregated from

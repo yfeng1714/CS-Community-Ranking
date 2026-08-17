@@ -16,12 +16,25 @@
   public routes, 70-player ranking data, and six security headers without creating a test Vote.
 - **Review boundary:** The one-time pre-user reset exception is consumed. Railway now contains real
   beta data, so future work must preserve history with forward migrations and retained backups. The
-  initial launch scope is Core-only; Review Auto, Review Manual, the 2026 T1 whitelist, Special
-  Players, and complete optional stats are deferred. Closed-beta observation and final Owner Gate F
-  sign-off remain.
+  2026-08-17 Owner request admitted four Review Manual Teams (BC.Game, 100 Thieves, TYLOO, Lynn
+  Vision / LVG) and their 20 current starters. Review Auto, the 2026 T1 whitelist, and Special
+  Players remain deferred. Closed-beta observation and final Owner Gate F sign-off remain.
 - **Last updated:** 2026-08-17
 
 ## Completed in the repository
+
+- Vote cards slightly enlarge the nationality flag and Major/MVP chips. Public labels are
+  **近三月 Rating 3.0** and **火力值** (no longer “近三月 HLTV Rating” / “近三月 Firepower”).
+  Admin Team/Player create can show **Operation is temporarily unavailable** after Postgres already
+  saved the row: mutate commits first, then the form used to treat `router.refresh()` as part of the
+  same failure catch. Owner's test `tyloo` / `machinewjq` rows are that case (see
+  `docs/ADMIN_CONSOLE.md`). The form now refreshes only after a confirmed 200. The trusted Review
+  Manual path is `pnpm pool:admit-review-manual` over a Railway Postgres tunnel. Owner-reviewed
+  identities live in `data/review-manual/2026-08-17.json` (BC.Game, 100 Thieves, TYLOO, Lynn Vision).
+  Production now has Core 14/70 plus Review Manual 4/20 (90 pairing-enabled players, 4,005 pairs).
+  The earlier Admin `tyloo` Team row was reused; unpooled `machinewjq` was left out of the Pool.
+  Logos/portraits stay missing until later passes. Recapture the 20 official HLTV profiles with
+  `--review-manual` rather than inventing Rating.
 
 - Public identity polish: nationality is a mini flag emoji from the ISO-2 code; Majors/MVPs render
   as `🏆 N Major` / `🏅 N MVP` chips. Admin Vote moderation now lists 10 recent Votes by default
@@ -329,7 +342,7 @@ observation window, and record traffic, latency, errors, resource usage, integri
 recovery evidence for final Gate F sign-off. China Telecom/Unicom and an evening-peak China Mobile
 window remain useful observations when available, not route blockers.
 
-Review Auto, Review Manual, the 2026 T1 whitelist, Special Players, a permitted low-frequency HLTV
-adapter, complete optional Player stats, final branding, custom domain, and Cloudflare edge remain
-deliberate later follow-ups. The ADR 0006 reset is consumed and must never be repeated against the
-real beta history.
+Review Auto, the 2026 T1 whitelist, Special Players, a later recapture of the 20 Review Manual
+players' HLTV stats/images, a permitted low-frequency HLTV adapter, complete optional Player stats,
+final branding, custom domain, and Cloudflare edge remain deliberate later follow-ups. The ADR 0006
+reset is consumed and must never be repeated against the real beta history.

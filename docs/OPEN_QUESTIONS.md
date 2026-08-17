@@ -23,10 +23,10 @@ are not missing M9 inputs.
 
 ## Milestone 10 inputs and approvals
 
-- The initial beta Candidate Pool is resolved as Core-only: 14 Teams and their 70 current starters.
-  On 2026-08-15 the Owner explicitly deferred Review Auto, Review Manual, the completed-2026 T1
-  whitelist, and Special Players. They can be reopened through audited Admin updates after launch
-  and are not Gate F blockers for this Core-only scope.
+- The initial beta Candidate Pool launched Core-only: 14 Teams and their 70 current starters. On
+  2026-08-17 the Owner explicitly admitted four Review Manual Teams (BC.Game, 100 Thieves, TYLOO,
+  Lynn Vision) with public reasons. Review Auto, the completed-2026 T1 whitelist, and Special
+  Players remain deferred and are not Gate F blockers.
 - Image acquisition is complete for the current canonical 14 Teams/70 Players. External rights
   clearance no longer blocks the small community beta; exact sources are recorded, and
   Owner-accepted pending-rights assets remain visible warnings until cleared or replaced.

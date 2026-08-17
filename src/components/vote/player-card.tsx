@@ -7,7 +7,12 @@ import { ChevronDownIcon } from "../icons";
 import { CountryFlag } from "../country-flag";
 import { PlayerHonors } from "../player-honors";
 import { PlayerPortrait } from "../player-portrait";
-import { formatFirepower, formatInteger, formatRating, formatTop20Peak } from "../player-stat-format";
+import {
+  formatFirepower,
+  formatInteger,
+  formatRating,
+  formatTop20Peak,
+} from "../player-stat-format";
 import { TeamLogo } from "../team-logo";
 
 function freshness(value: string | null): string {
@@ -83,11 +88,11 @@ export function VotePlayerCard({
 
       <dl className="vote-card__stats" aria-label={`${player.nickname} 默认数据`}>
         <div>
-          <dt>近三月 HLTV Rating</dt>
+          <dt>近三月 Rating 3.0</dt>
           <dd>{formatRating(player.recentRating)}</dd>
         </div>
         <div>
-          <dt>近三月 Firepower</dt>
+          <dt>火力值</dt>
           <dd>{formatFirepower(player.firepower)}</dd>
         </div>
         {ranking ? (

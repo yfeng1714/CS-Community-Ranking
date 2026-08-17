@@ -119,6 +119,26 @@ must not be used for a formal starter joining an already admitted Team; use the 
 workflow so provenance remains correct. The disable command is idempotent when the requested state
 is already present. Both commands return a small JSON result and a non-zero exit code on failure.
 
+To admit new Review Manual Teams with their current five starters (identity + HLTV URLs + roster +
+Pool), use the Owner-reviewed manifest CLI. Dry-run first; apply requires `--actor`, `--apply`, and
+`--confirm-review-manual`. Production writes go through the private Railway SSH tunnel, not
+`railway run`. This is the workaround when Admin Team/Player create shows “Operation is temporarily
+unavailable”. Check Audit before retrying the same slug: the write may already have committed. Do
+not use `pool:add-player` (that is Special admission).
+
+```bash
+pnpm pool:admit-review-manual
+pnpm pool:admit-review-manual -- \
+  --actor owner --edition 2026 \
+  --apply --confirm-review-manual
+```
+
+The 2026-08-17 set is `data/review-manual/2026-08-17.json`: BC.Game, 100 Thieves, TYLOO, and Lynn
+Vision (short name LVG). Logos/portraits are omitted; HLTV stats stay missing until a later
+recapture of the expanded identity set. Production reused the Owner's earlier Admin `tyloo` Team
+row (no roster at the time) and left the unpooled `machinewjq` Player out of the Candidate Pool
+because that player is not on TYLOO's current official starting five.
+
 ## Lifecycle boundaries
 
 - Pool changes are allowed in `DRAFT` and `ACTIVE` Editions.

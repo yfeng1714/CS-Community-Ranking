@@ -1,3 +1,5 @@
+import path from "node:path";
+
 import { describe, expect, it } from "vitest";
 import canonicalManifest from "../../data/canonical/2026-beta.json";
 
@@ -7,6 +9,7 @@ import {
   mergeCapturedRecentStats,
   validateReviewedHltvPlayerStats,
 } from "@/domain/external-data/reviewed-player-stats";
+import { loadReviewManualManifest } from "@/domain/pool/review-manual-manifest";
 
 interface TestBundle {
   capturedAt: string;
@@ -191,6 +194,27 @@ describe("reviewed HLTV Player stats", () => {
     expect(merged.records.filter((record) => record.recent === null)).toHaveLength(68);
     expect(merged.records.every((record) => record.career === null)).toBe(true);
     expect(validateReviewedHltvPlayerStats(merged).records).toHaveLength(70);
+  });
+
+  it("unions Core and Review Manual identities into one 90-player template", async () => {
+    const canonical = canonicalManifestSchema.parse(canonicalManifest);
+    const reviewManual = await loadReviewManualManifest(
+      path.resolve("data/review-manual/2026-08-17.json"),
+    );
+    const template = createReviewedHltvPlayerStatsTemplate(
+      { teams: [...canonical.teams, ...reviewManual.teams] },
+      {
+        capturedAt: "2026-08-17T12:00:00.000Z",
+        periodEnd: "2026-08-17",
+        periodStart: "2026-05-17",
+      },
+    );
+    const ids = template.records.map((record) => record.externalId);
+
+    expect(template.records).toHaveLength(90);
+    expect(new Set(ids).size).toBe(90);
+    expect(ids).toContain("7998");
+    expect(ids).toContain("19645");
   });
 
   it("rejects a capture for an identity that is not in the template", () => {

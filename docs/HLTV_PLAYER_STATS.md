@@ -10,7 +10,7 @@ Public requests never fetch HLTV. Keep `HLTV_SYNC_ENABLED=false`. Never run this
 
 Vote cards:
 
-- default: past-3-month **Rating 3.0** + **Firepower** (`N/100`);
+- default: past-3-month **Rating 3.0** labeled **近三月 Rating 3.0**, plus **火力值** (`N/100`);
 - identity line: **Majors won** and **Total MVPs** when captured (`2 Major · 32 MVP`; zeros are
   shown; omit the line only when both values are missing);
 - nationality from `player.country_code` (ISO-2 from the profile flag; missing stays `国籍待补`);
@@ -68,8 +68,11 @@ column or a second stats table.
 
 ## Local commands
 
-Identity coverage comes from `data/canonical/2026-beta.json` (currently 70 HLTV player IDs). The
-output JSON is Git-ignored:
+Identity coverage is the union of `data/canonical/2026-beta.json` (70 Core HLTV IDs) and
+`--review-manual data/review-manual/2026-08-17.json` (20 Review Manual IDs). Import requires that
+bundle to cover every `player_external_identity` HLTV ID exactly once (90 after the 2026-08-17
+admission). Do not invent Rating for the new 20; recapture their official profiles, then resume
+into the existing ignored 70-player JSON so Core snapshots stay. The output JSON is Git-ignored:
 
 `data/reviewed-sources/hltv-player-stats-local.json`
 
@@ -78,15 +81,19 @@ output JSON is Git-ignored:
 ```bash
 pnpm source:capture-reviewed-hltv-stats -- \
   --start YYYY-MM-DD --end YYYY-MM-DD \
+  --review-manual data/review-manual/2026-08-17.json \
+  --resume \
   --output data/reviewed-sources/hltv-player-stats-local.json
 ```
 
 Defaults: period end = today, period start = three months earlier, delay = 8s, one retry 20s after
 HTTP 403/429/503, stop after three consecutive denials.
 
-- `--resume` fills identities that still lack recent metrics. It cannot upgrade a v1/v2 JSON that
-  is missing `top20Placements` / `countryCode`; that schema is rejected. Use `--force` for a full
-  recapture after a parser/schema bump.
+- `--review-manual` unions Owner-reviewed identities with Core. `--resume` then fetches only IDs
+  missing from the existing ignored JSON (the 20 Review Manual players when Core 70 are already
+  captured for the same `--start`/`--end`). It cannot upgrade a v1/v2 JSON that is missing
+  `top20Placements` / `countryCode`; that schema is rejected. Use `--force` for a full recapture
+  after a parser/schema bump.
 - `--force` overwrites the ignored JSON. Always use a **new** `capturedAt` (the default is `now`).
   Reusing a timestamp already imported into a database is refused.
 - `--player-id` is debug-only.

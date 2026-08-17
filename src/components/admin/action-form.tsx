@@ -59,12 +59,13 @@ export function AdminActionForm({
       }
       setMessage("Saved and audited.");
       if (!compact) event.currentTarget.reset();
-      router.refresh();
     } catch {
       setMessage("Operation is temporarily unavailable");
+      return;
     } finally {
       setPending(false);
     }
+    router.refresh();
   }
 
   return (

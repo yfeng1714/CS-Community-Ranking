@@ -1073,6 +1073,10 @@ button:disabled {
   line-height: 1;
 }
 
+.vote-card__identity .country-flag__emoji {
+  font-size: 1.4em;
+}
+
 .country-flag--missing {
   color: var(--muted);
 }
@@ -1098,6 +1102,12 @@ button:disabled {
   font-size: 0.68rem;
   font-weight: 750;
   letter-spacing: 0.01em;
+}
+
+.vote-card__identity .player-honors__item {
+  gap: 0.32rem;
+  padding: 0.24rem 0.58rem 0.24rem 0.4rem;
+  font-size: 0.8rem;
 }
 
 .player-honors__item strong {
@@ -2287,7 +2297,11 @@ button:disabled {
 
   .vote-card__honors,
   .vote-card__identity .player-honors {
-    font-size: 0.68rem;
+    font-size: 0.76rem;
+  }
+
+  .vote-card__identity .player-honors__item {
+    font-size: 0.76rem;
   }
 
   .vote-controls p {

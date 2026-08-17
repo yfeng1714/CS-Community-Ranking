@@ -178,12 +178,18 @@ changes pairing probability or score.
 | --------------- | ----: | ------: | ----------------------- | ------------------ |
 | Core            |    14 |      70 | Approved HLTV/VRS rank  | owner / 2026-08-15 |
 | Review Auto     |     0 |       0 | Deferred for beta       | owner / 2026-08-15 |
-| Review Manual   |     0 |       0 | Deferred for beta       | owner / 2026-08-15 |
+| Review Manual   |     4 |      20 | Owner-reviewed 2026-08-17 HLTV team pages; public reasons in `data/review-manual/2026-08-17.json` | owner / 2026-08-17 |
 | Special players |   n/a |       0 | Deferred for beta       | owner / 2026-08-15 |
 
 Initial-beta scope decision on 2026-08-15: launch Core-only with the rehearsed 14 Teams and 70
-current starters. Review Auto, Review Manual, the 2026 T1 whitelist, and Special admissions are
-explicitly deferred. Their zero launch counts are intentional scope, not incomplete evidence.
+current starters. Review Auto, the 2026 T1 whitelist, and Special admissions remain deferred. On
+2026-08-17 the Owner admitted four Review Manual Teams (BC.Game, 100 Thieves, TYLOO, Lynn Vision)
+and their 20 current starters through the trusted CLI because Admin Team/Player create returned
+“Operation is temporarily unavailable” even after Postgres committed the test `tyloo` /
+`machinewjq` rows (mutate commits first; the form used to treat a later refresh as failure). Core 14
+is unchanged. Total enabled Players after that
+admission: **90**. Total possible pairs `n(n-1)/2`: **4,005**. New-player HLTV stats and images are
+an honest later pass.
 
 - [x] Every pairing-enabled Team-derived Player is still a current formal starter for its source
       Team.
@@ -191,6 +197,8 @@ explicitly deferred. Their zero launch counts are intentional scope, not incompl
       pairing-disable former starters.
 - [x] Every current Pool admission has immutable `pool_change_log` and general Admin audit evidence.
 - [x] Total enabled Players: **70**. Total possible pairs `n(n-1)/2`: **2,415**.
+- [x] 2026-08-17 Review Manual expansion: **90** enabled Players, **4,005** possible pairs. Core 14
+      and existing ranking/vote history were not reset.
 
 ## 4. Assets and early-community policy
 

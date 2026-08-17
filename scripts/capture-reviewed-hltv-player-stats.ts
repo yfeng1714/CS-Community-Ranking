@@ -8,6 +8,7 @@ import { chromium, type Browser, type Page } from "@playwright/test";
 import { loadCanonicalManifest } from "../src/domain/canonical/manifest.ts";
 import { localIsoDate, shiftIsoDateByMonths } from "../src/domain/date.ts";
 import { DomainError } from "../src/domain/error.ts";
+import { loadReviewManualManifest } from "../src/domain/pool/review-manual-manifest.ts";
 import {
   HLTV_PLAYER_PROFILE_STATS_PARSER_VERSION,
   parseHltvPlayerProfileStatsHtml,
@@ -42,6 +43,7 @@ const args = parseArgs({
     manifest: { type: "string" },
     output: { type: "string" },
     "player-id": { type: "string" },
+    "review-manual": { type: "string" },
     resume: { type: "boolean" },
     start: { type: "string" },
   },
@@ -120,12 +122,20 @@ const outputFile = path.resolve(
   args.output ?? "data/reviewed-sources/hltv-player-stats-local.json",
 );
 
-const manifest = await loadCanonicalManifest(manifestFile);
-const template = createReviewedHltvPlayerStatsTemplate(manifest, {
-  capturedAt,
-  periodEnd,
-  periodStart,
-});
+const canonical = await loadCanonicalManifest(manifestFile);
+const reviewManual = args["review-manual"]
+  ? await loadReviewManualManifest(path.resolve(args["review-manual"]))
+  : null;
+const template = createReviewedHltvPlayerStatsTemplate(
+  {
+    teams: [...canonical.teams, ...(reviewManual?.teams ?? [])],
+  },
+  {
+    capturedAt,
+    periodEnd,
+    periodStart,
+  },
+);
 const existing = args.resume ? await loadExistingBundle(outputFile) : null;
 if (existing && (existing.periodStart !== periodStart || existing.periodEnd !== periodEnd)) {
   throw new DomainError(
@@ -150,7 +160,7 @@ const pending = template.records.filter((record) => {
 if (onlyPlayerId && pending.length === 0 && !captures.has(onlyPlayerId)) {
   throw new DomainError(
     "CLI_OPTION_INVALID",
-    `--player-id ${onlyPlayerId} is not in the canonical HLTV identity set`,
+    `--player-id ${onlyPlayerId} is not in the configured HLTV identity set`,
   );
 }
 

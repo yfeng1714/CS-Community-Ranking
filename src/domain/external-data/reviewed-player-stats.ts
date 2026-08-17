@@ -5,7 +5,6 @@ import { playerExternalIdentities, players, playerStatSnapshots } from "../../db
 import { writeAdminAudit } from "../audit.ts";
 import type { AppDatabase } from "../database.ts";
 import { DomainError, requireNonBlank } from "../error.ts";
-import type { CanonicalManifest } from "../canonical/manifest.ts";
 import type { CapturedHltvProfileStats } from "./providers/hltv.ts";
 import { top20YearPeriod } from "./top20.ts";
 
@@ -70,7 +69,13 @@ const reviewedPlayerStatsSchema = z.strictObject({
 export type ReviewedHltvPlayerStats = z.infer<typeof reviewedPlayerStatsSchema>;
 
 export function createReviewedHltvPlayerStatsTemplate(
-  manifest: CanonicalManifest,
+  manifest: {
+    teams: ReadonlyArray<{
+      players: ReadonlyArray<{
+        hltvIdentity: { externalId: string; externalSlug: string };
+      }>;
+    }>;
+  },
   input: { capturedAt: string; periodEnd: string; periodStart: string },
 ): ReviewedHltvPlayerStats {
   return validateReviewedHltvPlayerStatsBundle(

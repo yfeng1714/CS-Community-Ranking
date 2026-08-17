@@ -83,6 +83,9 @@ VRS/Pool proof.
   rerun the ordinary source → draft → proposal-review workflow.
 - Any later Review Manual Team or Special Player still requires an explicit public reason and
   audited Admin action. None is inferred or pre-approved here.
+- On 2026-08-17 the Owner admitted BC.Game, 100 Thieves, TYLOO, and Lynn Vision as Review Manual
+  through `pnpm pool:admit-review-manual` (Admin Team/Player create was unavailable). Review Auto
+  and Special Players remain deferred.
 - Production execution completed on 2026-08-15: refreshed/approved sources, regenerated the draft,
   reviewed exact proposal IDs 1–14, and passed `launch:check` while the real Edition was DRAFT.
 - ADR 0006 backup/restore/R2/reset approval and the later Edition activation remained separate Gate

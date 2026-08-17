@@ -1,0 +1,360 @@
+{
+  "version": 1,
+  "review": {
+    "status": "OWNER_APPROVED",
+    "approvedBy": "owner",
+    "reviewedAt": "2026-08-17T11:30:00Z"
+  },
+  "observedAt": "2026-08-17",
+  "editionCode": "2026",
+  "sources": [
+    {
+      "label": "HLTV BC.Game team page",
+      "url": "https://www.hltv.org/team/12878/bcgame",
+      "publishedAt": "2026-08-17T11:00:00Z"
+    },
+    {
+      "label": "HLTV 100 Thieves team page",
+      "url": "https://www.hltv.org/team/8474/100-thieves",
+      "publishedAt": "2026-08-17T11:00:00Z"
+    },
+    {
+      "label": "HLTV TYLOO team page",
+      "url": "https://www.hltv.org/team/4863/tyloo",
+      "publishedAt": "2026-08-17T11:00:00Z"
+    },
+    {
+      "label": "HLTV Lynn Vision team page",
+      "url": "https://www.hltv.org/team/8840/lynn-vision",
+      "publishedAt": "2026-08-17T11:00:00Z"
+    }
+  ],
+  "notes": [
+    "Owner-requested Review Manual admission after Admin Team/Player create returned a generic unavailable message.",
+    "Current starters were read from each official HLTV team page on 2026-08-17. Roster startsAt is an observation lower bound, not an asserted historical signing date.",
+    "Logos and portraits are omitted; public UI degrades to Team text and Player monograms until a later image pass.",
+    "HLTV Rating / Firepower / honors remain missing until a later recapture that includes these 20 identities. Do not invent stats."
+  ],
+  "teams": [
+    {
+      "slug": "bcgame",
+      "name": "BC.Game",
+      "shortName": "BCG",
+      "countryCode": null,
+      "logoPath": null,
+      "admissionReason": "International star roster and community interest; ranking lag after a 2026 rebuild, so the team is outside Core Top 12.",
+      "hltvIdentity": {
+        "externalId": "12878",
+        "externalSlug": "bcgame",
+        "sourceUrl": "https://www.hltv.org/team/12878/bcgame"
+      },
+      "players": [
+        {
+          "slug": "s1mple",
+          "nickname": "s1mple",
+          "realName": "Oleksandr Kostyliev",
+          "countryCode": "UA",
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/7998/s1mple",
+          "hltvIdentity": {
+            "externalId": "7998",
+            "externalSlug": "s1mple",
+            "sourceUrl": "https://www.hltv.org/player/7998/s1mple"
+          }
+        },
+        {
+          "slug": "electronic",
+          "nickname": "electroNic",
+          "realName": "Denis Sharipov",
+          "countryCode": "RU",
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/8918/electronic",
+          "hltvIdentity": {
+            "externalId": "8918",
+            "externalSlug": "electronic",
+            "sourceUrl": "https://www.hltv.org/player/8918/electronic"
+          }
+        },
+        {
+          "slug": "magisk",
+          "nickname": "Magisk",
+          "realName": "Emil Reif",
+          "countryCode": "DK",
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/9032/magisk",
+          "hltvIdentity": {
+            "externalId": "9032",
+            "externalSlug": "magisk",
+            "sourceUrl": "https://www.hltv.org/player/9032/magisk"
+          }
+        },
+        {
+          "slug": "senzu",
+          "nickname": "Senzu",
+          "realName": "Azbayar Munkhbold",
+          "countryCode": "MN",
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/20903/senzu",
+          "hltvIdentity": {
+            "externalId": "20903",
+            "externalSlug": "senzu",
+            "sourceUrl": "https://www.hltv.org/player/20903/senzu"
+          }
+        },
+        {
+          "slug": "mzinho",
+          "nickname": "mzinho",
+          "realName": "Ayush Batbold",
+          "countryCode": "MN",
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/21001/mzinho",
+          "hltvIdentity": {
+            "externalId": "21001",
+            "externalSlug": "mzinho",
+            "sourceUrl": "https://www.hltv.org/player/21001/mzinho"
+          }
+        }
+      ]
+    },
+    {
+      "slug": "100-thieves",
+      "name": "100 Thieves",
+      "shortName": "100T",
+      "countryCode": null,
+      "logoPath": null,
+      "admissionReason": "International star roster and community interest; ranking lag after the 2026 rebuild with device and rain, so the team is outside Core Top 12.",
+      "hltvIdentity": {
+        "externalId": "8474",
+        "externalSlug": "100-thieves",
+        "sourceUrl": "https://www.hltv.org/team/8474/100-thieves"
+      },
+      "players": [
+        {
+          "slug": "device",
+          "nickname": "device",
+          "realName": "Nicolai Reedtz",
+          "countryCode": "DK",
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/7592/device",
+          "hltvIdentity": {
+            "externalId": "7592",
+            "externalSlug": "device",
+            "sourceUrl": "https://www.hltv.org/player/7592/device"
+          }
+        },
+        {
+          "slug": "rain",
+          "nickname": "rain",
+          "realName": "Håvard Nygaard",
+          "countryCode": "NO",
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/8183/rain",
+          "hltvIdentity": {
+            "externalId": "8183",
+            "externalSlug": "rain",
+            "sourceUrl": "https://www.hltv.org/player/8183/rain"
+          }
+        },
+        {
+          "slug": "gizmy",
+          "nickname": "Gizmy",
+          "realName": "Jack von Spreckelsen",
+          "countryCode": "GB",
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/21816/gizmy",
+          "hltvIdentity": {
+            "externalId": "21816",
+            "externalSlug": "gizmy",
+            "sourceUrl": "https://www.hltv.org/player/21816/gizmy"
+          }
+        },
+        {
+          "slug": "sirah",
+          "nickname": "sirah",
+          "realName": "William Kjærsgaard",
+          "countryCode": "DK",
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/22695/sirah",
+          "hltvIdentity": {
+            "externalId": "22695",
+            "externalSlug": "sirah",
+            "sourceUrl": "https://www.hltv.org/player/22695/sirah"
+          }
+        },
+        {
+          "slug": "poiii",
+          "nickname": "poiii",
+          "realName": "Alex Nyholm Sundgren",
+          "countryCode": "SE",
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/23397/poiii",
+          "hltvIdentity": {
+            "externalId": "23397",
+            "externalSlug": "poiii",
+            "sourceUrl": "https://www.hltv.org/player/23397/poiii"
+          }
+        }
+      ]
+    },
+    {
+      "slug": "tyloo",
+      "name": "TYLOO",
+      "shortName": "TYLOO",
+      "countryCode": "CN",
+      "logoPath": null,
+      "admissionReason": "CNCS community relevance and historical representation; current HLTV/VRS standing is outside Core Top 12.",
+      "hltvIdentity": {
+        "externalId": "4863",
+        "externalSlug": "tyloo",
+        "sourceUrl": "https://www.hltv.org/team/4863/tyloo"
+      },
+      "players": [
+        {
+          "slug": "jamyoung",
+          "nickname": "JamYoung",
+          "realName": "Yi Yang",
+          "countryCode": "CN",
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/19645/jamyoung",
+          "hltvIdentity": {
+            "externalId": "19645",
+            "externalSlug": "jamyoung",
+            "sourceUrl": "https://www.hltv.org/player/19645/jamyoung"
+          }
+        },
+        {
+          "slug": "jee",
+          "nickname": "Jee",
+          "realName": "Dongkai Ji",
+          "countryCode": "CN",
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/20702/jee",
+          "hltvIdentity": {
+            "externalId": "20702",
+            "externalSlug": "jee",
+            "sourceUrl": "https://www.hltv.org/player/20702/jee"
+          }
+        },
+        {
+          "slug": "mercury",
+          "nickname": "Mercury",
+          "realName": "Jingxiang Wang",
+          "countryCode": "CN",
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/20895/mercury",
+          "hltvIdentity": {
+            "externalId": "20895",
+            "externalSlug": "mercury",
+            "sourceUrl": "https://www.hltv.org/player/20895/mercury"
+          }
+        },
+        {
+          "slug": "moseyuh",
+          "nickname": "Moseyuh",
+          "realName": "Qianhao Chen",
+          "countryCode": "CN",
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/21621/moseyuh",
+          "hltvIdentity": {
+            "externalId": "21621",
+            "externalSlug": "moseyuh",
+            "sourceUrl": "https://www.hltv.org/player/21621/moseyuh"
+          }
+        },
+        {
+          "slug": "zero",
+          "nickname": "Zero",
+          "realName": "Su Jingshen",
+          "countryCode": "CN",
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/24857/zero",
+          "hltvIdentity": {
+            "externalId": "24857",
+            "externalSlug": "zero",
+            "sourceUrl": "https://www.hltv.org/player/24857/zero"
+          }
+        }
+      ]
+    },
+    {
+      "slug": "lynn-vision",
+      "name": "Lynn Vision",
+      "shortName": "LVG",
+      "countryCode": "CN",
+      "logoPath": null,
+      "admissionReason": "CNCS regional representation and community interest; current standing does not satisfy Core or Review Auto.",
+      "hltvIdentity": {
+        "externalId": "8840",
+        "externalSlug": "lynn-vision",
+        "sourceUrl": "https://www.hltv.org/team/8840/lynn-vision"
+      },
+      "players": [
+        {
+          "slug": "westmelon",
+          "nickname": "Westmelon",
+          "realName": "Zhe Niu",
+          "countryCode": "CN",
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/16551/westmelon",
+          "hltvIdentity": {
+            "externalId": "16551",
+            "externalSlug": "westmelon",
+            "sourceUrl": "https://www.hltv.org/player/16551/westmelon"
+          }
+        },
+        {
+          "slug": "z4kr",
+          "nickname": "z4KR",
+          "realName": "Sike Zhang",
+          "countryCode": "CN",
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/18744/z4kr",
+          "hltvIdentity": {
+            "externalId": "18744",
+            "externalSlug": "z4kr",
+            "sourceUrl": "https://www.hltv.org/player/18744/z4kr"
+          }
+        },
+        {
+          "slug": "starry",
+          "nickname": "Starry",
+          "realName": "Lizhi Ye",
+          "countryCode": "CN",
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/20254/starry",
+          "hltvIdentity": {
+            "externalId": "20254",
+            "externalSlug": "starry",
+            "sourceUrl": "https://www.hltv.org/player/20254/starry"
+          }
+        },
+        {
+          "slug": "emiliaqaq",
+          "nickname": "EmiliaQAQ",
+          "realName": "Junjie Tang",
+          "countryCode": "CN",
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/22922/emiliaqaq",
+          "hltvIdentity": {
+            "externalId": "22922",
+            "externalSlug": "emiliaqaq",
+            "sourceUrl": "https://www.hltv.org/player/22922/emiliaqaq"
+          }
+        },
+        {
+          "slug": "c4llm3su3",
+          "nickname": "C4LLM3SU3",
+          "realName": "Qihao Su",
+          "countryCode": "CN",
+          "photoPath": null,
+          "hltvProfileUrl": "https://www.hltv.org/player/23100/c4llm3su3",
+          "hltvIdentity": {
+            "externalId": "23100",
+            "externalSlug": "c4llm3su3",
+            "sourceUrl": "https://www.hltv.org/player/23100/c4llm3su3"
+          }
+        }
+      ]
+    }
+  ]
+}

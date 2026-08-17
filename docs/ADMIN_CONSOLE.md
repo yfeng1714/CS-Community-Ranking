@@ -52,6 +52,21 @@ cross-site Fetch Metadata, and mismatched Origin requests, then injects the acto
 session rather than accepting an actor ID from the browser. Known uniqueness, reference, range, and
 check-constraint failures receive safe `400`/`409` responses without database details.
 
+The mutate handler commits the Team/Player write and its `admin_audit_log` row **before** returning
+JSON. A later browser failure cannot roll that write back. Browser forms show **Operation is
+temporarily unavailable** only when `fetch` or `response.json()` throws (network abort, or a
+non-JSON body such as an HTML error page). Parsed JSON errors, including Origin/`Sec-Fetch-Site`
+rejection (`Request rejected`) and uniqueness `409`s, are shown instead of that generic line.
+
+Owner's 2026-08-17 test creates of TYLOO (`CREATE_TEAM`, reason `CN Special Edition`) and
+MachineWJQ (`CREATE_PLAYER`, reason `6657upup`) therefore landed in Postgres even though the form
+showed the generic line. The form used to wrap `form.reset()` and `router.refresh()` in the same
+`catch` as the request, so a post-success refresh could overwrite **Saved and audited.** Refresh
+now runs only after a confirmed 200. Do not treat the generic message as proof the write failed;
+check Audit. Do not reset the database. Review Manual reused the existing `tyloo` Team and left
+unpooled `machinewjq` out of the Pool. Trusted Review Manual admission remains
+`pnpm pool:admit-review-manual` over a Railway Postgres tunnel.
+
 ## Audit model
 
 Every successful mutation writes a general `admin_audit_log` in the same PostgreSQL transaction as
@@ -130,6 +145,7 @@ tunnel, or a decision that is not a form on this page.
 | End a roster row and add the replacement starter from an already admitted Team | Change pairing math, Vote scoring, or public UI |
 | Disable/enable a Pool player's pairing with a reason | Reset the database, run migrations, or change env vars |
 | Create/transition Editions, confirm T1 events, record placements | Enable live HLTV sync or scrape `/stats/players/` |
+| Admit a Review Manual Team after its identity/roster already exist | Create a full new Team+roster via `pnpm pool:admit-review-manual`; if create showed “temporarily unavailable”, check Audit before retrying the same slug |
 | Approve or reject a pending import / Pool proposal after reading evidence | Invent Pool admissions without source snapshots |
 | Search a Vote by exact ID and revoke a known-bad Vote | Bulk-delete Votes, or inspect production logs/backups |
 | Read score integrity, audit logs, and the Pool update “next action” card | Debug parser drift or write a new capture script |

@@ -20,7 +20,7 @@
 </tbody>
 </table>
 
-**版本** V0.1.25
+**版本** V0.1.26
 
 **日期** 2026-08-17
 
@@ -73,6 +73,8 @@
 **Owner Top 20 / 国籍 / Skip 文案** 2026-08-17（V0.1.24；详细数据改为最高 HLTV Top 20 + 地图数；国籍写入 `player.country_code`；Skip 结果标题为「已跳过」；Round Swing 因不在选手主页而放弃）
 
 **Owner 公开身份与 Admin 分页** 2026-08-17（V0.1.25；国籍改为迷你国旗；Major/MVP 使用奖杯/奖牌筹码；Vote moderation 默认 10 条并可 Load more）
+
+**Owner Review Manual 四队** 2026-08-17（V0.1.26；Admin 新建 Team/Player 返回 generic unavailable，不阻断投票；Vote 卡放大国旗与 Major/MVP；文案改为「近三月 Rating 3.0」与「火力值」；以 Review Manual 纳入 BC.Game、100 Thieves、TYLOO、Lynn Vision）
 
 **定位** 产品背景、决策记录与后续 Review Context
 
@@ -268,6 +270,14 @@ Top 20**（峰值名次，以及所有达到该名次的年份）替换详细数
 Cloudflare 拦截的 `/stats/players/`，选手主页没有该字段，因此保持不采集、不展示。国籍来自同一
 资料页的国旗文件名（ISO-2），写入已有的 `player.country_code`，与 Rating 等字段一样走审核导入
 进入 Railway Postgres，而不是另开一张表。Skip 后的结果标题从「这一票已计入社区榜」改为「已跳过」。
+
+  2026-08-17 Owner 确认国旗与 Major/MVP 展示可用后，要求把选手卡上的国旗和荣誉筹码略微放大，并把
+「近三月 HLTV Rating」改为「近三月 Rating 3.0」、「近三月 Firepower」改为「火力值」。同日 Admin
+新建 Team/Player 返回 generic “Operation is temporarily unavailable”，但 Postgres 已写入 TYLOO 与
+MachineWJQ：mutate 先提交再返回 JSON，表单曾把成功后的 `router.refresh()` 也当成失败。Owner 明确
+这不阻断产品使用，并要求记录；在 Admin 不可用时把 BC.Game、100 Thieves、TYLOO、Lynn Vision（LVG）
+以 Review Manual 纳入 2026 候选池。该纳入走已有 `admitManualTeam` 与公开理由，不重置数据库、不启用
+live HLTV sync、不为这 20 人编造 Rating。Review Auto 与 Special 仍后置。
 
 <table>
 <colgroup>
