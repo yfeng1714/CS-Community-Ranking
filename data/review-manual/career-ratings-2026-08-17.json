@@ -1,7 +1,7 @@
 {
-  "capturedAt": "2026-08-17T14:20:00.000Z",
+  "capturedAt": "2026-08-17T16:00:00.000Z",
   "notes": [
-    "Owner-reviewed career Rating 3.0 for a player without Past 3 months activity. Official /stats/players/ remains Cloudflare-blocked, so this value is not auto-captured."
+    "Owner-reviewed career Rating 3.0 for retired Special players without Past 3 months activity. Official /stats/players/ remains Cloudflare-blocked, so these values are not auto-captured and will not be recaptured."
   ],
   "provider": "HLTV",
   "records": [
@@ -9,6 +9,11 @@
       "rating": 0.78,
       "slug": "machinewjq",
       "sourceUrl": "https://www.hltv.org/player/16149/machinewjq"
+    },
+    {
+      "rating": 0.85,
+      "slug": "advent",
+      "sourceUrl": "https://www.hltv.org/player/8600/advent"
     }
   ],
   "version": 1

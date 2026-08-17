@@ -25,8 +25,10 @@ are not missing M9 inputs.
 
 - The initial beta Candidate Pool launched Core-only: 14 Teams and their 70 current starters. On
   2026-08-17 the Owner explicitly admitted four Review Manual Teams (BC.Game, 100 Thieves, TYLOO,
-  Lynn Vision) with public reasons. Review Auto, the completed-2026 T1 whitelist, and Special
-  Players remain deferred and are not Gate F blockers.
+  Lynn Vision) with public reasons. On 2026-08-18 the Owner admitted two retired Specials
+  (MachineWJQ, advent) for closed-beta pairing tests. Review Auto and the completed-2026 T1
+  whitelist remain deferred and are not Gate F blockers. Retired Special data does not change and
+  is excluded from future HLTV recapture.
 - Image acquisition is complete for the current canonical 14 Teams/70 Players. External rights
   clearance no longer blocks the small community beta; exact sources are recorded, and
   Owner-accepted pending-rights assets remain visible warnings until cleared or replaced.

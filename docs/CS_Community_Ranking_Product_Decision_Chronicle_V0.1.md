@@ -20,7 +20,7 @@
 </tbody>
 </table>
 
-**版本** V0.1.27
+**版本** V0.1.28
 
 **日期** 2026-08-17
 
@@ -77,6 +77,8 @@
 **Owner Review Manual 四队** 2026-08-17（V0.1.26；Admin 新建 Team/Player 返回 generic unavailable，不阻断投票；Vote 卡放大国旗与 Major/MVP；文案改为「近三月 Rating 3.0」与「火力值」；以 Review Manual 纳入 BC.Game、100 Thieves、TYLOO、Lynn Vision）
 
 **Owner 生涯 Rating 回退** 2026-08-17（V0.1.27；无近三月 Rating 时，若有审核的生涯 Rating 则改标「生涯 Rating」；MachineWJQ Owner 查阅为 0.78，因 Cloudflare 不自动采集）
+
+**Owner Special 退役选手入池** 2026-08-18（V0.1.28；MachineWJQ 与 advent 以 RETIRED Special 进入配对池；生涯 Rating 冻结、不参与后续 HLTV 回采；MachineWJQ 肖像由 JPEG 误标转为真实 800×800 WebP）
 
 **定位** 产品背景、决策记录与后续 Review Context
 
@@ -284,6 +286,13 @@ live HLTV sync、不为这 20 人编造 Rating。Review Auto 与 Special 仍后�
 同日 Owner 确认：无近三月活动的 Special/退役选手（如测试写入的 MachineWJQ）可以把可空的生涯
 Rating 作为回退；有近三月 Rating 时仍显示「近三月 Rating 3.0」。生涯 Rating 因 Cloudflare 无法
 自动采集，MachineWJQ 由 Owner 查阅后记为 0.78。两者都缺则仍显示 —。
+
+2026-08-18 Owner 要求把尚未入池的 MachineWJQ 与退役选手 advent（HLTV 8600，生涯 Rating 0.85）
+作为 Special 退役选手纳入配对池，供 closed-beta 测试。`RETIRED` Special 可以出现在随机 Pair 中；
+`INACTIVE` 仍不可。退役选手的竞技数据不再变化，因此不进入后续 HLTV recapture / reviewed-stats
+覆盖（覆盖仍是每个非退役 HLTV identity 恰好一次）。MachineWJQ 不作为 TYLOO 正式首发纳入。
+Owner 放入仓库的 `MachineWJQ.webp` 实际是 1080×1518 JPEG 且扩展名为 webp；生产响应带
+`X-Content-Type-Options: nosniff`，必须转成真实 WebP，并按正方形框从顶部裁成 800×800，避免头像被切掉。
 
 <table>
 <colgroup>

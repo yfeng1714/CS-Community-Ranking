@@ -55,6 +55,13 @@ treatment across teams. Do not upscale a visibly low-resolution source merely to
 dimensions. The current complete HLTV set is the provider's consistent native 200×200 body-shot
 transform and is retained at that size rather than artificially enlarged.
 
+Owner-provided Special portraits may arrive at a different size or as a JPEG saved with a `.webp`
+name. Production sends `X-Content-Type-Options: nosniff`, so the file must be real WebP bytes.
+Square Vote/Ranking/Player frames use `object-fit: cover` and `object-position: center top`; a
+taller studio photo should be top-aligned into a square (800×800 is enough) so the head stays in
+frame. Do not force-downsample a sharp Owner photo to the HLTV 200×200 size. Keep the exact
+filename, including case (`MachineWJQ.webp`).
+
 ## Source and rights record
 
 Every imported file receives one ignored `assets/attribution.json` entry containing the exact source
@@ -116,8 +123,10 @@ identity-verified batches of 30, 20, and 20, each with zero failures.
 Player ID, profile slug, Team, and nickname, then joined exact source URL to each bundle manifest.
 It imported 70 WebP files, configured all 70 `photoPath` values, added 70 minimal tracked registry
 entries, and added 70 detailed records only to the ignored local attribution file. Filesystem,
-canonical, registry, and local-source counts agree at 70 portraits / 14 logos / 84 total assets;
-representative crops from every Team were visually reviewed.
+canonical, registry, and local-source counts agree at 70 Core portraits / 14 logos / 84 pending-rights
+assets, plus the Owner-provided Special portrait `/images/players/MachineWJQ.webp` (`OWNER_PROVIDED`,
+real 800×800 WebP cropped from a 1080×1518 JPEG). Advent has no portrait. Representative crops from
+every Team were visually reviewed.
 
 The preserved local rehearsal databases were bootstrapped before both asset passes and still contain
 null image paths. A fresh canonical bootstrap/reset will receive all 84 configured paths; do not

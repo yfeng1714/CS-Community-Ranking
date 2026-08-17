@@ -74,7 +74,11 @@ export default async function PlayerPage({ params }: { params: Promise<{ slug: s
         </div>
         <div className="player-profile__identity">
           <span className="eyebrow">
-            {player.professionalStatus === "ACTIVE" ? "现役选手" : "当前未参与新对决"}
+            {player.professionalStatus === "ACTIVE"
+              ? "现役选手"
+              : player.professionalStatus === "RETIRED"
+                ? "退役选手"
+                : "当前未参与新对决"}
           </span>
           <h1>{player.nickname}</h1>
           <p className="player-profile__real-name">{player.realName ?? "真实姓名待补充"}</p>

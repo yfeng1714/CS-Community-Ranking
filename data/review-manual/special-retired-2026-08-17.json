@@ -1,0 +1,45 @@
+{
+  "editionCode": "2026",
+  "notes": [
+    "Owner-approved Special retired players for closed-beta pairing tests. Career Rating is frozen Owner-reviewed data; retired players are excluded from future HLTV recapture and reviewed-stats coverage."
+  ],
+  "observedAt": "2026-08-17",
+  "review": {
+    "approvedBy": "owner",
+    "reviewedAt": "2026-08-17T16:00:00.000Z",
+    "status": "OWNER_APPROVED"
+  },
+  "players": [
+    {
+      "admissionReason": "Owner-approved Special retired inclusion for closed-beta pairing tests",
+      "careerRating": 0.78,
+      "countryCode": "CN",
+      "hltvIdentity": {
+        "externalId": "16149",
+        "externalSlug": "machinewjq",
+        "sourceUrl": "https://www.hltv.org/player/16149/machinewjq"
+      },
+      "hltvProfileUrl": "https://www.hltv.org/player/16149/machinewjq",
+      "nickname": "MachineWJQ",
+      "photoPath": "/images/players/MachineWJQ.webp",
+      "realName": "Yibo Liu",
+      "slug": "machinewjq"
+    },
+    {
+      "admissionReason": "Owner-approved Special retired inclusion for closed-beta pairing tests",
+      "careerRating": 0.85,
+      "countryCode": "CN",
+      "hltvIdentity": {
+        "externalId": "8600",
+        "externalSlug": "advent",
+        "sourceUrl": "https://www.hltv.org/player/8600/advent"
+      },
+      "hltvProfileUrl": "https://www.hltv.org/player/8600/advent",
+      "nickname": "advent",
+      "photoPath": null,
+      "realName": "Zhuo Liang",
+      "slug": "advent"
+    }
+  ],
+  "version": 1
+}

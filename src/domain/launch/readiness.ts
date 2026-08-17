@@ -18,6 +18,7 @@ import {
 } from "@/db/schema";
 import { loadAssetRegistry } from "@/domain/assets/attribution";
 import type { AppDatabase } from "@/domain/database";
+import { isPairingEligibleProfessionalStatus } from "@/domain/pool/rules";
 import { DomainError, requireDomainValue } from "@/domain/error";
 import { runIntegrityCheck } from "@/domain/integrity/check";
 
@@ -280,11 +281,11 @@ export async function checkLaunchReadiness(
   });
 
   const activePairingRows = playerRows.filter(
-    (row) => row.pairingEnabled && row.professionalStatus === "ACTIVE",
+    (row) => row.pairingEnabled && isPairingEligibleProfessionalStatus(row.professionalStatus),
   );
   const inactiveTeams = teamRows.filter((row) => !row.active);
   const ineligiblePairingPlayers = playerRows.filter(
-    (row) => row.pairingEnabled && row.professionalStatus !== "ACTIVE",
+    (row) => row.pairingEnabled && !isPairingEligibleProfessionalStatus(row.professionalStatus),
   );
   const teamDerivedRosterConflicts = playerRows.filter(
     (row) =>
@@ -350,15 +351,15 @@ export async function checkLaunchReadiness(
       activePairingRows.length >= 2 ? "PASS" : "BLOCK",
       "PAIRING_POOL_READY",
       activePairingRows.length >= 2
-        ? "At least two active players are pairing-enabled."
-        : "At least two active pairing-enabled players are required.",
+        ? "At least two pairing-eligible players are pairing-enabled."
+        : "At least two pairing-enabled ACTIVE or RETIRED players are required.",
       { activePairingPlayers: activePairingRows.length },
     ),
     check(
       inactiveTeams.length === 0 && ineligiblePairingPlayers.length === 0 ? "PASS" : "BLOCK",
       "POOL_ELIGIBILITY_VALID",
       inactiveTeams.length === 0 && ineligiblePairingPlayers.length === 0
-        ? "All admitted teams and pairing-enabled players are active."
+        ? "All admitted teams are active, and pairing-enabled players are ACTIVE or RETIRED."
         : "Inactive teams or ineligible pairing-enabled players remain.",
       {
         inactiveTeams: inactiveTeams.map((row) => row.name),

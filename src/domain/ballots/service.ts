@@ -13,6 +13,7 @@ import {
 import type { AppDatabase, AppTransaction } from "../database.ts";
 import { DomainError, requireDomainValue } from "../error.ts";
 import { getPublicPlayerStats } from "../public/queries.ts";
+import { PAIRING_ELIGIBLE_PROFESSIONAL_STATUSES } from "../pool/rules.ts";
 import { dateInTimeZone } from "./date.ts";
 import { selectRandomPair, type RandomIndex } from "./random.ts";
 import { withTransactionRetry } from "./retry.ts";
@@ -287,7 +288,7 @@ export class BallotIssuanceService {
         and(
           eq(poolPlayerEntries.editionId, edition.id),
           eq(poolPlayerEntries.pairingEnabled, true),
-          eq(players.professionalStatus, "ACTIVE"),
+          inArray(players.professionalStatus, [...PAIRING_ELIGIBLE_PROFESSIONAL_STATUSES]),
           inArray(poolPlayerEntries.playerId, [pair.player1Id, pair.player2Id]),
         ),
       )

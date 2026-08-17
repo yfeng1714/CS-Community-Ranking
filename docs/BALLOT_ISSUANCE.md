@@ -36,7 +36,7 @@ The transaction then:
 7. assigns `ELIGIBLE`, `THROTTLED`, or internal `SUSPICIOUS` eligibility;
 8. selects two distinct IDs with Node's cryptographic random API, canonicalizes storage order, and
    independently randomizes left/right;
-9. revalidates both selected players as pairing-enabled and professionally active under row locks;
+9. revalidates both selected players as pairing-enabled and professionally `ACTIVE` or `RETIRED` under row locks;
 10. inserts the Ballot and commits.
 
 The visitor lock serializes normal concurrent requests. The existing partial unique index

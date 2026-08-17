@@ -1,4 +1,4 @@
-import { and, eq } from "drizzle-orm";
+import { and, eq, ne } from "drizzle-orm";
 import { z } from "zod";
 
 import { playerExternalIdentities, players, playerStatSnapshots } from "../../db/schema/index.ts";
@@ -290,7 +290,12 @@ export async function importReviewedHltvPlayerStats(
       })
       .from(playerExternalIdentities)
       .innerJoin(players, eq(players.id, playerExternalIdentities.playerId))
-      .where(eq(playerExternalIdentities.provider, "HLTV"));
+      .where(
+        and(
+          eq(playerExternalIdentities.provider, "HLTV"),
+          ne(players.professionalStatus, "RETIRED"),
+        ),
+      );
     const identityByExternalId = new Map(
       identities.map((identity) => [identity.externalId, identity]),
     );
@@ -306,7 +311,7 @@ export async function importReviewedHltvPlayerStats(
     if (missingIds.length > 0 || unknownIds.length > 0) {
       throw new DomainError(
         "REVIEWED_HLTV_STATS_COVERAGE_MISMATCH",
-        "Reviewed HLTV stats must cover every configured HLTV Player identity exactly once",
+        "Reviewed HLTV stats must cover every non-retired HLTV Player identity exactly once",
         { missingIds, unknownIds },
       );
     }

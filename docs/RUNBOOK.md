@@ -157,23 +157,27 @@ pnpm source:import-reviewed-hltv-stats -- --file data/reviewed-sources/hltv-play
 Production apply uses the same flags against a private Railway SSH tunnel (`railway connect Postgres
 --environment production --ssh --tunnel-only`), not `railway run`, because `railway run` injects the
 private `postgres.railway.internal` hostname which the laptop cannot reach. The ignored JSON never
-leaves the operator machine. The bundle must cover every configured HLTV Player identity exactly
-once, but may explicitly record missing recent, career, Top 20, or nationality values. Never
+leaves the operator machine. The bundle must cover every **non-retired** configured HLTV Player identity exactly
+once, but may explicitly record missing recent, career, Top 20, or nationality values. Retired
+Special players are frozen and must not be added to a recapture. Never
 substitute a three-month Rating for career Rating, and never infer nationality from the current team.
 The input file is ignored and should be retained only as private operational evidence; accepted
 metrics land in `player_stat_snapshot`, and parsed flags land in `player.country_code`, with the
 exact official source URL and capture timestamp.
 
-Owner-reviewed career Rating for inactive/special players without Past 3 months activity is
-`pnpm source:import-reviewed-career-rating` (`data/review-manual/career-ratings-2026-08-17.json`).
-Apply requires `--actor`, `--apply`, and `--confirm-reviewed-career-rating`. Do not invent that
-value from Liquipedia or BO3.
+Owner-reviewed career Rating for retired Special players without Past 3 months activity is
+frozen (`data/review-manual/career-ratings-2026-08-17.json`: MachineWJQ `0.78`, advent `0.85`).
+`pnpm pool:admit-special-retired` admits those players and writes the career snapshots. The
+standalone `pnpm source:import-reviewed-career-rating` path remains available. Apply requires
+`--actor`, `--apply`, and `--confirm-reviewed-career-rating`. Do not invent that value from
+Liquipedia or BO3, and do not recapture retired players with the Core / Review Manual HLTV bundle.
 
 Admin Team/Player create may show **Operation is temporarily unavailable** after the server already
 committed the row (the form used to treat a post-success page refresh as failure). That is not a
 voting outage and is not a rollback. Check Audit before retrying the same slug. To add Review Manual
 Teams with a reviewed roster, dry-run then apply `pnpm pool:admit-review-manual` against the
-same private SSH tunnel. Do not use `pool:add-player` (Special path) and do not reset the database.
+same private SSH tunnel. To admit retired Specials, use `pnpm pool:admit-special-retired`. Do not
+use `pool:add-player` for either path (that creates an ACTIVE Special) and do not reset the database.
 
 The safe operating order is: sync → inspect and approve each source snapshot → generate Pool draft
 → inspect conflicts/freshness/JSON → approve or reject individual proposals. The generator reports
@@ -273,6 +277,8 @@ Milestone 2 provides trusted operational commands before the Admin UI exists:
 ```bash
 pnpm pool:add-player -- --actor <admin-username> --edition <code> \
   --slug <player-slug> --nickname <nickname> --reason <public-reason>
+pnpm pool:admit-special-retired -- --actor owner --edition 2026 \
+  --apply --confirm-special-retired
 pnpm pool:disable-player -- --actor <admin-username> --edition <code> \
   --player <player-slug> --reason <public-reason>
 ```
@@ -305,7 +311,7 @@ its reserved CPU and memory. Start it again only for the next database or image 
 ## Ballot issuance triage
 
 - `NO_ACTIVE_EDITION`: activate exactly one prepared Edition; do not treat this as database failure.
-- `POOL_NOT_READY`: confirm at least two Pool players are pairing-enabled and professionally active.
+- `POOL_NOT_READY`: confirm at least two Pool players are pairing-enabled and `ACTIVE` or `RETIRED`.
 - `INFRASTRUCTURE_RATE_LIMITED`: wait for `Retry-After`; this limiter is process-local and is not the
   daily ranking quota.
 - `BALLOT_ISSUANCE_UNAVAILABLE`: inspect structured logs by request ID and safe error code. Never log

@@ -18,6 +18,11 @@ describe("reviewed career Rating overrides", () => {
         slug: "machinewjq",
         sourceUrl: "https://www.hltv.org/player/16149/machinewjq",
       },
+      {
+        rating: 0.85,
+        slug: "advent",
+        sourceUrl: "https://www.hltv.org/player/8600/advent",
+      },
     ]);
   });
 

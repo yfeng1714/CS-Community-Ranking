@@ -336,6 +336,10 @@
     {
       "assetPath": "/images/players/slaxejezzz.webp",
       "permission": "OWNER_ACCEPTED_PENDING_RIGHTS"
+    },
+    {
+      "assetPath": "/images/players/MachineWJQ.webp",
+      "permission": "OWNER_PROVIDED"
     }
   ]
 }

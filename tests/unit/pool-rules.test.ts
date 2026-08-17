@@ -145,7 +145,7 @@ describe("Candidate Pool rule evaluation", () => {
     );
   });
 
-  it("limits Special admission to explicitly approved active professionals", () => {
+  it("limits Special admission to approved ACTIVE or RETIRED professionals", () => {
     expect(
       evaluateSpecialPlayerAdmission({
         approved: true,
@@ -157,6 +157,13 @@ describe("Candidate Pool rule evaluation", () => {
       evaluateSpecialPlayerAdmission({
         approved: true,
         professionalStatus: "RETIRED",
+        reason: "Owner-approved retired Special inclusion",
+      }),
+    ).toMatchObject({ admissionType: "SPECIAL", eligible: true });
+    expect(
+      evaluateSpecialPlayerAdmission({
+        approved: true,
+        professionalStatus: "INACTIVE",
         reason: "Historical popularity",
       }),
     ).toMatchObject({ admissionType: null, eligible: false });

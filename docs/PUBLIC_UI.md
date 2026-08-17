@@ -22,6 +22,9 @@ Rating is missing, an Owner-reviewed career Rating may occupy that same slot as 
 If both are missing, the slot stays **近三月 Rating 3.0** / `—`. Majors won and Total MVPs sit under the identity line when
 captured (`🏆 2 Major` / `🏅 32 MVP` chips; zeros are shown; the line is omitted only when both
 values are missing). Nationality is a mini flag from the stored ISO-2 `country` code, or `国籍待补`.
+The player-page eyebrow is **现役选手**, **退役选手**, or **当前未参与新对决**. Square portraits use
+`object-fit: cover` and `object-position: center top` so a non-200×200 Owner photo still keeps the
+head in frame.
 Details expand highest HLTV Top 20 (peak rank plus every year at that rank) and maps, plus an honest
 freshness label.
 Unsupported or unexposed fields remain `—`; KAST, Round Swing, and ADR are not shown. Career Rating
@@ -86,7 +89,8 @@ are `MISSING` when absent, `CURRENT` through the configured freshness window, an
 `EXTERNAL_STATS_STALE_AFTER_HOURS` defaults to 48 hours. Provider failure keeps stale data visible
 and never breaks the Vote page. Career Rating is not auto-captured from Cloudflare-blocked
 `/stats/players/`; do not invent it from Liquipedia or BO3. An Owner-reviewed career Rating may be
-imported for inactive/special players who have no Past 3 months Rating. Highest Top 20 is aggregated from
+imported for retired/special players who have no Past 3 months Rating. Those career values are
+frozen and are not recaptured with the Core / Review Manual HLTV bundle. Highest Top 20 is aggregated from
 the latest `top20_rank` year rows (peak rank, every year at that rank). Nationality is
 `player.country_code`.
 

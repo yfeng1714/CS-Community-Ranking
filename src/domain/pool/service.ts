@@ -1,4 +1,4 @@
-import { and, asc, eq, isNull } from "drizzle-orm";
+import { and, asc, eq, inArray, isNull } from "drizzle-orm";
 
 import { toAuditRecord, writeAdminAudit } from "../audit.ts";
 import type { AppDatabase, AppTransaction } from "../database.ts";
@@ -19,6 +19,8 @@ import {
   evaluateAutomaticTeamAdmission,
   evaluateManualTeamAdmission,
   evaluateSpecialPlayerAdmission,
+  isPairingEligibleProfessionalStatus,
+  PAIRING_ELIGIBLE_PROFESSIONAL_STATUSES,
   type AutomaticTeamEvidence,
 } from "./rules.ts";
 
@@ -644,10 +646,10 @@ export class CandidatePoolService {
           .from(players)
           .where(eq(players.id, input.playerId))
           .limit(1);
-        if (player?.professionalStatus !== "ACTIVE") {
+        if (!player || !isPairingEligibleProfessionalStatus(player.professionalStatus)) {
           throw new DomainError(
             "PLAYER_NOT_ACTIVE",
-            "Only an ACTIVE professional player can be enabled for pairing",
+            "Only an ACTIVE or RETIRED professional player can be enabled for pairing",
           );
         }
       }
@@ -706,7 +708,7 @@ export class CandidatePoolService {
           and(
             eq(poolPlayerEntries.editionId, editionId),
             eq(poolPlayerEntries.pairingEnabled, true),
-            eq(players.professionalStatus, "ACTIVE"),
+            inArray(players.professionalStatus, [...PAIRING_ELIGIBLE_PROFESSIONAL_STATUSES]),
           ),
         )
         .orderBy(asc(poolPlayerEntries.playerId));

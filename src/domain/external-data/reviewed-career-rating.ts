@@ -70,7 +70,7 @@ export async function importReviewedCareerRatings(
         `Player ${record.slug} not found`,
       );
       const [existing] = await transaction
-        .select({ id: playerStatSnapshots.id })
+        .select({ id: playerStatSnapshots.id, value: playerStatSnapshots.value })
         .from(playerStatSnapshots)
         .where(
           and(
@@ -82,6 +82,7 @@ export async function importReviewedCareerRatings(
         )
         .limit(1);
       if (existing) {
+        if (existing.value === String(record.rating)) continue;
         throw new DomainError(
           "REVIEWED_CAREER_RATING_ALREADY_IMPORTED",
           `Career Rating for ${record.slug} already imported at ${input.bundle.capturedAt}`,

@@ -64,8 +64,9 @@ showed the generic line. The form used to wrap `form.reset()` and `router.refres
 `catch` as the request, so a post-success refresh could overwrite **Saved and audited.** Refresh
 now runs only after a confirmed 200. Do not treat the generic message as proof the write failed;
 check Audit. Do not reset the database. Review Manual reused the existing `tyloo` Team and left
-unpooled `machinewjq` out of the Pool. Trusted Review Manual admission remains
-`pnpm pool:admit-review-manual` over a Railway Postgres tunnel.
+unpooled `machinewjq` out of the Team roster (he is not a current TYLOO starter). He and advent
+were later admitted as retired Specials via `pnpm pool:admit-special-retired`. Trusted Review
+Manual admission remains `pnpm pool:admit-review-manual` over a Railway Postgres tunnel.
 
 ## Audit model
 

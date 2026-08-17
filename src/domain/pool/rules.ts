@@ -171,7 +171,7 @@ export function evaluateSpecialPlayerAdmission(input: {
     reasonCodes.push("SPECIAL_APPROVAL_REQUIRED");
   }
 
-  if (input.professionalStatus !== "ACTIVE") {
+  if (!isPairingEligibleProfessionalStatus(input.professionalStatus)) {
     reasonCodes.push("PLAYER_NOT_ACTIVE");
   }
 
@@ -180,7 +180,10 @@ export function evaluateSpecialPlayerAdmission(input: {
         admissionType: "SPECIAL",
         eligible: true,
         reason,
-        reasonCodes: ["OWNER_APPROVED_SPECIAL"],
+        reasonCodes:
+          input.professionalStatus === "RETIRED"
+            ? ["OWNER_APPROVED_SPECIAL", "RETIRED_SPECIAL"]
+            : ["OWNER_APPROVED_SPECIAL"],
       }
     : {
         admissionType: null,
@@ -188,4 +191,12 @@ export function evaluateSpecialPlayerAdmission(input: {
         reason: null,
         reasonCodes,
       };
+}
+
+export const PAIRING_ELIGIBLE_PROFESSIONAL_STATUSES = ["ACTIVE", "RETIRED"] as const;
+
+export function isPairingEligibleProfessionalStatus(
+  status: "ACTIVE" | "INACTIVE" | "RETIRED",
+): boolean {
+  return status === "ACTIVE" || status === "RETIRED";
 }

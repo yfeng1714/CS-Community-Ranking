@@ -19,9 +19,11 @@ Vote cards:
 - details: **highest HLTV Top 20** (peak rank and every year at that rank) + **maps**.
 
 Player pages show the same fields. Missing values render as `—`. Do not invent career Rating from
-Liquipedia or BO3. Inactive/special players without Past 3 months activity may receive an
-Owner-reviewed `career_rating` / `CAREER` snapshot via `pnpm source:import-reviewed-career-rating`
-(`data/review-manual/career-ratings-2026-08-17.json` currently has MachineWJQ `0.78`).
+Liquipedia or BO3. Retired Special players without Past 3 months activity may receive an
+Owner-reviewed `career_rating` / `CAREER` snapshot. Those values are frozen: do not recapture or
+re-import them on later HLTV stats passes. `pnpm pool:admit-special-retired` writes the same
+snapshots from `data/review-manual/special-retired-2026-08-17.json` (MachineWJQ `0.78`, advent
+`0.85`). The standalone file `data/review-manual/career-ratings-2026-08-17.json` matches that set.
 
 Skip on the Vote result panel uses the heading **已跳过**, not “这一票已计入社区榜”.
 
@@ -75,9 +77,11 @@ column or a second stats table.
 
 Identity coverage is the union of `data/canonical/2026-beta.json` (70 Core HLTV IDs) and
 `--review-manual data/review-manual/2026-08-17.json` (20 Review Manual IDs). Import requires that
-bundle to cover every `player_external_identity` HLTV ID exactly once (90 after the 2026-08-17
-admission). Do not invent Rating for the new 20; recapture their official profiles, then resume
-into the existing ignored 70-player JSON so Core snapshots stay. The output JSON is Git-ignored:
+bundle to cover every **non-retired** `player_external_identity` HLTV ID exactly once (90 after the
+2026-08-17 Review Manual admission). Retired Special identities (MachineWJQ, advent) are excluded
+because their data does not change. Do not invent Rating for the new 20; recapture their official
+profiles, then resume into the existing ignored 70-player JSON so Core snapshots stay. The output
+JSON is Git-ignored:
 
 `data/reviewed-sources/hltv-player-stats-local.json`
 
@@ -163,8 +167,10 @@ Node `--env-file-if-exists=.env` does **not** override an already-set `DATABASE_
 actor username is `owner`. Close the tunnel when the import finishes. Do not commit the ignored
 capture JSON, `.env`, or captured HTML.
 
-Owner-reviewed career Rating for players without Past 3 months activity (currently MachineWJQ
-`0.78`) is a separate committed file. Dry-run then apply with the same tunnel:
+Owner-reviewed career Rating for retired Special players without Past 3 months activity
+(MachineWJQ `0.78`, advent `0.85`) is a separate committed file. Prefer
+`pnpm pool:admit-special-retired`, which imports the same frozen values. The standalone career
+command remains available; dry-run then apply with the same tunnel:
 
 ```bash
 pnpm source:import-reviewed-career-rating
@@ -200,6 +206,8 @@ HLTV Rating, Firepower, ADR, honors, or Top 20.
 - Do not invent Round Swing, career Rating, or ADR from adjacent numbers.
 - Do not infer nationality from the current team.
 - Do not run capture against production from a public request or GitHub Action.
+- Do not recapture or include retired Special players in the reviewed-stats bundle; their data is
+  frozen and coverage is non-retired HLTV identities only.
 - Do not import the same `capturedAt` twice; capture again so the timestamp is new.
 
 See `docs/DATA_SOURCES.md` for provider boundaries and `docs/RUNBOOK.md` for the trusted CLI list.

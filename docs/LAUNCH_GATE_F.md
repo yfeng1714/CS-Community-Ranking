@@ -179,7 +179,7 @@ changes pairing probability or score.
 | Core            |    14 |      70 | Approved HLTV/VRS rank  | owner / 2026-08-15 |
 | Review Auto     |     0 |       0 | Deferred for beta       | owner / 2026-08-15 |
 | Review Manual   |     4 |      20 | Owner-reviewed 2026-08-17 HLTV team pages; public reasons in `data/review-manual/2026-08-17.json` | owner / 2026-08-17 |
-| Special players |   n/a |       0 | Deferred for beta       | owner / 2026-08-15 |
+| Special players |   n/a |       2 | Owner-approved retired Specials 2026-08-18: MachineWJQ, advent | owner / 2026-08-18 |
 
 Initial-beta scope decision on 2026-08-15: launch Core-only with the rehearsed 14 Teams and 70
 current starters. Review Auto, the 2026 T1 whitelist, and Special admissions remain deferred. On
@@ -189,7 +189,9 @@ and their 20 current starters through the trusted CLI because Admin Team/Player 
 `machinewjq` rows (mutate commits first; the form used to treat a later refresh as failure). Core 14
 is unchanged. Total enabled Players after that
 admission: **90**. Total possible pairs `n(n-1)/2`: **4,005**. New-player HLTV stats and images are
-an honest later pass.
+an honest later pass. On 2026-08-18 the Owner admitted two retired Specials (MachineWJQ, advent)
+for pairing tests. Total enabled Players: **92**. Total possible pairs: **4,186**. Retired Special
+data is frozen and excluded from HLTV recapture.
 
 - [x] Every pairing-enabled Team-derived Player is still a current formal starter for its source
       Team.
@@ -199,6 +201,8 @@ an honest later pass.
 - [x] Total enabled Players: **70**. Total possible pairs `n(n-1)/2`: **2,415**.
 - [x] 2026-08-17 Review Manual expansion: **90** enabled Players, **4,005** possible pairs. Core 14
       and existing ranking/vote history were not reset.
+- [x] 2026-08-18 retired Special expansion: **92** enabled Players, **4,186** possible pairs
+      (MachineWJQ, advent). Retired identities are excluded from HLTV recapture.
 
 ## 4. Assets and early-community policy
 

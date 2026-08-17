@@ -23,7 +23,7 @@ pairing probability, initial score, or later scoring behavior.
 | `CORE`          | HLTV or Valve VRS Top 12                                                        |
 | `REVIEW_AUTO`   | Either source Top 20 plus same-year whitelisted T1 Top 4 or Major Top 8         |
 | `REVIEW_MANUAL` | Explicit human approval with a nonblank public reason                           |
-| `SPECIAL`       | Explicit individual approval, a nonblank public reason, and `ACTIVE` pro status |
+| `SPECIAL`       | Explicit individual approval, a nonblank public reason, and `ACTIVE` or `RETIRED` pro status |
 
 Automatic evaluation is deterministic and provider-independent. Milestone 7 supplies it with
 approved, freshness-checked ranking snapshots and event evidence; the evaluator itself performs no
@@ -54,8 +54,11 @@ Team admission is one transaction:
 An already admitted player is retained with their original admission category and ranking history
 when their current Team is later admitted. No admission path deletes or resets a player.
 
-Special admission creates or references one active Player, inserts a `SPECIAL` Pool entry with no
+Special admission creates or references one Player, inserts a `SPECIAL` Pool entry with no
 source Team entry, initializes the ranking row at zero, and writes the same audit history.
+`RETIRED` Special players remain pairing-eligible so they can appear in votes; `INACTIVE` players
+do not. Retired Special players are excluded from HLTV recapture and reviewed-stats coverage
+because their competitive data is frozen.
 
 When an admitted Team signs a new formal starter at a later Pool update, the operator uses the
 team-derived Player path rather than Special admission. It requires an active admitted Team, an
@@ -68,10 +71,9 @@ reset; pairing eligibility is managed explicitly.
 ## Pairing state and cache
 
 Disabling pairing updates the existing Pool Player row with a timestamp and reason. The Pool entry,
-ranking row, votes, and all historical records remain intact. Re-enabling is allowed only while the
-Player's professional status is `ACTIVE`.
+ranking row, votes, and all historical records remain intact. Re-enabling is allowed for `ACTIVE` and `RETIRED` professionals.
 
-Active-pool lookup selects only professionally `ACTIVE`, pairing-enabled players for an Edition. It
+Active-pool lookup selects pairing-enabled `ACTIVE` or `RETIRED` players for an Edition. It
 does not read admission type or ranking score. Ballot issuance revalidates the two randomly selected
 rows under database locks, so the cache cannot issue a disabled or newly inactive player. The
 in-process cache:
@@ -140,6 +142,23 @@ set were recaptured 2026-08-17 (`capturedAt` `2026-08-17T13:18:41.536Z`; checksu
 Postgres the same day. Production reused the Owner's earlier Admin `tyloo` Team row (no roster at
 the time) and left the unpooled `machinewjq` Player out of the Candidate Pool because that player
 is not on TYLOO's current official starting five.
+
+To admit Owner-reviewed retired Special players (identity + frozen career Rating + Pool), dry-run
+then apply `pnpm pool:admit-special-retired`. Do not use `pool:add-player` (that creates an ACTIVE
+Special) and do not add these players as Team starters. Retired Specials stay pairing-eligible, but
+their competitive data is frozen: they are excluded from HLTV recapture and reviewed-stats coverage.
+
+```bash
+pnpm pool:admit-special-retired
+pnpm pool:admit-special-retired -- \
+  --actor owner --edition 2026 \
+  --apply --confirm-special-retired
+```
+
+The 2026-08-17 set is `data/review-manual/special-retired-2026-08-17.json`: MachineWJQ (career
+Rating 0.78, Owner-provided portrait `/images/players/MachineWJQ.webp` — converted from a
+1080×1518 JPEG to a real 800×800 WebP so square frames and `nosniff` both work) and advent (career
+Rating 0.85, no portrait). After that admission the pairing pool is **92** players (**4,186** pairs).
 
 ## Lifecycle boundaries
 

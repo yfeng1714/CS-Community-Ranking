@@ -241,6 +241,8 @@ The application stores its own immutable event-whitelist record. It must never d
 - A player who transfers retains the same player identity, score, votes, and history.
 - A player who leaves a team normally remains in the annual Edition while still professionally active.
 - A formally retired or inactive player may have `pairing_enabled = false`; historical rows remain intact.
+  Owner-approved `RETIRED` Special players remain pairing-eligible. Their HLTV data is frozen and
+  excluded from recapture.
 - There is no physical “delete player from history” operation.
 
 ## 3.5 Pool updates

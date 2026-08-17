@@ -17,9 +17,10 @@
 - **Review boundary:** The one-time pre-user reset exception is consumed. Railway now contains real
   beta data, so future work must preserve history with forward migrations and retained backups. The
   2026-08-17 Owner request admitted four Review Manual Teams (BC.Game, 100 Thieves, TYLOO, Lynn
-  Vision / LVG) and their 20 current starters. Review Auto, the 2026 T1 whitelist, and Special
-  Players remain deferred. Closed-beta observation and final Owner Gate F sign-off remain.
-- **Last updated:** 2026-08-17
+  Vision / LVG) and their 20 current starters. On 2026-08-18 two retired Specials (MachineWJQ,
+  advent) were admitted for closed-beta pairing tests. Review Auto and the 2026 T1 whitelist remain
+  deferred. Closed-beta observation and final Owner Gate F sign-off remain.
+- **Last updated:** 2026-08-18
 
 ## Completed in the repository
 
@@ -33,9 +34,13 @@
   `docs/ADMIN_CONSOLE.md`). The form now refreshes only after a confirmed 200. The trusted Review
   Manual path is `pnpm pool:admit-review-manual` over a Railway Postgres tunnel. Owner-reviewed
   identities live in `data/review-manual/2026-08-17.json` (BC.Game, 100 Thieves, TYLOO, Lynn Vision).
-  Production now has Core 14/70 plus Review Manual 4/20 (90 pairing-enabled players, 4,005 pairs).
-  The earlier Admin `tyloo` Team row was reused; unpooled `machinewjq` was left out of the Pool.
-  Logos/portraits stay missing until later passes. The 2026-08-17 recapture resumed the ignored
+  Production now has Core 14/70 plus Review Manual 4/20 plus two Owner-approved retired Specials
+  (MachineWJQ, advent): **92** pairing-enabled players, **4,186** pairs. MachineWJQ was left out of
+  the TYLOO Review Manual roster (not a current starter) and is admitted as a `RETIRED` Special with
+  Owner-provided portrait `/images/players/MachineWJQ.webp` (converted from a 1080×1518 JPEG to a
+  real 800×800 WebP so square frames and `nosniff` both work). advent has career Rating `0.85` and
+  no portrait. Retired Specials are frozen and excluded from HLTV recapture. Logos/portraits for the
+  Review Manual 20 stay missing until later passes. The 2026-08-17 recapture resumed the ignored
   Core JSON with `--review-manual` and filled **20/20** new official profiles (bundle **90/90**
   recent Rating + Firepower + nationality, 85 Majors won, 33 Total MVPs, 35 Top 20 players / 121
   year-rows; period 2026-05-17 → 2026-08-17; `capturedAt` `2026-08-17T13:18:41.536Z`). Dry-run
