@@ -23,6 +23,11 @@
 
 ## Completed in the repository
 
+- Public identity polish: nationality is a mini flag emoji from the ISO-2 code; Majors/MVPs render
+  as `🏆 N Major` / `🏅 N MVP` chips. Admin Vote moderation now lists 10 recent Votes by default
+  with **Load more** (20 more, cap 200). Exact-ID search is unchanged. See `docs/ADMIN_CONSOLE.md`
+  for when to use `/admin` versus an agent.
+
 - Vote details and Player pages now show highest HLTV Top 20 (peak rank plus every year at that
   rank) and maps instead of career Rating / ADR. Nationality is written to `player.country_code`
   from the profile flag in the same reviewed import. Round Swing is not on `/player/{id}/{slug}`

@@ -20,7 +20,7 @@
 </tbody>
 </table>
 
-**版本** V0.1.24
+**版本** V0.1.25
 
 **日期** 2026-08-17
 
@@ -71,6 +71,8 @@
 **Owner 选手卡数据与荣誉** 2026-08-16（V0.1.23；默认近三月 Rating + Firepower，详细生涯 Rating + ADR + 地图数；卡片展示 Majors won 与 Total MVPs；career/ADR 仍诚实缺失）
 
 **Owner Top 20 / 国籍 / Skip 文案** 2026-08-17（V0.1.24；详细数据改为最高 HLTV Top 20 + 地图数；国籍写入 `player.country_code`；Skip 结果标题为「已跳过」；Round Swing 因不在选手主页而放弃）
+
+**Owner 公开身份与 Admin 分页** 2026-08-17（V0.1.25；国籍改为迷你国旗；Major/MVP 使用奖杯/奖牌筹码；Vote moderation 默认 10 条并可 Load more）
 
 **定位** 产品背景、决策记录与后续 Review Context
 

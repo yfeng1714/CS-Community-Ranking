@@ -2,13 +2,14 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { ArrowRightIcon } from "@/components/icons";
 import { ProductPageView } from "@/components/analytics/page-view";
+import { CountryFlag } from "@/components/country-flag";
+import { ArrowRightIcon } from "@/components/icons";
+import { PlayerHonors } from "@/components/player-honors";
 import { PlayerPortrait } from "@/components/player-portrait";
 import {
   formatFirepower,
   formatInteger,
-  formatPlayerHonors,
   formatRating,
   formatTop20Peak,
 } from "@/components/player-stat-format";
@@ -52,8 +53,6 @@ export default async function PlayerPage({ params }: { params: Promise<{ slug: s
     notFound();
   }
 
-  const honors = formatPlayerHonors(player.majorsWon, player.mvpCount);
-
   return (
     <main className="public-page player-page" id="main-content">
       <ProductPageView
@@ -82,9 +81,9 @@ export default async function PlayerPage({ params }: { params: Promise<{ slug: s
               {player.team ? <TeamLogo logoUrl={player.teamLogoUrl} /> : null}
               {player.team ?? "暂无战队"}
             </span>
-            <span>{player.country ?? "国籍待补"}</span>
+            <CountryFlag code={player.country} />
           </div>
-          {honors ? <p className="player-profile__honors">{honors}</p> : null}
+          <PlayerHonors majorsWon={player.majorsWon} mvpCount={player.mvpCount} />
         </div>
         <div className="player-profile__rank">
           <span>社区排名</span>

@@ -4,14 +4,10 @@ import type { BallotPlayerCard } from "@/domain/ballots/service";
 import type { RankingResult, ResolutionChoice } from "@/domain/votes/presentation";
 
 import { ChevronDownIcon } from "../icons";
+import { CountryFlag } from "../country-flag";
+import { PlayerHonors } from "../player-honors";
 import { PlayerPortrait } from "../player-portrait";
-import {
-  formatFirepower,
-  formatInteger,
-  formatPlayerHonors,
-  formatRating,
-  formatTop20Peak,
-} from "../player-stat-format";
+import { formatFirepower, formatInteger, formatRating, formatTop20Peak } from "../player-stat-format";
 import { TeamLogo } from "../team-logo";
 
 function freshness(value: string | null): string {
@@ -131,7 +127,6 @@ export function VotePlayerCard({
 }
 
 function PlayerIdentity({ player }: { player: BallotPlayerCard }) {
-  const honors = formatPlayerHonors(player.majorsWon, player.mvpCount);
   return (
     <div className="vote-card__identity">
       <h2>{player.nickname}</h2>
@@ -141,9 +136,9 @@ function PlayerIdentity({ player }: { player: BallotPlayerCard }) {
           {player.team ?? "暂无战队"}
         </span>
         <span aria-hidden="true">·</span>
-        <span>{player.country ?? "国籍待补"}</span>
+        <CountryFlag code={player.country} />
       </p>
-      {honors ? <p className="vote-card__honors">{honors}</p> : null}
+      <PlayerHonors majorsWon={player.majorsWon} mvpCount={player.mvpCount} />
     </div>
   );
 }

@@ -1053,6 +1053,7 @@ button:disabled {
 .vote-card__identity p {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: 0.38rem;
   margin: 0.45rem 0 0;
   color: var(--muted-strong);
@@ -1060,12 +1061,53 @@ button:disabled {
   font-weight: 650;
 }
 
-.vote-card__honors {
-  margin: 0.32rem 0 0;
+.country-flag {
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
+}
+
+.country-flag__emoji {
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+  font-size: 1.05em;
+  line-height: 1;
+}
+
+.country-flag--missing {
   color: var(--muted);
-  font-size: 0.72rem;
+}
+
+.player-honors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0.45rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.player-honors__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.28rem;
+  padding: 0.18rem 0.48rem 0.18rem 0.32rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface-soft);
+  color: var(--muted-strong);
+  font-size: 0.68rem;
   font-weight: 750;
   letter-spacing: 0.01em;
+}
+
+.player-honors__item strong {
+  color: var(--foreground);
+  font-variant-numeric: tabular-nums;
+}
+
+.vote-card__honors,
+.player-profile__honors {
+  margin: 0.32rem 0 0;
 }
 
 .vote-card__stats {
@@ -1556,7 +1598,11 @@ button:disabled {
 
 .ranking-player small {
   color: var(--muted);
-  font-size: 0.65rem;
+  font-size: 0.8rem;
+}
+
+.ranking-player .country-flag__emoji {
+  font-size: 0.95rem;
 }
 
 .ranking-empty {
@@ -1648,9 +1694,10 @@ button:disabled {
 
 .player-profile__honors {
   margin: 0.85rem 0 0;
-  color: var(--muted-strong);
-  font-size: 0.82rem;
-  font-weight: 750;
+}
+
+.player-profile__meta .country-flag__emoji {
+  font-size: 1.15em;
 }
 
 .player-profile__rank {
@@ -2238,7 +2285,8 @@ button:disabled {
     flex-direction: column;
   }
 
-  .vote-card__honors {
+  .vote-card__honors,
+  .vote-card__identity .player-honors {
     font-size: 0.68rem;
   }
 

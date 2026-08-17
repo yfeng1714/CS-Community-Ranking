@@ -1,4 +1,5 @@
 import type { AdminConsoleData } from "@/domain/admin/queries";
+import { ADMIN_RECENT_VOTES_MAX } from "@/domain/admin/vote-limit";
 import type { ReactNode } from "react";
 
 import { AdminActionForm } from "./action-form";
@@ -1029,6 +1030,20 @@ export function AdminConsole({
           </button>
           {!data.voteSearch.showingRecent && <a href="/admin#moderation">Show recent Votes</a>}
         </form>
+        {data.voteSearch.showingRecent && (
+          <p className="admin-empty">
+            Showing the {data.votes.length} most recent Votes.
+            {data.voteSearch.hasMore ? (
+              <>
+                {" "}
+                <a href={`/admin?voteLimit=${data.voteSearch.nextLimit}#moderation`}>Load more</a>
+              </>
+            ) : data.voteSearch.limit >= ADMIN_RECENT_VOTES_MAX &&
+              data.votes.length === data.voteSearch.limit ? (
+              " Search by exact Vote ID for older records."
+            ) : null}
+          </p>
+        )}
         {data.voteSearch.invalid && (
           <p className="admin-empty">Vote ID must contain digits only.</p>
         )}

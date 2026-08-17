@@ -22,8 +22,8 @@ export function formatPlayerHonors(
     return null;
   }
   const parts: string[] = [];
-  if (majorsWon !== null) parts.push(`${Math.round(majorsWon)} Major`);
-  if (mvpCount !== null) parts.push(`${Math.round(mvpCount)} MVP`);
+  if (majorsWon !== null) parts.push(`🏆 ${Math.round(majorsWon)} Major`);
+  if (mvpCount !== null) parts.push(`🏅 ${Math.round(mvpCount)} MVP`);
   return parts.join(" · ");
 }
 

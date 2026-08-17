@@ -19,9 +19,10 @@ materially broader use. `CS 野榜` is a working identity pending the final name
 Before resolution, each complete Player card is a choice target. Keyboard shortcuts are `1` for the
 left player, `2` for the right player, and `S` for Skip. The default card shows recent three-month
 HLTV Rating and Firepower (`N/100`). Majors won and Total MVPs sit under the identity line when
-captured (`2 Major · 32 MVP`; zeros are shown; the line is omitted only when both values are
-missing). Nationality is the stored ISO-2 `country` code, or `国籍待补`. Details expand highest
-HLTV Top 20 (peak rank plus every year at that rank) and maps, plus an honest freshness label.
+captured (`🏆 2 Major` / `🏅 32 MVP` chips; zeros are shown; the line is omitted only when both
+values are missing). Nationality is a mini flag from the stored ISO-2 `country` code, or `国籍待补`.
+Details expand highest HLTV Top 20 (peak rank plus every year at that rank) and maps, plus an honest
+freshness label.
 Unsupported or unexposed fields remain `—`; KAST, Round Swing, career Rating, and ADR are not shown.
 
 After resolution, the same two cards remain in place and show the user's selection plus both current

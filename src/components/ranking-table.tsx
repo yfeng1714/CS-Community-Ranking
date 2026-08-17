@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 
 import type { PublicRankingPlayer } from "@/domain/public/types";
 
+import { CountryFlag } from "./country-flag";
 import { SearchIcon } from "./icons";
 import { PlayerPortrait } from "./player-portrait";
 import { TeamLogo } from "./team-logo";
@@ -78,7 +79,9 @@ export function RankingTable({ players }: { players: PublicRankingPlayer[] }) {
                     </div>
                     <span>
                       <strong>{player.nickname}</strong>
-                      <small>{player.country ?? "—"}</small>
+                      <small>
+                        <CountryFlag code={player.country} missingLabel="—" />
+                      </small>
                     </span>
                   </Link>
                 </td>

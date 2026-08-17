@@ -11,13 +11,17 @@ export const dynamic = "force-dynamic";
 export default async function AdminPage({
   searchParams,
 }: {
-  searchParams: Promise<{ voteId?: string | string[] }>;
+  searchParams: Promise<{ voteId?: string | string[]; voteLimit?: string | string[] }>;
 }) {
   const session = await requireAdminPageSession();
   const query = await searchParams;
   const voteId = Array.isArray(query.voteId) ? query.voteId[0] : query.voteId;
+  const voteLimit = Array.isArray(query.voteLimit) ? query.voteLimit[0] : query.voteLimit;
   const env = getEnv();
-  const data = await getAdminConsoleData(getDatabase(), voteId ? { voteId } : {});
+  const data = await getAdminConsoleData(getDatabase(), {
+    ...(voteId ? { voteId } : {}),
+    ...(voteLimit ? { voteLimit } : {}),
+  });
   return (
     <>
       <header className="admin-header">

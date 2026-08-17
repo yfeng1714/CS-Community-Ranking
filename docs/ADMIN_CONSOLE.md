@@ -40,7 +40,8 @@ The console manages the following without a deployment:
 - Manual Team admission, Special Player admission, newly signed formal starters from an already
   admitted Team, and reversible pairing eligibility.
 - Pending imported-change approval/rejection.
-- Exact-ID Vote search and revocation with counter rollback.
+- Exact-ID Vote search and revocation with counter rollback. The recent-Vote table starts at 10
+  rows; **Load more** raises the window by 20 up to 200. Older Votes are reached by exact ID.
 
 There is no physical-delete control. Pool admissions and Votes remain historical records. Pairing
 disable and Vote revoke are explicit state transitions with reasons.
@@ -116,6 +117,25 @@ summary. Apply requires the exact IDs plus `--actor`, `--reason`, `--apply`, and
 `--confirm-pending-review`. It preflights that every selected row is still pending and conflict-free,
 then reviews each through `PendingImportReviewService`, preserving the ordinary mutation, Pool, and
 Admin audit rows. It never selects all pending work implicitly.
+
+## When to use `/admin` instead of an agent
+
+Use the console for attributed, reversible product-data changes that should land immediately in
+PostgreSQL. Ask an agent when the work needs a code change, a capture/import playbook, a Railway
+tunnel, or a decision that is not a form on this page.
+
+| Do this in Admin | Ask an agent instead |
+| --- | --- |
+| Correct a Team/Player name, slug, logo/photo path, country code, or HLTV profile URL | Recapture/import HLTV stats, portraits, or ranking snapshots |
+| End a roster row and add the replacement starter from an already admitted Team | Change pairing math, Vote scoring, or public UI |
+| Disable/enable a Pool player's pairing with a reason | Reset the database, run migrations, or change env vars |
+| Create/transition Editions, confirm T1 events, record placements | Enable live HLTV sync or scrape `/stats/players/` |
+| Approve or reject a pending import / Pool proposal after reading evidence | Invent Pool admissions without source snapshots |
+| Search a Vote by exact ID and revoke a known-bad Vote | Bulk-delete Votes, or inspect production logs/backups |
+| Read score integrity, audit logs, and the Pool update “next action” card | Debug parser drift or write a new capture script |
+
+Every Admin mutation requires a reason and writes an audit row. There is no physical delete. Do not
+paste database URLs or passwords into the console.
 
 ## Search-engine and response treatment
 

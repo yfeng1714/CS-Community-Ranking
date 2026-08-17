@@ -77,8 +77,8 @@ Admin smoke checks:
   still revalidated in PostgreSQL.
 - Use **Add starter from admitted team** for a formal roster replacement. Do not use Special
   admission: the resulting Player entry must reference the Pool Team entry and inherit its category.
-- Search a Vote by an exact numeric ID before revocation; the default table intentionally shows only
-  the most recent 100 Votes.
+- Search a Vote by an exact numeric ID before revocation; the default table shows the 10 most
+  recent Votes, with **Load more** to raise the window by 20 up to 200.
 - Revoke only a known test Vote; confirm it remains visible as `REVOKED`, its counted effects are
   reversed, and both general and moderation audit rows exist.
 - A pending import with conflicts, a newer source run, or changed expected state must fail approval

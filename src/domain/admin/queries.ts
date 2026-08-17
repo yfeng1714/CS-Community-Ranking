@@ -25,22 +25,28 @@ import {
 import type { AppDatabase } from "../database.ts";
 import { checkScoreIntegrity } from "../votes/integrity.ts";
 import { summarizePoolUpdateStatus } from "./pool-update-status.ts";
+import {
+  ADMIN_RECENT_VOTES_MAX,
+  ADMIN_RECENT_VOTES_STEP,
+  parseAdminRecentVoteLimit,
+} from "./vote-limit.ts";
 
 const iso = (value: Date | null) => value?.toISOString() ?? null;
 
 export async function getAdminConsoleData(
   database: AppDatabase,
-  options: { voteId?: string } = {},
+  options: { voteId?: string; voteLimit?: string } = {},
 ) {
   const voteSearch = options.voteId?.trim() ?? "";
   const parsedVoteId = /^[1-9]\d{0,18}$/.test(voteSearch) ? BigInt(voteSearch) : null;
   const validVoteSearch =
     voteSearch === "" || (parsedVoteId !== null && parsedVoteId <= 9_223_372_036_854_775_807n);
+  const recentVoteLimit = parseAdminRecentVoteLimit(options.voteLimit);
   const voteRowsPromise = !validVoteSearch
     ? Promise.resolve([])
     : voteSearch
       ? database.select().from(votes).where(eq(votes.id, parsedVoteId!)).limit(1)
-      : database.select().from(votes).orderBy(desc(votes.createdAt)).limit(100);
+      : database.select().from(votes).orderBy(desc(votes.createdAt)).limit(recentVoteLimit);
   const [
     teamRows,
     playerRows,
@@ -301,7 +307,10 @@ export async function getAdminConsoleData(
       status: row.status,
     })),
     voteSearch: {
+      hasMore: voteSearch === "" && voteRows.length === recentVoteLimit && recentVoteLimit < ADMIN_RECENT_VOTES_MAX,
       invalid: !validVoteSearch,
+      limit: recentVoteLimit,
+      nextLimit: Math.min(recentVoteLimit + ADMIN_RECENT_VOTES_STEP, ADMIN_RECENT_VOTES_MAX),
       query: voteSearch,
       showingRecent: voteSearch === "",
     },
