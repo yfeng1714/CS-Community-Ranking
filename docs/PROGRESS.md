@@ -38,7 +38,7 @@
   recent Rating + Firepower + nationality, 85 Majors won, 33 Total MVPs, 35 Top 20 players / 121
   year-rows; period 2026-05-17 → 2026-08-17; `capturedAt` `2026-08-17T13:18:41.536Z`). Dry-run
   checksum `2dc1b4b5ada7bada9350865e1740b1ce0f36c0bf89f21cbc51e670fb52b6a84c`. Production import
-  still needs the private Railway SSH tunnel.
+  applied 2026-08-17 (`APPLIED`, 90/90 recent Rating).
 
 - Public identity polish: nationality is a mini flag emoji from the ISO-2 code; Majors/MVPs render
   as `🏆 N Major` / `🏅 N MVP` chips. Admin Vote moderation now lists 10 recent Votes by default
@@ -56,8 +56,8 @@
   Dry-run checksum
   `0730202265b8bd8fd0f3969f883489f2acb2bc0c466e8c604ce5a710fed4c37d`.
   A later same-day resume added the 20 Review Manual profiles (90/90; checksum
-  `2dc1b4b5ada7bada9350865e1740b1ce0f36c0bf89f21cbc51e670fb52b6a84c`; production apply pending
-  tunnel).
+  `2dc1b4b5ada7bada9350865e1740b1ce0f36c0bf89f21cbc51e670fb52b6a84c`; production apply
+  completed the same day).
 
 - Player-stat capture, Vote cards, and Player pages use the profile fields HLTV actually
   exposes. Default Vote cards show past-3-month Rating + Firepower; Majors won and Total MVPs sit
