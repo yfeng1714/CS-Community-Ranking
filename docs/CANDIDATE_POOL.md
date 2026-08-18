@@ -136,8 +136,8 @@ pnpm pool:admit-review-manual -- \
 ```
 
 The 2026-08-17 set is `data/review-manual/2026-08-17.json`: BC.Game, 100 Thieves, TYLOO, and Lynn
-Vision (short name LVG). Team logos remain omitted. Player portraits are local HLTV profile body
-shots. Official HLTV stats for the expanded 90-player
+Vision (short name LVG). Team logos and player portraits are local HLTV copies. Official HLTV stats
+for the expanded 90-player
 set were recaptured 2026-08-17 (`capturedAt` `2026-08-17T13:18:41.536Z`; checksum
 `2dc1b4b5ada7bada9350865e1740b1ce0f36c0bf89f21cbc51e670fb52b6a84c`) and imported to Railway
 Postgres the same day. Production reused the Owner's earlier Admin `tyloo` Team row (no roster at
@@ -162,7 +162,9 @@ Rating 0.78, Owner-provided portrait `/images/players/MachineWJQ.webp` — conve
 Rating 0.85, local HLTV profile portrait `/images/players/advent.webp`). After that admission the
 pairing pool is **92** players (**4,186** pairs). Review Manual portraits use
 `pnpm assets:capture-hltv-profile-portraits` then `pnpm assets:import-hltv-profile-portraits`;
-production `photoPath` updates are `pnpm players:apply-photos`.
+production `photoPath` updates are `pnpm players:apply-photos`. Review Manual logos use
+`pnpm assets:capture-hltv-team-logos` then `pnpm assets:import-hltv-team-logos`; production
+`logoPath` updates are `pnpm teams:apply-logos`.
 
 ## Lifecycle boundaries
 

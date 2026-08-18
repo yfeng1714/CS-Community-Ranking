@@ -25,7 +25,12 @@ describe("Review Manual admission manifest", () => {
     expect(() => assertReviewManualManifestApproved(manifest)).not.toThrow();
     expect(manifest.teams.every((team) => team.players.length === 5)).toBe(true);
     expect(manifest.teams.every((team) => team.admissionReason.length >= 3)).toBe(true);
-    expect(manifest.teams.every((team) => team.logoPath === null)).toBe(true);
+    expect(manifest.teams.map((team) => team.logoPath)).toEqual([
+      "/images/teams/bcgame.webp",
+      "/images/teams/100-thieves.webp",
+      "/images/teams/tyloo.png",
+      "/images/teams/lynn-vision.webp",
+    ]);
     expect(
       manifest.teams.every((team) =>
         team.players.every((player) => player.photoPath === `/images/players/${player.slug}.webp`),

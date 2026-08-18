@@ -10,16 +10,16 @@ describe("local asset attribution", () => {
     const manifest = await loadAssetRegistry();
 
     expect(manifest.version).toBe(1);
-    expect(manifest.assets).toHaveLength(106);
+    expect(manifest.assets).toHaveLength(110);
     expect(
       manifest.assets.filter((asset) => asset.assetPath.startsWith("/images/teams/")),
-    ).toHaveLength(14);
+    ).toHaveLength(18);
     expect(
       manifest.assets.filter((asset) => asset.assetPath.startsWith("/images/players/")),
     ).toHaveLength(92);
     expect(
       manifest.assets.filter((asset) => asset.permission === "OWNER_ACCEPTED_PENDING_RIGHTS"),
-    ).toHaveLength(105);
+    ).toHaveLength(109);
     expect(
       manifest.assets.find((asset) => asset.assetPath === "/images/players/MachineWJQ.webp"),
     ).toEqual({

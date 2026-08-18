@@ -275,10 +275,15 @@ export async function createAndAdmitReviewManualTeams(
       if (!team.active) {
         throw new DomainError("TEAM_NOT_ACTIVE", `Existing Team ${teamInput.slug} is inactive`);
       }
-      if (team.countryCode !== teamInput.countryCode || team.shortName !== teamInput.shortName) {
+      if (
+        team.countryCode !== teamInput.countryCode ||
+        team.shortName !== teamInput.shortName ||
+        (teamInput.logoPath !== null && team.logoPath !== teamInput.logoPath)
+      ) {
         team = await updateTeam(database, {
           actorAdminUserId: input.actorAdminUserId,
           countryCode: teamInput.countryCode,
+          ...(teamInput.logoPath === null ? {} : { logoPath: teamInput.logoPath }),
           reason: identityReason,
           shortName: teamInput.shortName,
           teamId: team.id,

@@ -20,7 +20,7 @@
 </tbody>
 </table>
 
-**版本** V0.1.29
+**版本** V0.1.30
 
 **日期** 2026-08-18
 
@@ -81,6 +81,8 @@
 **Owner Special 退役选手入池** 2026-08-18（V0.1.28；MachineWJQ 与 advent 以 RETIRED Special 进入配对池；生涯 Rating 冻结、不参与后续 HLTV 回采；MachineWJQ 肖像由 JPEG 误标转为真实 800×800 WebP）
 
 **Owner Review Manual / advent 肖像** 2026-08-18（V0.1.29；从官方 HLTV 选手主页采集 20 名 Review Manual 与 advent 的 body shot，转为本地 WebP 后入生产）
+
+**Owner Review Manual 队标** 2026-08-18（V0.1.30；从官方 HLTV 战队页采集 BC.Game、100 Thieves、TYLOO、Lynn Vision 队标，转为本地 WebP/PNG 后入生产）
 
 **定位** 产品背景、决策记录与后续 Review Context
 
@@ -298,7 +300,9 @@ Owner 放入仓库的 `MachineWJQ.webp` 实际是 1080×1518 JPEG 且扩展名�
 
 同日 Owner 要求补齐新增 21 人肖像（Review Manual 20 人 + advent）。采集改为官方选手主页的
 `playerbodyshot`（`data-cookieblock-src`），在页面内 fetch 后转为本地 WebP；MachineWJQ 的
-Owner 提供肖像保持不动。公开页面仍然不向 HLTV 发请求。
+Owner 提供肖像保持不动。公开页面仍然不向 HLTV 发请求。同日再补四支 Review Manual 队标：从官方
+战队页采集 `teamlogo`（100 Thieves 取 night-only 以适配深色容器；TYLOO 的 SVG 渲染为透明
+512×512 PNG），本地保存后写入 `logoPath`。
 
 <table>
 <colgroup>

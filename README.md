@@ -117,6 +117,9 @@ If port `5432` is already occupied, set `POSTGRES_PORT` to another host port in
 | `pnpm assets:capture-hltv-profile-portraits` | Local Playwright capture of official HLTV player-profile body shots for Review Manual + advent |
 | `pnpm assets:import-hltv-profile-portraits` | Copy captured profile portraits into `public/images`, registry, and manifests |
 | `pnpm players:apply-photos -- --actor owner --apply --confirm-player-photos` | Write manifest `photoPath` values onto existing Player rows |
+| `pnpm assets:capture-hltv-team-logos` | Local Playwright capture of official HLTV team-page logos for the four Review Manual teams |
+| `pnpm assets:import-hltv-team-logos` | Copy captured team logos into `public/images`, registry, and the Review Manual manifest |
+| `pnpm teams:apply-logos -- --actor owner --apply --confirm-team-logos` | Write manifest `logoPath` values onto existing Team rows |
 | `pnpm source:approve-ranking -- --snapshot <id> [...]` | Review an immutable ranking snapshot; explicit actor, reason, apply, and confirmation inputs are required to approve it |
 | `pnpm source:import-reviewed-hltv [-- ...]` | Validate the checksum-locked reviewed HLTV top-12 fallback; guarded apply records and approves it when live retrieval is blocked |
 | `pnpm source:capture-reviewed-hltv-stats [-- ...]` | Local Playwright capture of official HLTV player profiles into the ignored reviewed-stats JSON; see `docs/HLTV_PLAYER_STATS.md` |

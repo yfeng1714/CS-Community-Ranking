@@ -5,51 +5,43 @@ import { parseArgs } from "node:util";
 import { printCliError } from "./pool-cli-support.ts";
 
 import {
-  listHltvProfilePortraitTargets,
-  loadHltvProfilePortraitBundle,
-  portraitAssetPath,
+  listHltvTeamLogoTargets,
+  loadHltvTeamLogoBundle,
+  logoAssetPath,
   sha256Hex,
-  validateHltvProfilePortraitBundle,
-} from "../src/domain/assets/hltv-profile-portraits.ts";
+  validateHltvTeamLogoBundle,
+} from "../src/domain/assets/hltv-team-logos.ts";
 import { DomainError } from "../src/domain/error.ts";
 import { loadReviewManualManifest } from "../src/domain/pool/review-manual-manifest.ts";
-import { loadSpecialRetiredManifest } from "../src/domain/pool/special-retired-manifest.ts";
 import { cliArgs } from "./cli-args.ts";
+
+const LOGO_NOTE =
+  "Team logos and player portraits are local HLTV copies accepted as pending-rights community-beta assets.";
 
 const args = parseArgs({
   args: cliArgs(),
   options: {
     apply: { type: "boolean" },
-    "confirm-profile-portraits": { type: "boolean" },
+    "confirm-team-logos": { type: "boolean" },
     file: { type: "string" },
     "review-manual": { type: "string" },
-    "special-retired": { type: "string" },
   },
   strict: true,
 }).values;
 
 try {
   const root = process.cwd();
-  const bundleFile = path.resolve(
-    args.file ?? "data/reviewed-sources/hltv-profile-portraits-local.json",
-  );
-  const bundleDirectory = path.join(path.dirname(bundleFile), "hltv-profile-portraits");
+  const bundleFile = path.resolve(args.file ?? "data/reviewed-sources/hltv-team-logos-local.json");
+  const bundleDirectory = path.join(path.dirname(bundleFile), "hltv-team-logos");
   const reviewManualFile = path.resolve(
     args["review-manual"] ?? "data/review-manual/2026-08-17.json",
-  );
-  const specialRetiredFile = path.resolve(
-    args["special-retired"] ?? "data/review-manual/special-retired-2026-08-17.json",
   );
   const registryFile = path.join(root, "assets", "registry.json");
   const attributionFile = path.join(root, "assets", "attribution.json");
 
   const reviewManual = await loadReviewManualManifest(reviewManualFile);
-  const specialRetired = await loadSpecialRetiredManifest(specialRetiredFile);
-  const targets = listHltvProfilePortraitTargets({ reviewManual, specialRetired });
-  const bundle = validateHltvProfilePortraitBundle(
-    await loadHltvProfilePortraitBundle(bundleFile),
-    targets,
-  );
+  const targets = listHltvTeamLogoTargets(reviewManual);
+  const bundle = validateHltvTeamLogoBundle(await loadHltvTeamLogoBundle(bundleFile), targets);
 
   const copies = [];
   for (const record of bundle.records) {
@@ -57,21 +49,26 @@ try {
     const bytes = await readFile(source);
     if (sha256Hex(bytes) !== record.sha256) {
       throw new DomainError(
-        "HLTV_PROFILE_PORTRAIT_CHECKSUM_MISMATCH",
+        "HLTV_TEAM_LOGO_CHECKSUM_MISMATCH",
         `Checksum mismatch for ${record.slug}`,
       );
     }
-    if (
-      bytes.subarray(0, 4).toString("ascii") !== "RIFF" ||
-      bytes.subarray(8, 12).toString("ascii") !== "WEBP"
-    ) {
-      throw new DomainError(
-        "HLTV_PROFILE_PORTRAIT_NOT_WEBP",
-        `${record.file} must contain real WebP bytes`,
-      );
+    const extension = record.file.endsWith(".png") ? "png" : "webp";
+    if (extension === "webp") {
+      if (
+        bytes.subarray(0, 4).toString("ascii") !== "RIFF" ||
+        bytes.subarray(8, 12).toString("ascii") !== "WEBP"
+      ) {
+        throw new DomainError(
+          "HLTV_TEAM_LOGO_NOT_WEBP",
+          `${record.file} must contain real WebP bytes`,
+        );
+      }
+    } else if (bytes.subarray(0, 8).toString("hex") !== "89504e470d0a1a0a") {
+      throw new DomainError("HLTV_TEAM_LOGO_NOT_PNG", `${record.file} must contain real PNG bytes`);
     }
     copies.push({
-      assetPath: portraitAssetPath(record.slug),
+      assetPath: logoAssetPath(record.slug, extension),
       record,
       source,
     });
@@ -80,16 +77,16 @@ try {
   const summary = {
     capturedAt: bundle.capturedAt,
     mode: args.apply ? "APPLIED" : "DRY_RUN",
-    players: copies.map((entry) => entry.record.slug),
+    teams: copies.map((entry) => entry.record.slug),
   };
 
   if (!args.apply) {
     process.stdout.write(`${JSON.stringify(summary)}\n`);
   } else {
-    if (args["confirm-profile-portraits"] !== true) {
+    if (args["confirm-team-logos"] !== true) {
       throw new DomainError(
-        "HLTV_PROFILE_PORTRAIT_CONFIRMATION_REQUIRED",
-        "--apply also requires --confirm-profile-portraits",
+        "HLTV_TEAM_LOGO_CONFIRMATION_REQUIRED",
+        "--apply also requires --confirm-team-logos",
       );
     }
     const registry = JSON.parse(await readFile(registryFile, "utf8")) as {
@@ -118,41 +115,33 @@ try {
       ...attribution.assets.filter((entry) => !importedPaths.has(entry.assetPath)),
       ...copies.map((entry) => ({
         assetPath: entry.assetPath,
-        license: "Rights not independently verified; HLTV-hosted player body shot",
-        notes:
-          "Captured from the official HLTV player profile body shot (data-cookieblock-src / playerbodyshot); local community-beta copy converted to WebP.",
+        license: "Rights not independently verified; HLTV-hosted team logo",
+        notes: `Captured from the official HLTV team page (${entry.record.variant} variant); local community-beta copy. Dark UI container, no baked background.`,
         permission: "OWNER_ACCEPTED_PENDING_RIGHTS",
         sourceUrl: entry.record.sourceUrl,
       })),
     ];
-    await mkdir(path.join(root, "public", "images", "players"), { recursive: true });
+    await mkdir(path.join(root, "public", "images", "teams"), { recursive: true });
     await Promise.all(
       copies.map((entry) =>
         copyFile(entry.source, path.join(root, "public", entry.assetPath.replace(/^\//, ""))),
       ),
     );
-    const photoBySlug = new Map(copies.map((entry) => [entry.record.slug, entry.assetPath]));
+    const logoBySlug = new Map(copies.map((entry) => [entry.record.slug, entry.assetPath]));
     for (const team of reviewManual.teams) {
-      for (const player of team.players) {
-        const photoPath = photoBySlug.get(player.slug);
-        if (photoPath) player.photoPath = photoPath;
-      }
+      const logoPath = logoBySlug.get(team.slug);
+      if (logoPath) team.logoPath = logoPath;
     }
     reviewManual.notes = reviewManual.notes.map((note) =>
-      note.startsWith("Logos and portraits are omitted") ||
-      note.startsWith("Team logos remain omitted")
-        ? "Team logos and player portraits are local HLTV copies accepted as pending-rights community-beta assets."
+      note.startsWith("Team logos remain omitted") ||
+      note.startsWith("Logos and portraits are omitted")
+        ? LOGO_NOTE
         : note,
     );
-    for (const player of specialRetired.players) {
-      const photoPath = photoBySlug.get(player.slug);
-      if (photoPath) player.photoPath = photoPath;
-    }
     await Promise.all([
       writeFile(registryFile, `${JSON.stringify(registry, null, 2)}\n`),
       writeFile(attributionFile, `${JSON.stringify(attribution, null, 2)}\n`),
       writeFile(reviewManualFile, `${JSON.stringify(reviewManual, null, 2)}\n`),
-      writeFile(specialRetiredFile, `${JSON.stringify(specialRetired, null, 2)}\n`),
     ]);
     process.stdout.write(`${JSON.stringify({ ...summary, imported: copies.length })}\n`);
   }

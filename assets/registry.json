@@ -424,6 +424,22 @@
     {
       "assetPath": "/images/players/advent.webp",
       "permission": "OWNER_ACCEPTED_PENDING_RIGHTS"
+    },
+    {
+      "assetPath": "/images/teams/bcgame.webp",
+      "permission": "OWNER_ACCEPTED_PENDING_RIGHTS"
+    },
+    {
+      "assetPath": "/images/teams/100-thieves.webp",
+      "permission": "OWNER_ACCEPTED_PENDING_RIGHTS"
+    },
+    {
+      "assetPath": "/images/teams/tyloo.png",
+      "permission": "OWNER_ACCEPTED_PENDING_RIGHTS"
+    },
+    {
+      "assetPath": "/images/teams/lynn-vision.webp",
+      "permission": "OWNER_ACCEPTED_PENDING_RIGHTS"
     }
   ]
 }

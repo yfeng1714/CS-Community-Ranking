@@ -132,10 +132,19 @@ stores the image on `data-cookieblock-src`; capture fetches that `img-cdn.hltv.o
 URL in-page, converts PNG to real WebP, and writes ignored local evidence. Import copies the 21
 files into `public/images/players/{slug}.webp`, appends registry/attribution, and sets manifest
 `photoPath` values. MachineWJQ remains `OWNER_PROVIDED`. Production `photoPath` is applied with
-`pnpm players:apply-photos`. Counts: 92 player portraits / 14 logos / 105 pending-rights assets / 1
-Owner-provided portrait. Team logos for Review Manual remain omitted. Representative Review Manual
-and advent crops were visually reviewed. Square UI frames still use `object-fit: cover` and
+`pnpm players:apply-photos`. Counts after portraits: 92 player portraits / 14 logos / 105
+pending-rights assets / 1 Owner-provided portrait. Representative Review Manual and advent crops
+were visually reviewed. Square UI frames still use `object-fit: cover` and
 `object-position: center top` because profile body shots are slightly taller than square.
+
+On 2026-08-18 a Review Manual logo pass captured official HLTV **team-page** marks for BC.Game,
+100 Thieves, TYLOO, and Lynn Vision (`pnpm assets:capture-hltv-team-logos`). Capture prefers the
+night-only variant when HLTV splits day/night (the public team-logo container is always `#202936`),
+fetches `img-cdn.hltv.org/teamlogo/` in-page, converts raster PNG to real WebP, and renders SVG
+sources locally to transparent 512×512 PNG. Import copies the files into `public/images/teams/`,
+appends registry/attribution, and sets manifest `logoPath` values. Production `logoPath` is applied
+with `pnpm teams:apply-logos`. Counts: 92 player portraits / 18 logos / 109 pending-rights assets /
+1 Owner-provided portrait.
 
 The preserved local rehearsal databases were bootstrapped before both asset passes and still contain
 null image paths. A fresh canonical bootstrap/reset will receive the Core 84 configured paths; do not
