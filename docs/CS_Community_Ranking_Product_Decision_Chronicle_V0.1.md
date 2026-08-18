@@ -20,9 +20,9 @@
 </tbody>
 </table>
 
-**版本** V0.1.28
+**版本** V0.1.29
 
-**日期** 2026-08-17
+**日期** 2026-08-18
 
 **施工规范复核** 2026-08-10（V0.1.1；未改变冻结的产品决定）
 
@@ -79,6 +79,8 @@
 **Owner 生涯 Rating 回退** 2026-08-17（V0.1.27；无近三月 Rating 时，若有审核的生涯 Rating 则改标「生涯 Rating」；MachineWJQ Owner 查阅为 0.78，因 Cloudflare 不自动采集）
 
 **Owner Special 退役选手入池** 2026-08-18（V0.1.28；MachineWJQ 与 advent 以 RETIRED Special 进入配对池；生涯 Rating 冻结、不参与后续 HLTV 回采；MachineWJQ 肖像由 JPEG 误标转为真实 800×800 WebP）
+
+**Owner Review Manual / advent 肖像** 2026-08-18（V0.1.29；从官方 HLTV 选手主页采集 20 名 Review Manual 与 advent 的 body shot，转为本地 WebP 后入生产）
 
 **定位** 产品背景、决策记录与后续 Review Context
 
@@ -293,6 +295,10 @@ Rating 作为回退；有近三月 Rating 时仍显示「近三月 Rating 3.0」
 覆盖（覆盖仍是每个非退役 HLTV identity 恰好一次）。MachineWJQ 不作为 TYLOO 正式首发纳入。
 Owner 放入仓库的 `MachineWJQ.webp` 实际是 1080×1518 JPEG 且扩展名为 webp；生产响应带
 `X-Content-Type-Options: nosniff`，必须转成真实 WebP，并按正方形框从顶部裁成 800×800，避免头像被切掉。
+
+同日 Owner 要求补齐新增 21 人肖像（Review Manual 20 人 + advent）。采集改为官方选手主页的
+`playerbodyshot`（`data-cookieblock-src`），在页面内 fetch 后转为本地 WebP；MachineWJQ 的
+Owner 提供肖像保持不动。公开页面仍然不向 HLTV 发请求。
 
 <table>
 <colgroup>

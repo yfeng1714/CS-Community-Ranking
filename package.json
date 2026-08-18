@@ -57,7 +57,10 @@
     "backup:create": "node --env-file-if-exists=.env scripts/backup-create.ts",
     "backup:verify": "node --env-file-if-exists=.env scripts/backup-verify.ts",
     "assets:check": "node scripts/assets-check.ts",
-    "assets:import-hltv-portraits": "node scripts/import-hltv-portrait-bundles.ts"
+      "assets:import-hltv-portraits": "node scripts/import-hltv-portrait-bundles.ts",
+    "assets:capture-hltv-profile-portraits": "node --env-file-if-exists=.env --import ./scripts/register-path-aliases.mjs --import ./scripts/playwright-browser-path.ts scripts/capture-hltv-profile-portraits.ts",
+    "assets:import-hltv-profile-portraits": "node --env-file-if-exists=.env --import ./scripts/register-path-aliases.mjs scripts/import-hltv-profile-portraits.ts",
+    "players:apply-photos": "node --env-file-if-exists=.env --import ./scripts/register-path-aliases.mjs scripts/apply-player-photo-paths.ts"
   },
   "dependencies": {
     "argon2": "0.45.1",

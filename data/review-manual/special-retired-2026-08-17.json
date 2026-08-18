@@ -4,11 +4,6 @@
     "Owner-approved Special retired players for closed-beta pairing tests. Career Rating is frozen Owner-reviewed data; retired players are excluded from future HLTV recapture and reviewed-stats coverage."
   ],
   "observedAt": "2026-08-17",
-  "review": {
-    "approvedBy": "owner",
-    "reviewedAt": "2026-08-17T16:00:00.000Z",
-    "status": "OWNER_APPROVED"
-  },
   "players": [
     {
       "admissionReason": "Owner-approved Special retired inclusion for closed-beta pairing tests",
@@ -36,10 +31,15 @@
       },
       "hltvProfileUrl": "https://www.hltv.org/player/8600/advent",
       "nickname": "advent",
-      "photoPath": null,
+      "photoPath": "/images/players/advent.webp",
       "realName": "Zhuo Liang",
       "slug": "advent"
     }
   ],
+  "review": {
+    "approvedBy": "owner",
+    "reviewedAt": "2026-08-17T16:00:00.000Z",
+    "status": "OWNER_APPROVED"
+  },
   "version": 1
 }

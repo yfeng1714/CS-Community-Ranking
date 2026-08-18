@@ -112,11 +112,18 @@ pnpm source:import-reviewed-career-rating -- --file data/review-manual/career-ra
 pnpm job:build-pool-draft -- --edition 2026
 pnpm job:snapshot-ranking -- --edition 2026 --date YYYY-MM-DD
 pnpm assets:check
+pnpm assets:capture-hltv-profile-portraits
+pnpm assets:import-hltv-profile-portraits
+pnpm players:apply-photos
 ```
 
 `assets:check` is deliberately a local Owner/developer verification: it requires the ignored
 `assets/attribution.json` source record and compares it with tracked `assets/registry.json` plus the
 served files. CI, production images, and public/Admin responses never receive the detailed record.
+Review Manual and advent portraits come from official HLTV player-profile body shots
+(`pnpm assets:capture-hltv-profile-portraits`), then local import, then
+`pnpm players:apply-photos` against the Railway tunnel. Do not hotlink HLTV. MachineWJQ stays
+Owner-provided.
 
 Keep `HLTV_SYNC_ENABLED=false` until the User-Agent, low-frequency schedule, and source URLs have
 been reviewed. Never respond to blocking by bypassing access controls. A failed sync is visible in

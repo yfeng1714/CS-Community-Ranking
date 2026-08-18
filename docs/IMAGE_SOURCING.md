@@ -123,11 +123,20 @@ identity-verified batches of 30, 20, and 20, each with zero failures.
 Player ID, profile slug, Team, and nickname, then joined exact source URL to each bundle manifest.
 It imported 70 WebP files, configured all 70 `photoPath` values, added 70 minimal tracked registry
 entries, and added 70 detailed records only to the ignored local attribution file. Filesystem,
-canonical, registry, and local-source counts agree at 70 Core portraits / 14 logos / 84 pending-rights
-assets, plus the Owner-provided Special portrait `/images/players/MachineWJQ.webp` (`OWNER_PROVIDED`,
-real 800×800 WebP cropped from a 1080×1518 JPEG). Advent has no portrait. Representative crops from
-every Team were visually reviewed.
+canonical, registry, and local-source counts then agreed at 70 Core portraits / 14 logos / 84
+pending-rights assets.
+
+On 2026-08-18 a second portrait pass captured official HLTV **player-profile** body shots for the 20
+Review Manual starters plus advent (`pnpm assets:capture-hltv-profile-portraits`). The profile page
+stores the image on `data-cookieblock-src`; capture fetches that `img-cdn.hltv.org/playerbodyshot/`
+URL in-page, converts PNG to real WebP, and writes ignored local evidence. Import copies the 21
+files into `public/images/players/{slug}.webp`, appends registry/attribution, and sets manifest
+`photoPath` values. MachineWJQ remains `OWNER_PROVIDED`. Production `photoPath` is applied with
+`pnpm players:apply-photos`. Counts: 92 player portraits / 14 logos / 105 pending-rights assets / 1
+Owner-provided portrait. Team logos for Review Manual remain omitted. Representative Review Manual
+and advent crops were visually reviewed. Square UI frames still use `object-fit: cover` and
+`object-position: center top` because profile body shots are slightly taller than square.
 
 The preserved local rehearsal databases were bootstrapped before both asset passes and still contain
-null image paths. A fresh canonical bootstrap/reset will receive all 84 configured paths; do not
+null image paths. A fresh canonical bootstrap/reset will receive the Core 84 configured paths; do not
 describe the old rehearsal report as evidence that the post-asset database was tested.

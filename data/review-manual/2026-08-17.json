@@ -32,7 +32,7 @@
   "notes": [
     "Owner-requested Review Manual admission after Admin Team/Player create returned a generic unavailable message.",
     "Current starters were read from each official HLTV team page on 2026-08-17. Roster startsAt is an observation lower bound, not an asserted historical signing date.",
-    "Logos and portraits are omitted; public UI degrades to Team text and Player monograms until a later image pass.",
+    "Team logos remain omitted. Player portraits are local HLTV profile body shots accepted as pending-rights community-beta copies.",
     "HLTV Rating / Firepower / honors remain missing until a later recapture that includes these 20 identities. Do not invent stats."
   ],
   "teams": [
@@ -54,7 +54,7 @@
           "nickname": "s1mple",
           "realName": "Oleksandr Kostyliev",
           "countryCode": "UA",
-          "photoPath": null,
+          "photoPath": "/images/players/s1mple.webp",
           "hltvProfileUrl": "https://www.hltv.org/player/7998/s1mple",
           "hltvIdentity": {
             "externalId": "7998",
@@ -67,7 +67,7 @@
           "nickname": "electroNic",
           "realName": "Denis Sharipov",
           "countryCode": "RU",
-          "photoPath": null,
+          "photoPath": "/images/players/electronic.webp",
           "hltvProfileUrl": "https://www.hltv.org/player/8918/electronic",
           "hltvIdentity": {
             "externalId": "8918",
@@ -80,7 +80,7 @@
           "nickname": "Magisk",
           "realName": "Emil Reif",
           "countryCode": "DK",
-          "photoPath": null,
+          "photoPath": "/images/players/magisk.webp",
           "hltvProfileUrl": "https://www.hltv.org/player/9032/magisk",
           "hltvIdentity": {
             "externalId": "9032",
@@ -93,7 +93,7 @@
           "nickname": "Senzu",
           "realName": "Azbayar Munkhbold",
           "countryCode": "MN",
-          "photoPath": null,
+          "photoPath": "/images/players/senzu.webp",
           "hltvProfileUrl": "https://www.hltv.org/player/20903/senzu",
           "hltvIdentity": {
             "externalId": "20903",
@@ -106,7 +106,7 @@
           "nickname": "mzinho",
           "realName": "Ayush Batbold",
           "countryCode": "MN",
-          "photoPath": null,
+          "photoPath": "/images/players/mzinho.webp",
           "hltvProfileUrl": "https://www.hltv.org/player/21001/mzinho",
           "hltvIdentity": {
             "externalId": "21001",
@@ -134,7 +134,7 @@
           "nickname": "device",
           "realName": "Nicolai Reedtz",
           "countryCode": "DK",
-          "photoPath": null,
+          "photoPath": "/images/players/device.webp",
           "hltvProfileUrl": "https://www.hltv.org/player/7592/device",
           "hltvIdentity": {
             "externalId": "7592",
@@ -147,7 +147,7 @@
           "nickname": "rain",
           "realName": "Håvard Nygaard",
           "countryCode": "NO",
-          "photoPath": null,
+          "photoPath": "/images/players/rain.webp",
           "hltvProfileUrl": "https://www.hltv.org/player/8183/rain",
           "hltvIdentity": {
             "externalId": "8183",
@@ -160,7 +160,7 @@
           "nickname": "Gizmy",
           "realName": "Jack von Spreckelsen",
           "countryCode": "GB",
-          "photoPath": null,
+          "photoPath": "/images/players/gizmy.webp",
           "hltvProfileUrl": "https://www.hltv.org/player/21816/gizmy",
           "hltvIdentity": {
             "externalId": "21816",
@@ -173,7 +173,7 @@
           "nickname": "sirah",
           "realName": "William Kjærsgaard",
           "countryCode": "DK",
-          "photoPath": null,
+          "photoPath": "/images/players/sirah.webp",
           "hltvProfileUrl": "https://www.hltv.org/player/22695/sirah",
           "hltvIdentity": {
             "externalId": "22695",
@@ -186,7 +186,7 @@
           "nickname": "poiii",
           "realName": "Alex Nyholm Sundgren",
           "countryCode": "SE",
-          "photoPath": null,
+          "photoPath": "/images/players/poiii.webp",
           "hltvProfileUrl": "https://www.hltv.org/player/23397/poiii",
           "hltvIdentity": {
             "externalId": "23397",
@@ -214,7 +214,7 @@
           "nickname": "JamYoung",
           "realName": "Yi Yang",
           "countryCode": "CN",
-          "photoPath": null,
+          "photoPath": "/images/players/jamyoung.webp",
           "hltvProfileUrl": "https://www.hltv.org/player/19645/jamyoung",
           "hltvIdentity": {
             "externalId": "19645",
@@ -227,7 +227,7 @@
           "nickname": "Jee",
           "realName": "Dongkai Ji",
           "countryCode": "CN",
-          "photoPath": null,
+          "photoPath": "/images/players/jee.webp",
           "hltvProfileUrl": "https://www.hltv.org/player/20702/jee",
           "hltvIdentity": {
             "externalId": "20702",
@@ -240,7 +240,7 @@
           "nickname": "Mercury",
           "realName": "Jingxiang Wang",
           "countryCode": "CN",
-          "photoPath": null,
+          "photoPath": "/images/players/mercury.webp",
           "hltvProfileUrl": "https://www.hltv.org/player/20895/mercury",
           "hltvIdentity": {
             "externalId": "20895",
@@ -253,7 +253,7 @@
           "nickname": "Moseyuh",
           "realName": "Qianhao Chen",
           "countryCode": "CN",
-          "photoPath": null,
+          "photoPath": "/images/players/moseyuh.webp",
           "hltvProfileUrl": "https://www.hltv.org/player/21621/moseyuh",
           "hltvIdentity": {
             "externalId": "21621",
@@ -266,7 +266,7 @@
           "nickname": "Zero",
           "realName": "Su Jingshen",
           "countryCode": "CN",
-          "photoPath": null,
+          "photoPath": "/images/players/zero.webp",
           "hltvProfileUrl": "https://www.hltv.org/player/24857/zero",
           "hltvIdentity": {
             "externalId": "24857",
@@ -294,7 +294,7 @@
           "nickname": "Westmelon",
           "realName": "Zhe Niu",
           "countryCode": "CN",
-          "photoPath": null,
+          "photoPath": "/images/players/westmelon.webp",
           "hltvProfileUrl": "https://www.hltv.org/player/16551/westmelon",
           "hltvIdentity": {
             "externalId": "16551",
@@ -307,7 +307,7 @@
           "nickname": "z4KR",
           "realName": "Sike Zhang",
           "countryCode": "CN",
-          "photoPath": null,
+          "photoPath": "/images/players/z4kr.webp",
           "hltvProfileUrl": "https://www.hltv.org/player/18744/z4kr",
           "hltvIdentity": {
             "externalId": "18744",
@@ -320,7 +320,7 @@
           "nickname": "Starry",
           "realName": "Lizhi Ye",
           "countryCode": "CN",
-          "photoPath": null,
+          "photoPath": "/images/players/starry.webp",
           "hltvProfileUrl": "https://www.hltv.org/player/20254/starry",
           "hltvIdentity": {
             "externalId": "20254",
@@ -333,7 +333,7 @@
           "nickname": "EmiliaQAQ",
           "realName": "Junjie Tang",
           "countryCode": "CN",
-          "photoPath": null,
+          "photoPath": "/images/players/emiliaqaq.webp",
           "hltvProfileUrl": "https://www.hltv.org/player/22922/emiliaqaq",
           "hltvIdentity": {
             "externalId": "22922",
@@ -346,7 +346,7 @@
           "nickname": "C4LLM3SU3",
           "realName": "Qihao Su",
           "countryCode": "CN",
-          "photoPath": null,
+          "photoPath": "/images/players/c4llm3su3.webp",
           "hltvProfileUrl": "https://www.hltv.org/player/23100/c4llm3su3",
           "hltvIdentity": {
             "externalId": "23100",

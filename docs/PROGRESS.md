@@ -38,9 +38,10 @@
   (MachineWJQ, advent): **92** pairing-enabled players, **4,186** pairs. MachineWJQ was left out of
   the TYLOO Review Manual roster (not a current starter) and is admitted as a `RETIRED` Special with
   Owner-provided portrait `/images/players/MachineWJQ.webp` (converted from a 1080×1518 JPEG to a
-  real 800×800 WebP so square frames and `nosniff` both work). advent has career Rating `0.85` and
-  no portrait. Retired Specials are frozen and excluded from HLTV recapture. Logos/portraits for the
-  Review Manual 20 stay missing until later passes. The 2026-08-17 recapture resumed the ignored
+  real 800×800 WebP so square frames and `nosniff` both work). Review Manual 20 plus advent now have
+  local HLTV profile body shots (`pnpm assets:capture-hltv-profile-portraits` then import, then
+  `pnpm players:apply-photos` on Railway). Retired Specials are frozen and excluded from HLTV
+  recapture. The 2026-08-17 recapture resumed the ignored
   Core JSON with `--review-manual` and filled **20/20** new official profiles (bundle **90/90**
   recent Rating + Firepower + nationality, 85 Majors won, 33 Total MVPs, 35 Top 20 players / 121
   year-rows; period 2026-05-17 → 2026-08-17; `capturedAt` `2026-08-17T13:18:41.536Z`). Dry-run

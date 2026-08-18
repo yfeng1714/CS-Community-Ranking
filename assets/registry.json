@@ -340,6 +340,90 @@
     {
       "assetPath": "/images/players/MachineWJQ.webp",
       "permission": "OWNER_PROVIDED"
+    },
+    {
+      "assetPath": "/images/players/s1mple.webp",
+      "permission": "OWNER_ACCEPTED_PENDING_RIGHTS"
+    },
+    {
+      "assetPath": "/images/players/electronic.webp",
+      "permission": "OWNER_ACCEPTED_PENDING_RIGHTS"
+    },
+    {
+      "assetPath": "/images/players/magisk.webp",
+      "permission": "OWNER_ACCEPTED_PENDING_RIGHTS"
+    },
+    {
+      "assetPath": "/images/players/senzu.webp",
+      "permission": "OWNER_ACCEPTED_PENDING_RIGHTS"
+    },
+    {
+      "assetPath": "/images/players/mzinho.webp",
+      "permission": "OWNER_ACCEPTED_PENDING_RIGHTS"
+    },
+    {
+      "assetPath": "/images/players/device.webp",
+      "permission": "OWNER_ACCEPTED_PENDING_RIGHTS"
+    },
+    {
+      "assetPath": "/images/players/rain.webp",
+      "permission": "OWNER_ACCEPTED_PENDING_RIGHTS"
+    },
+    {
+      "assetPath": "/images/players/gizmy.webp",
+      "permission": "OWNER_ACCEPTED_PENDING_RIGHTS"
+    },
+    {
+      "assetPath": "/images/players/sirah.webp",
+      "permission": "OWNER_ACCEPTED_PENDING_RIGHTS"
+    },
+    {
+      "assetPath": "/images/players/poiii.webp",
+      "permission": "OWNER_ACCEPTED_PENDING_RIGHTS"
+    },
+    {
+      "assetPath": "/images/players/jamyoung.webp",
+      "permission": "OWNER_ACCEPTED_PENDING_RIGHTS"
+    },
+    {
+      "assetPath": "/images/players/jee.webp",
+      "permission": "OWNER_ACCEPTED_PENDING_RIGHTS"
+    },
+    {
+      "assetPath": "/images/players/mercury.webp",
+      "permission": "OWNER_ACCEPTED_PENDING_RIGHTS"
+    },
+    {
+      "assetPath": "/images/players/moseyuh.webp",
+      "permission": "OWNER_ACCEPTED_PENDING_RIGHTS"
+    },
+    {
+      "assetPath": "/images/players/zero.webp",
+      "permission": "OWNER_ACCEPTED_PENDING_RIGHTS"
+    },
+    {
+      "assetPath": "/images/players/westmelon.webp",
+      "permission": "OWNER_ACCEPTED_PENDING_RIGHTS"
+    },
+    {
+      "assetPath": "/images/players/z4kr.webp",
+      "permission": "OWNER_ACCEPTED_PENDING_RIGHTS"
+    },
+    {
+      "assetPath": "/images/players/starry.webp",
+      "permission": "OWNER_ACCEPTED_PENDING_RIGHTS"
+    },
+    {
+      "assetPath": "/images/players/emiliaqaq.webp",
+      "permission": "OWNER_ACCEPTED_PENDING_RIGHTS"
+    },
+    {
+      "assetPath": "/images/players/c4llm3su3.webp",
+      "permission": "OWNER_ACCEPTED_PENDING_RIGHTS"
+    },
+    {
+      "assetPath": "/images/players/advent.webp",
+      "permission": "OWNER_ACCEPTED_PENDING_RIGHTS"
     }
   ]
 }

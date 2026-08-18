@@ -20,5 +20,6 @@ describe("Special retired admission manifest", () => {
     });
     expect(manifest.players.map((player) => player.careerRating)).toEqual([0.78, 0.85]);
     expect(manifest.players[0]?.photoPath).toBe("/images/players/MachineWJQ.webp");
+    expect(manifest.players[1]?.photoPath).toBe("/images/players/advent.webp");
   });
 });
