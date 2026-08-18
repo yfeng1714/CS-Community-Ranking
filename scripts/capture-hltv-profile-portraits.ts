@@ -15,9 +15,11 @@ import {
   sha256Hex,
   type HltvProfilePortraitBundle,
   type HltvProfilePortraitRecord,
+  type HltvProfilePortraitSource,
   type HltvProfilePortraitTarget,
 } from "../src/domain/assets/hltv-profile-portraits.ts";
 import { DomainError } from "../src/domain/error.ts";
+import { loadCanonicalManifest } from "../src/domain/canonical/manifest.ts";
 import { loadReviewManualManifest } from "../src/domain/pool/review-manual-manifest.ts";
 import { loadSpecialRetiredManifest } from "../src/domain/pool/special-retired-manifest.ts";
 import { cliArgs } from "./cli-args.ts";
@@ -35,12 +37,14 @@ const PAGE_OPTIONS = {
 const args = parseArgs({
   args: cliArgs(),
   options: {
+    canonical: { type: "string" },
     "delay-ms": { type: "string" },
     headed: { type: "boolean" },
     output: { type: "string" },
     "player-slug": { type: "string" },
     "review-manual": { type: "string" },
     resume: { type: "boolean" },
+    source: { type: "string" },
     "special-retired": { type: "string" },
   },
   strict: true,
@@ -53,6 +57,15 @@ function integerOption(value: string | undefined, fallback: number, name: string
     throw new DomainError("CLI_OPTION_INVALID", `${name} must be a non-negative integer`);
   }
   return parsed;
+}
+
+function parseSourceOption(value: string | undefined): HltvProfilePortraitSource | undefined {
+  if (value === undefined) return undefined;
+  if (value === "CORE" || value === "REVIEW_MANUAL" || value === "SPECIAL_RETIRED") return value;
+  throw new DomainError(
+    "CLI_OPTION_INVALID",
+    "--source must be CORE, REVIEW_MANUAL, or SPECIAL_RETIRED",
+  );
 }
 
 function sleep(ms: number): Promise<void> {
@@ -71,7 +84,10 @@ function loadSharp() {
   const pnpm = path.join(process.cwd(), "node_modules/.pnpm");
   const directory = readdirSync(pnpm).find((name) => name.startsWith("sharp@"));
   if (!directory) {
-    throw new DomainError("SHARP_NOT_INSTALLED", "sharp is required to convert HLTV portraits to WebP");
+    throw new DomainError(
+      "SHARP_NOT_INSTALLED",
+      "sharp is required to convert HLTV portraits to WebP",
+    );
   }
   return createRequire(path.join(pnpm, directory, "node_modules/sharp/package.json"))("sharp");
 }
@@ -108,7 +124,10 @@ async function capturePortrait(
   page: Page,
   player: HltvProfilePortraitTarget,
   sharp: ReturnType<typeof loadSharp>,
-): Promise<{ bytes: Buffer; record: Omit<HltvProfilePortraitRecord, "sha256"> & { sha256?: string } }> {
+): Promise<{
+  bytes: Buffer;
+  record: Omit<HltvProfilePortraitRecord, "sha256"> & { sha256?: string };
+}> {
   const labels = await page.evaluate(() => {
     const image = document.querySelector("img.player-summary-stat-box-left-bodyshot");
     return {
@@ -141,10 +160,7 @@ async function capturePortrait(
     return { base64: btoa(binary), type };
   }, sourceUrl);
   const raw = Buffer.from(downloaded.base64, "base64");
-  const webp: Buffer = await sharp(raw)
-    .rotate()
-    .webp({ quality: 82, effort: 6 })
-    .toBuffer();
+  const webp: Buffer = await sharp(raw).rotate().webp({ quality: 82, effort: 6 }).toBuffer();
   return {
     bytes: webp,
     record: {
@@ -170,19 +186,30 @@ async function replacePage(browser: Browser, page: Page | null): Promise<Page> {
 }
 
 const delayMs = integerOption(args["delay-ms"], 8_000, "--delay-ms");
+const sourceFilter = parseSourceOption(args.source);
 const outputFile = path.resolve(
-  args.output ?? "data/reviewed-sources/hltv-profile-portraits-local.json",
+  args.output ??
+    (sourceFilter === "CORE"
+      ? "data/reviewed-sources/hltv-profile-portraits-core-local.json"
+      : "data/reviewed-sources/hltv-profile-portraits-local.json"),
 );
-const outputDirectory = path.join(path.dirname(outputFile), "hltv-profile-portraits");
+const outputDirectory = path.join(
+  path.dirname(outputFile),
+  sourceFilter === "CORE" ? "hltv-profile-portraits-core" : "hltv-profile-portraits",
+);
+const canonical = await loadCanonicalManifest(args.canonical ?? "data/canonical/2026-beta.json");
 const reviewManual = await loadReviewManualManifest(
   args["review-manual"] ?? "data/review-manual/2026-08-17.json",
 );
 const specialRetired = await loadSpecialRetiredManifest(
   args["special-retired"] ?? "data/review-manual/special-retired-2026-08-17.json",
 );
-const targets = listHltvProfilePortraitTargets({ reviewManual, specialRetired }).filter(
-  (target) => !args["player-slug"] || target.slug === args["player-slug"],
-);
+const targets = listHltvProfilePortraitTargets({
+  canonical,
+  reviewManual,
+  source: sourceFilter,
+  specialRetired,
+}).filter((target) => !args["player-slug"] || target.slug === args["player-slug"]);
 if (targets.length === 0) {
   throw new DomainError("HLTV_PROFILE_PORTRAIT_EMPTY", "No portrait targets matched");
 }
@@ -232,7 +259,9 @@ try {
       await writeFile(path.join(outputDirectory, record.file), capture.bytes);
       recordsBySlug.set(player.slug, record);
       consecutiveDenials = 0;
-      process.stderr.write(`${recordsBySlug.size}/${targets.length} ${player.slug} ${record.sourceUrl}\n`);
+      process.stderr.write(
+        `${recordsBySlug.size}/${targets.length} ${player.slug} ${record.sourceUrl}\n`,
+      );
     } catch (error) {
       const reason = error instanceof Error ? error.message : "unknown failure";
       failures.push({ slug: player.slug, reason });

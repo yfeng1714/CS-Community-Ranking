@@ -18,7 +18,7 @@ describe("player stat formatters", () => {
     expect(formatFirepower(null)).toBe("—");
     expect(formatAdr(null)).toBe("—");
     expect(formatInteger(null)).toBe("—");
-    expect(formatPlayerHonors(null, null)).toBeNull();
+    expect(formatPlayerHonors(null, null)).toBe("🏆 0 Major");
     expect(formatTop20Peak(null)).toBe("—");
   });
 
@@ -28,6 +28,7 @@ describe("player stat formatters", () => {
     expect(formatPlayerHonors(2, 32)).toBe("🏆 2 Major · 🏅 32 MVP");
     expect(formatPlayerHonors(0, 0)).toBe("🏆 0 Major · 🏅 0 MVP");
     expect(formatPlayerHonors(3, null)).toBe("🏆 3 Major");
+    expect(formatPlayerHonors(null, 2)).toBe("🏆 0 Major · 🏅 2 MVP");
     expect(formatAdr(85.4)).toBe("85.4");
     expect(formatTop20Peak({ rank: 1, years: [2019, 2020, 2023, 2025] })).toBe(
       "#1 · 2019, 2020, 2023, 2025",

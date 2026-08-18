@@ -114,7 +114,7 @@ If port `5432` is already occupied, set `POSTGRES_PORT` to another host port in
 | `pnpm launch:check -- --edition <code>` | Produce the fail-closed, read-only pre-activation readiness report |
 | `pnpm canonical:bootstrap [-- ...]` | Validate the DRAFT canonical manifest; explicit approved flags are required to apply it to an empty DB |
 | `pnpm assets:import-hltv-portraits -- --capture <file> --bundles <dir,...>` | Identity-check and import reviewed local HLTV portrait bundles |
-| `pnpm assets:capture-hltv-profile-portraits` | Local Playwright capture of official HLTV player-profile body shots for Review Manual + advent |
+| `pnpm assets:capture-hltv-profile-portraits` | Local Playwright capture of official HLTV player-profile body shots (`--source CORE` for the first 70) |
 | `pnpm assets:import-hltv-profile-portraits` | Copy captured profile portraits into `public/images`, registry, and manifests |
 | `pnpm players:apply-photos -- --actor owner --apply --confirm-player-photos` | Write manifest `photoPath` values onto existing Player rows |
 | `pnpm assets:capture-hltv-team-logos` | Local Playwright capture of official HLTV team-page logos for the four Review Manual teams |

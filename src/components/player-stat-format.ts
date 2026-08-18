@@ -30,15 +30,8 @@ export function formatAdr(value: number | null): string {
   return value === null ? "—" : value.toFixed(1);
 }
 
-export function formatPlayerHonors(
-  majorsWon: number | null,
-  mvpCount: number | null,
-): string | null {
-  if (majorsWon === null && mvpCount === null) {
-    return null;
-  }
-  const parts: string[] = [];
-  if (majorsWon !== null) parts.push(`🏆 ${Math.round(majorsWon)} Major`);
+export function formatPlayerHonors(majorsWon: number | null, mvpCount: number | null): string {
+  const parts = [`🏆 ${Math.round(majorsWon ?? 0)} Major`];
   if (mvpCount !== null) parts.push(`🏅 ${Math.round(mvpCount)} MVP`);
   return parts.join(" · ");
 }

@@ -20,7 +20,7 @@
 </tbody>
 </table>
 
-**版本** V0.1.30
+**版本** V0.1.31
 
 **日期** 2026-08-18
 
@@ -83,6 +83,8 @@
 **Owner Review Manual / advent 肖像** 2026-08-18（V0.1.29；从官方 HLTV 选手主页采集 20 名 Review Manual 与 advent 的 body shot，转为本地 WebP 后入生产）
 
 **Owner Review Manual 队标** 2026-08-18（V0.1.30；从官方 HLTV 战队页采集 BC.Game、100 Thieves、TYLOO、Lynn Vision 队标，转为本地 WebP/PNG 后入生产）
+
+**Owner Core 肖像统一与 0 Major** 2026-08-19（V0.1.31；Core 70 人肖像改用选手主页 body shot；无 Major 次数时统一展示 🏆 0 Major；投票卡头像略放大）
 
 **定位** 产品背景、决策记录与后续 Review Context
 
@@ -302,7 +304,7 @@ Owner 放入仓库的 `MachineWJQ.webp` 实际是 1080×1518 JPEG 且扩展名�
 `playerbodyshot`（`data-cookieblock-src`），在页面内 fetch 后转为本地 WebP；MachineWJQ 的
 Owner 提供肖像保持不动。公开页面仍然不向 HLTV 发请求。同日再补四支 Review Manual 队标：从官方
 战队页采集 `teamlogo`（100 Thieves 取 night-only 以适配深色容器；TYLOO 的 SVG 渲染为透明
-512×512 PNG），本地保存后写入 `logoPath`。
+512×512 PNG），本地保存后写入 `logoPath`。2026-08-19 Owner 要求把最初 70 张 Ranking-page 肖像也换成同一套选手主页 body shot，使全池头像风格一致；投票卡上无 Major 记录的选手（HLTV 未写出该字段、库中为 null）一律显示 🏆 0 Major，与明确记为 0 的选手相同；头像更清晰后投票卡照片略放大。MachineWJQ 仍为 Owner 提供肖像。公开页面仍然不向 HLTV 发请求。
 
 <table>
 <colgroup>

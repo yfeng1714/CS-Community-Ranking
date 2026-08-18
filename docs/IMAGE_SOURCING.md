@@ -146,6 +146,13 @@ appends registry/attribution, and sets manifest `logoPath` values. Production `l
 with `pnpm teams:apply-logos`. Counts: 92 player portraits / 18 logos / 109 pending-rights assets /
 1 Owner-provided portrait.
 
+On 2026-08-19 the Core 70 ranking-page 200×200 portraits were replaced with the same official
+HLTV **player-profile** body shots (`pnpm assets:capture-hltv-profile-portraits -- --source CORE`).
+Paths stay `/images/players/{slug}.webp`; only the bytes and ignored source URLs change.
+MachineWJQ remains `OWNER_PROVIDED`. Vote-card portraits are slightly larger (7.5rem) after this
+pass. Missing `majors_won` snapshots display as 🏆 0 Major so players without a Major winner badge
+match those captured as zero.
+
 The preserved local rehearsal databases were bootstrapped before both asset passes and still contain
 null image paths. A fresh canonical bootstrap/reset will receive the Core 84 configured paths; do not
 describe the old rehearsal report as evidence that the post-asset database was tested.

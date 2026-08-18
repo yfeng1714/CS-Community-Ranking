@@ -40,7 +40,9 @@
   Owner-provided portrait `/images/players/MachineWJQ.webp` (converted from a 1080×1518 JPEG to a
   real 800×800 WebP so square frames and `nosniff` both work). Review Manual 20 plus advent now have
   local HLTV profile body shots (`pnpm assets:capture-hltv-profile-portraits` then import, then
-  `pnpm players:apply-photos` on Railway). Review Manual team logos are local HLTV team-page marks
+  `pnpm players:apply-photos` on Railway). Core 70 portraits were later replaced with the same
+  player-profile body shots (`--source CORE`) so Vote cards match Review Manual crops. Missing
+  Major counts render as 🏆 0 Major. Review Manual team logos are local HLTV team-page marks
   (`pnpm assets:capture-hltv-team-logos` then import, then `pnpm teams:apply-logos` on Railway).
   Retired Specials are frozen and excluded from HLTV
   recapture. The 2026-08-17 recapture resumed the ignored

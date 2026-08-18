@@ -4,6 +4,7 @@ import path from "node:path";
 
 import { z } from "zod";
 
+import type { CanonicalManifest } from "../canonical/manifest.ts";
 import { DomainError } from "../error.ts";
 import type { ReviewManualManifest } from "../pool/review-manual-manifest.ts";
 import type { SpecialRetiredManifest } from "../pool/special-retired-manifest.ts";
@@ -21,7 +22,7 @@ const recordSchema = z.strictObject({
   profileUrl: z.url({ protocol: /^https$/ }),
   sha256: z.string().regex(/^[a-f0-9]{64}$/),
   slug,
-  source: z.enum(["REVIEW_MANUAL", "SPECIAL_RETIRED"]),
+  source: z.enum(["CORE", "REVIEW_MANUAL", "SPECIAL_RETIRED"]),
   sourceUrl: z.url({ protocol: /^https$/ }),
 });
 
@@ -34,6 +35,7 @@ export const hltvProfilePortraitBundleSchema = z.strictObject({
 
 export type HltvProfilePortraitBundle = z.infer<typeof hltvProfilePortraitBundleSchema>;
 export type HltvProfilePortraitRecord = HltvProfilePortraitBundle["records"][number];
+export type HltvProfilePortraitSource = HltvProfilePortraitRecord["source"];
 
 export interface HltvProfilePortraitTarget {
   externalId: string;
@@ -41,7 +43,7 @@ export interface HltvProfilePortraitTarget {
   nickname: string;
   profileUrl: string;
   slug: string;
-  source: "REVIEW_MANUAL" | "SPECIAL_RETIRED";
+  source: HltvProfilePortraitSource;
 }
 
 export function portraitAssetPath(playerSlug: string): string {
@@ -49,9 +51,22 @@ export function portraitAssetPath(playerSlug: string): string {
 }
 
 export function listHltvProfilePortraitTargets(input: {
+  canonical?: CanonicalManifest;
   reviewManual: ReviewManualManifest;
   specialRetired: SpecialRetiredManifest;
+  source?: HltvProfilePortraitSource;
 }): HltvProfilePortraitTarget[] {
+  const core =
+    input.canonical?.teams.flatMap((team) =>
+      team.players.map((player) => ({
+        externalId: player.hltvIdentity.externalId,
+        externalSlug: player.hltvIdentity.externalSlug,
+        nickname: player.nickname,
+        profileUrl: player.hltvProfileUrl,
+        slug: player.slug,
+        source: "CORE" as const,
+      })),
+    ) ?? [];
   const reviewManual = input.reviewManual.teams.flatMap((team) =>
     team.players.map((player) => ({
       externalId: player.hltvIdentity.externalId,
@@ -72,7 +87,9 @@ export function listHltvProfilePortraitTargets(input: {
       slug: player.slug,
       source: "SPECIAL_RETIRED" as const,
     }));
-  const targets = [...reviewManual, ...specialRetired];
+  const targets = [...core, ...reviewManual, ...specialRetired].filter(
+    (target) => !input.source || target.source === input.source,
+  );
   const slugs = new Set<string>();
   for (const target of targets) {
     if (slugs.has(target.slug)) {

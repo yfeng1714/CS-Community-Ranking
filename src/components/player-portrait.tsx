@@ -3,7 +3,7 @@ import Image from "next/image";
 const portraitSizes = {
   profile: "200px",
   ranking: "42px",
-  vote: "112px",
+  vote: "120px",
 } as const;
 
 export function PlayerPortrait({

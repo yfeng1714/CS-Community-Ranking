@@ -64,5 +64,7 @@ docker-data/
 /data/reviewed-sources/hltv-player-stats-html/
 /data/reviewed-sources/hltv-profile-portraits-local.json
 /data/reviewed-sources/hltv-profile-portraits/
+/data/reviewed-sources/hltv-profile-portraits-core-local.json
+/data/reviewed-sources/hltv-profile-portraits-core/
 /data/reviewed-sources/hltv-team-logos-local.json
 /data/reviewed-sources/hltv-team-logos/

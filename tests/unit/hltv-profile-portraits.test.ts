@@ -8,6 +8,7 @@ import {
   portraitAssetPath,
   validateHltvProfilePortraitBundle,
 } from "@/domain/assets/hltv-profile-portraits";
+import { loadCanonicalManifest } from "@/domain/canonical/manifest";
 import { loadReviewManualManifest } from "@/domain/pool/review-manual-manifest";
 import { loadSpecialRetiredManifest } from "@/domain/pool/special-retired-manifest";
 
@@ -44,6 +45,23 @@ describe("HLTV profile portrait targets", () => {
     ]);
     expect(targets.every((target) => target.slug !== "machinewjq")).toBe(true);
     expect(portraitAssetPath("advent")).toBe("/images/players/advent.webp");
+  });
+
+  it("lists all 70 Core players when the canonical manifest is included", async () => {
+    const [canonical, reviewManual, specialRetired] = await Promise.all([
+      loadCanonicalManifest(path.resolve("data/canonical/2026-beta.json")),
+      loadReviewManualManifest(reviewManualFile),
+      loadSpecialRetiredManifest(specialRetiredFile),
+    ]);
+    const targets = listHltvProfilePortraitTargets({
+      canonical,
+      reviewManual,
+      source: "CORE",
+      specialRetired,
+    });
+    expect(targets).toHaveLength(70);
+    expect(targets.every((target) => target.source === "CORE")).toBe(true);
+    expect(targets[0]).toMatchObject({ nickname: "karrigan", slug: "karrigan", source: "CORE" });
   });
 
   it("rejects a non-HLTV portrait URL", async () => {
