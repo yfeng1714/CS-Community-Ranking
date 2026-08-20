@@ -61,8 +61,8 @@ try {
   const targets = listHltvProfilePortraitTargets({
     canonical,
     reviewManual,
-    source: sourceFilter,
     specialRetired,
+    ...(sourceFilter === undefined ? {} : { source: sourceFilter }),
   });
   const bundle = validateHltvProfilePortraitBundle(
     await loadHltvProfilePortraitBundle(bundleFile),

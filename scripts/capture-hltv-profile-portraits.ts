@@ -207,8 +207,8 @@ const specialRetired = await loadSpecialRetiredManifest(
 const targets = listHltvProfilePortraitTargets({
   canonical,
   reviewManual,
-  source: sourceFilter,
   specialRetired,
+  ...(sourceFilter === undefined ? {} : { source: sourceFilter }),
 }).filter((target) => !args["player-slug"] || target.slug === args["player-slug"]);
 if (targets.length === 0) {
   throw new DomainError("HLTV_PROFILE_PORTRAIT_EMPTY", "No portrait targets matched");
