@@ -8,6 +8,7 @@ import { ThemeToggle } from "./theme-toggle";
 const links = [
   { href: "/", label: "投票" },
   { href: "/ranking", label: "榜单" },
+  { event: true, href: "/current-event", label: "当期赛事 - EWC" },
   { href: "/about", label: "关于" },
 ] as const;
 
@@ -27,7 +28,9 @@ export function SiteHeader() {
             return (
               <Link
                 aria-current={active ? "page" : undefined}
-                className="site-nav__link"
+                className={
+                  "event" in link ? "site-nav__link site-nav__link--event" : "site-nav__link"
+                }
                 data-active={active ? "true" : "false"}
                 href={link.href}
                 key={link.href}

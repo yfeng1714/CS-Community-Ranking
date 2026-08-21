@@ -9,7 +9,9 @@
 5. Optionally load fictional local sample data with `pnpm db:seed`.
 6. Start the application with `pnpm dev`.
 7. Check `/api/health/live` and `/api/health/ready`.
-8. Open `/` for the public Vote page and `/ranking` for the public ranking.
+8. Open `/` for the public Vote page, `/ranking` for the public ranking, and `/current-event` for
+   the EWC Event MVP list (seeded locally; production needs `pnpm source:import-event-mvp` after
+   migrate).
 
 Create the first real local Admin from a trusted terminal (the password prompt is hidden):
 
@@ -110,6 +112,7 @@ pnpm source:capture-reviewed-hltv-stats -- --start YYYY-MM-DD --end YYYY-MM-DD -
 pnpm source:create-reviewed-hltv-stats-template -- --captured <ISO-time> --start YYYY-MM-DD --end YYYY-MM-DD --output <ignored-reviewed-json>
 pnpm source:import-reviewed-hltv-stats -- --file <ignored-reviewed-json>
 pnpm source:import-reviewed-career-rating -- --file data/review-manual/career-ratings-2026-08-17.json
+pnpm source:import-event-mvp -- --actor owner --apply --confirm-event-mvp
 pnpm job:build-pool-draft -- --edition 2026
 pnpm job:snapshot-ranking -- --edition 2026 --date YYYY-MM-DD
 pnpm assets:check

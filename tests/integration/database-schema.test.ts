@@ -152,12 +152,12 @@ describe("Milestone 1 PostgreSQL schema", () => {
        order by typname`,
     );
 
-    expect(tables.rows).toHaveLength(29);
+    expect(tables.rows).toHaveLength(32);
     expect(enums.rows).toHaveLength(21);
     expect(tables.rows.map((row) => row.table_name)).toContain("pending_import_change");
     expect(tables.rows.map((row) => row.table_name)).toContain("admin_audit_log");
     expect(tables.rows.map((row) => row.table_name)).toContain("risk_observation");
-    expect(tables.rows.map((row) => row.table_name)).toContain("api_request_metric");
+    expect(tables.rows.map((row) => row.table_name)).toContain("event_mvp_contest");
   });
 
   it("allows at most one active Edition", async () => {

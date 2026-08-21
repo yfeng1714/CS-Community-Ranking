@@ -246,5 +246,61 @@ export async function seedDevelopmentData(database: Database): Promise<void> {
           },
         });
     }
+
+    const [contestRow] = await transaction
+      .insert(schema.eventMvpContests)
+      .values({
+        capturedAt: new Date("2026-08-21T01:10:00.000Z"),
+        endsAt: "2026-08-23",
+        hltvEventId: "8261",
+        name: "Esports World Cup 2026",
+        navLabel: "当期赛事 - EWC",
+        slug: "ewc-2026",
+        sourceUrl: "https://www.hltv.org/stats/players?event=8261",
+        startsAt: "2026-08-12",
+        status: "ACTIVE",
+      })
+      .onConflictDoUpdate({
+        target: schema.eventMvpContests.slug,
+        set: {
+          capturedAt: new Date("2026-08-21T01:10:00.000Z"),
+          endsAt: "2026-08-23",
+          name: "Esports World Cup 2026",
+          navLabel: "当期赛事 - EWC",
+          sourceUrl: "https://www.hltv.org/stats/players?event=8261",
+          startsAt: "2026-08-12",
+          status: "ACTIVE",
+          updatedAt: new Date(),
+        },
+      })
+      .returning({ id: schema.eventMvpContests.id });
+    const contest = requireRow(contestRow, "event mvp contest");
+    const sampleRatings = [
+      { rating: "1.65", slug: "sample-ace" },
+      { rating: "1.40", slug: "sample-bolt" },
+      { rating: "1.21", slug: "sample-clutch" },
+      { rating: "1.05", slug: "sample-drift" },
+    ] as const;
+    for (const [index, entry] of sampleRatings.entries()) {
+      const playerId = requireRow(playerIds.get(entry.slug), `player ${entry.slug}`);
+      await transaction
+        .insert(schema.eventMvpCandidates)
+        .values({
+          contestId: contest.id,
+          eventRating: entry.rating,
+          maps: 8 - index,
+          playerId,
+          sourceRank: index + 1,
+        })
+        .onConflictDoUpdate({
+          target: [schema.eventMvpCandidates.contestId, schema.eventMvpCandidates.playerId],
+          set: {
+            eventRating: entry.rating,
+            maps: 8 - index,
+            sourceRank: index + 1,
+            updatedAt: new Date(),
+          },
+        });
+    }
   });
 }

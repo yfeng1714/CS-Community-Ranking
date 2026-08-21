@@ -20,7 +20,7 @@
 </tbody>
 </table>
 
-**版本** V0.1.32
+**版本** V0.1.33
 
 **日期** 2026-08-20
 
@@ -87,6 +87,8 @@
 **Owner Core 肖像统一与 0 Major** 2026-08-19（V0.1.31；Core 70 人肖像改用选手主页 body shot；无 Major 次数时统一展示 🏆 0 Major；投票卡头像略放大）
 
 **Owner 榜单排序与关于页署名** 2026-08-20（V0.1.32；榜单可切换高分/低分顺序；同分先比胜率再比有效对决；关于页改为 Bilibili / GitHub 筹码链接；肖像回采步骤写入 `docs/HLTV_PROFILE_PORTRAITS.md`）
+
+**Owner Event MVP 有限解冻** 2026-08-20（V0.1.33；当期赛事 EWC 使用每日 +1 列表投票，不使用真随机 pair 与 +1/−1；名单为 HLTV 赛事 Rating 前 15）
 
 **定位** 产品背景、决策记录与后续 Review Context
 
@@ -306,7 +308,7 @@ Owner 放入仓库的 `MachineWJQ.webp` 实际是 1080×1518 JPEG 且扩展名�
 `playerbodyshot`（`data-cookieblock-src`），在页面内 fetch 后转为本地 WebP；MachineWJQ 的
 Owner 提供肖像保持不动。公开页面仍然不向 HLTV 发请求。同日再补四支 Review Manual 队标：从官方
 战队页采集 `teamlogo`（100 Thieves 取 night-only 以适配深色容器；TYLOO 的 SVG 渲染为透明
-512×512 PNG），本地保存后写入 `logoPath`。2026-08-19 Owner 要求把最初 70 张 Ranking-page 肖像也换成同一套选手主页 body shot，使全池头像风格一致；投票卡上无 Major 记录的选手（HLTV 未写出该字段、库中为 null）一律显示 🏆 0 Major，与明确记为 0 的选手相同；头像更清晰后投票卡照片略放大。MachineWJQ 仍为 Owner 提供肖像。公开页面仍然不向 HLTV 发请求。后续代理必须按 `docs/HLTV_PROFILE_PORTRAITS.md` 用同一套选手主页 body shot 回采，不得回到 Ranking-page 200×200。2026-08-20 Owner 要求榜单增加升序/降序开关；同分时先比胜率（无有效对决的胜率排在后面），仍平则有效对决次数多的在前；竞争名次仍只由分数决定。关于页去掉原口号标题，改为作者 Bilibili 与项目 GitHub 的筹码链接。
+512×512 PNG），本地保存后写入 `logoPath`。2026-08-19 Owner 要求把最初 70 张 Ranking-page 肖像也换成同一套选手主页 body shot，使全池头像风格一致；投票卡上无 Major 记录的选手（HLTV 未写出该字段、库中为 null）一律显示 🏆 0 Major，与明确记为 0 的选手相同；头像更清晰后投票卡照片略放大。MachineWJQ 仍为 Owner 提供肖像。公开页面仍然不向 HLTV 发请求。后续代理必须按 `docs/HLTV_PROFILE_PORTRAITS.md` 用同一套选手主页 body shot 回采，不得回到 Ranking-page 200×200。2026-08-20 Owner 要求榜单增加升序/降序开关；同分时先比胜率（无有效对决的胜率排在后面），仍平则有效对决次数多的在前；竞争名次仍只由分数决定。关于页去掉原口号标题，改为作者 Bilibili 与项目 GitHub 的筹码链接。同日 Owner 解冻有限 Event MVP：导航增加「当期赛事 - EWC」，路径 `/current-event`，计分是每位访客每个上海自然日给一名选手 +1，不改常驻榜的真随机与 +1/−1。名单取官方 HLTV `stats/players?event=8261` Rating 3.0 前 15；同分先比社区票再比赛事 Rating。步骤见 `docs/EVENT_MVP.md`。
 
 <table>
 <colgroup>
@@ -771,6 +773,8 @@ PlayerStatSnapshot = 某来源、某指标、某时间窗口的快照</th>
 
 赛事单独投 MVP 看起来非常适合复用同一套 Voting Engine，但它有尚未解决的产品问题：投票窗口有限，真随机能否让所有候选获得足够曝光；候选池应包含所有参赛选手还是赛后筛选；早早淘汰但个人数据出色的选手如何处理；+1/-1 在短期小样本中是否足够稳定。
 
+**Owner 2026-08-20 有限解冻。** 常驻榜已上线后，当期赛事改用独立列表：访客每天给一名选手 +1，不再使用 pair 真随机和 +1/−1。当前硬编码 EWC，Top 15 来自官方 HLTV 赛事 Rating 3.0。这验证的是「每日一票」而不是原冻结问题本身。原冻结理由仍适用于把 Event MVP 做成另一套 Ballot Engine。
+
 <table>
 <colgroup>
 <col style="width: 1%" />
@@ -1050,7 +1054,7 @@ Pool 的审查与 Closed Beta 准备，但仍需遵守 M10 的逐项 Owner Appro
 
 | **功能**                     | **为什么不进 V0.1**                         | **何时重启讨论**                                                          |
 |------------------------------|---------------------------------------------|---------------------------------------------------------------------------|
-| **Event MVP**                | 短期窗口下真随机和 +1/-1 是否稳定尚未验证。 | 常驻榜已有稳定用户，单赛事能在窗口内获得足够有效 Ballot。                 |
+| **Event MVP（pair +1/−1）** | 短期窗口下真随机和 +1/-1 是否稳定尚未验证。 | 若要把 Event MVP 做成另一套 Ballot Engine。当前 `/current-event` 是每日 +1 列表，见 `docs/EVENT_MVP.md`。 |
 | **年度编辑专题**             | 2026 开始较晚，首版不应为年终内容过度建设。 | 完整 Edition 累积、快照和 HLTV 年榜发布后。                               |
 | **个人 Top 20**              | 需要足够个人投票数据与排序推导规则。        | 大量用户单次完成 20–50 票，并出现分享需求。                               |
 | **Steam 登录 / Verified 榜** | 提高门槛，且游客是初期核心。                | 刷票真实发生且匿名风控不足，或社区强烈需要双榜。                          |

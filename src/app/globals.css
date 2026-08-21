@@ -705,6 +705,17 @@ button:disabled {
   color: var(--background);
 }
 
+.site-nav__link--event {
+  border: 1px solid color-mix(in srgb, var(--accent) 55%, var(--border));
+  background: color-mix(in srgb, var(--accent) 14%, var(--surface));
+  color: var(--foreground);
+}
+
+.site-nav__link--event[data-active="true"] {
+  background: var(--accent);
+  color: #fff;
+}
+
 .theme-toggle {
   display: grid;
   place-items: center;
@@ -1546,6 +1557,38 @@ button:disabled {
   font-size: 0.82rem;
 }
 
+.event-mvp-vote {
+  min-width: 5.8rem;
+  height: 2rem;
+  padding: 0 0.7rem;
+  border: 1px solid var(--brand);
+  border-radius: 999px;
+  background: var(--brand-soft);
+  color: var(--brand-strong);
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 750;
+}
+
+.event-mvp-vote:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+
+.event-mvp-table tr[data-voted="true"] .event-mvp-vote {
+  opacity: 1;
+  border-color: var(--success);
+  background: color-mix(in srgb, var(--success) 16%, var(--surface));
+  color: var(--success);
+}
+
+.event-mvp-message {
+  margin: 0;
+  padding: 0.85rem 1.5rem 1.2rem;
+  color: var(--muted-strong);
+  font-size: 0.82rem;
+}
+
 .ranking-table-wrap {
   overflow-x: auto;
 }
@@ -2285,6 +2328,11 @@ button:disabled {
   .ranking-table th:nth-child(n + 4),
   .ranking-table td:nth-child(n + 4) {
     display: none;
+  }
+
+  .event-mvp-table th:nth-child(6),
+  .event-mvp-table td:nth-child(6) {
+    display: table-cell;
   }
 
   .ranking-table th,

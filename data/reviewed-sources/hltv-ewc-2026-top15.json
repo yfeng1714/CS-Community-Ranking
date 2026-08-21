@@ -1,0 +1,186 @@
+{
+  "version": 1,
+  "contest": {
+    "slug": "ewc-2026",
+    "name": "Esports World Cup 2026",
+    "navLabel": "当期赛事 - EWC",
+    "hltvEventId": "8261",
+    "sourceUrl": "https://www.hltv.org/stats/players?event=8261",
+    "eventUrl": "https://www.hltv.org/events/8261/esports-world-cup-2026",
+    "startsAt": "2026-08-12",
+    "endsAt": "2026-08-23",
+    "capturedAt": "2026-08-21T01:10:00.000Z"
+  },
+  "notes": [
+    "Official HLTV event Rating 3.0 leaderboard for Esports World Cup 2026 (event id 8261).",
+    "Top 15 rows from https://www.hltv.org/stats/players?event=8261 captured 2026-08-21. Public pages never fetch HLTV.",
+    "Four players are not in the pairing pool (xkacpersky, tenzy, dziugss, nqz); Event MVP import may create Player rows without pool admission."
+  ],
+  "records": [
+    {
+      "sourceRank": 1,
+      "nickname": "m0NESY",
+      "slug": "m0nesy",
+      "team": "Falcons",
+      "countryCode": "RU",
+      "externalId": "19230",
+      "externalSlug": "m0nesy",
+      "maps": 5,
+      "eventRating": "1.65"
+    },
+    {
+      "sourceRank": 2,
+      "nickname": "donk",
+      "slug": "donk",
+      "team": "Spirit",
+      "countryCode": "RU",
+      "externalId": "21167",
+      "externalSlug": "donk",
+      "maps": 8,
+      "eventRating": "1.57"
+    },
+    {
+      "sourceRank": 3,
+      "nickname": "ZywOo",
+      "slug": "zywoo",
+      "team": "Vitality",
+      "countryCode": "FR",
+      "externalId": "11893",
+      "externalSlug": "zywoo",
+      "maps": 8,
+      "eventRating": "1.47"
+    },
+    {
+      "sourceRank": 4,
+      "nickname": "kyousuke",
+      "slug": "kyousuke",
+      "team": "Falcons",
+      "countryCode": "RU",
+      "externalId": "24177",
+      "externalSlug": "kyousuke",
+      "maps": 5,
+      "eventRating": "1.45"
+    },
+    {
+      "sourceRank": 5,
+      "nickname": "xKacpersky",
+      "slug": "xkacpersky",
+      "team": "Ninjas in Pyjamas",
+      "countryCode": "PL",
+      "externalId": "23372",
+      "externalSlug": "xkacpersky",
+      "maps": 6,
+      "eventRating": "1.42"
+    },
+    {
+      "sourceRank": 6,
+      "nickname": "NiKo",
+      "slug": "niko",
+      "team": "Falcons",
+      "countryCode": "BA",
+      "externalId": "3741",
+      "externalSlug": "niko",
+      "maps": 5,
+      "eventRating": "1.30"
+    },
+    {
+      "sourceRank": 7,
+      "nickname": "n1ssim",
+      "slug": "n1ssim",
+      "team": "Legacy",
+      "countryCode": "BR",
+      "externalId": "19686",
+      "externalSlug": "n1ssim",
+      "maps": 7,
+      "eventRating": "1.28"
+    },
+    {
+      "sourceRank": 8,
+      "nickname": "KSCERATO",
+      "slug": "kscerato",
+      "team": "FURIA",
+      "countryCode": "BR",
+      "externalId": "15631",
+      "externalSlug": "kscerato",
+      "maps": 10,
+      "eventRating": "1.27"
+    },
+    {
+      "sourceRank": 9,
+      "nickname": "tenzy",
+      "slug": "tenzy",
+      "team": "magic",
+      "countryCode": "RU",
+      "externalId": "24173",
+      "externalSlug": "tenzy",
+      "maps": 9,
+      "eventRating": "1.27"
+    },
+    {
+      "sourceRank": 10,
+      "nickname": "Jame",
+      "slug": "jame",
+      "team": "PARIVISION",
+      "countryCode": "RU",
+      "externalId": "13776",
+      "externalSlug": "jame",
+      "maps": 5,
+      "eventRating": "1.25"
+    },
+    {
+      "sourceRank": 11,
+      "nickname": "dumau",
+      "slug": "dumau",
+      "team": "Legacy",
+      "countryCode": "BR",
+      "externalId": "15698",
+      "externalSlug": "dumau",
+      "maps": 7,
+      "eventRating": "1.25"
+    },
+    {
+      "sourceRank": 12,
+      "nickname": "flameZ",
+      "slug": "flamez",
+      "team": "Vitality",
+      "countryCode": "IL",
+      "externalId": "16693",
+      "externalSlug": "flamez",
+      "maps": 8,
+      "eventRating": "1.25"
+    },
+    {
+      "sourceRank": 13,
+      "nickname": "dziugss",
+      "slug": "dziugss",
+      "team": "FUT",
+      "countryCode": "LT",
+      "externalId": "23553",
+      "externalSlug": "dziugss",
+      "maps": 7,
+      "eventRating": "1.25"
+    },
+    {
+      "sourceRank": 14,
+      "nickname": "nqz",
+      "slug": "nqz",
+      "team": "MIBR",
+      "countryCode": "BR",
+      "externalId": "19694",
+      "externalSlug": "nqz",
+      "maps": 5,
+      "eventRating": "1.23"
+    },
+    {
+      "sourceRank": 15,
+      "nickname": "HUASOPEEK",
+      "slug": "huasopeek",
+      "team": "9z",
+      "countryCode": "CL",
+      "externalId": "22613",
+      "externalSlug": "huasopeek",
+      "maps": 7,
+      "eventRating": "1.23"
+    }
+  ]
+}

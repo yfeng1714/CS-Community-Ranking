@@ -947,3 +947,97 @@ export const rankingSourceSnapshots = pgTable(
     ),
   ],
 );
+
+export const eventMvpContests = pgTable(
+  "event_mvp_contest",
+  {
+    id: identity(),
+    slug: text("slug").notNull(),
+    name: text("name").notNull(),
+    navLabel: text("nav_label").notNull(),
+    hltvEventId: text("hltv_event_id").notNull(),
+    sourceUrl: text("source_url").notNull(),
+    status: text("status").notNull().default("ACTIVE"),
+    startsAt: date("starts_at", { mode: "string" }).notNull(),
+    endsAt: date("ends_at", { mode: "string" }).notNull(),
+    capturedAt: requiredTimestamp("captured_at"),
+    createdAt: createdAt(),
+    updatedAt: updatedAt(),
+  },
+  (table) => [
+    unique("event_mvp_contest_slug_unique").on(table.slug),
+    uniqueIndex("event_mvp_single_active")
+      .on(table.status)
+      .where(sql`${table.status} = 'ACTIVE'`),
+    check("event_mvp_contest_slug_not_blank", sql`length(btrim(${table.slug})) > 0`),
+    check("event_mvp_contest_name_not_blank", sql`length(btrim(${table.name})) > 0`),
+    check("event_mvp_contest_nav_label_not_blank", sql`length(btrim(${table.navLabel})) > 0`),
+    check("event_mvp_contest_hltv_event_id", sql`${table.hltvEventId} ~ '^[1-9][0-9]*$'`),
+    check("event_mvp_contest_source_not_blank", sql`length(btrim(${table.sourceUrl})) > 0`),
+    check("event_mvp_contest_status", sql`${table.status} in ('ACTIVE', 'FROZEN')`),
+    check("event_mvp_contest_date_order", sql`${table.endsAt} >= ${table.startsAt}`),
+  ],
+);
+
+export const eventMvpCandidates = pgTable(
+  "event_mvp_candidate",
+  {
+    id: identity(),
+    contestId: bigint("contest_id", { mode: "bigint" })
+      .notNull()
+      .references(() => eventMvpContests.id, { onDelete: "restrict" }),
+    playerId: bigint("player_id", { mode: "bigint" })
+      .notNull()
+      .references(() => players.id, { onDelete: "restrict" }),
+    sourceRank: integer("source_rank").notNull(),
+    eventRating: numeric("event_rating").notNull(),
+    maps: integer("maps"),
+    createdAt: createdAt(),
+    updatedAt: updatedAt(),
+  },
+  (table) => [
+    unique("event_mvp_candidate_player_unique").on(table.contestId, table.playerId),
+    unique("event_mvp_candidate_rank_unique").on(table.contestId, table.sourceRank),
+    check("event_mvp_candidate_rank_positive", sql`${table.sourceRank} >= 1`),
+    check("event_mvp_candidate_maps_nonnegative", sql`${table.maps} is null or ${table.maps} >= 0`),
+  ],
+);
+
+export const eventMvpVotes = pgTable(
+  "event_mvp_vote",
+  {
+    id: identity(),
+    contestId: bigint("contest_id", { mode: "bigint" })
+      .notNull()
+      .references(() => eventMvpContests.id, { onDelete: "restrict" }),
+    visitorId: bigint("visitor_id", { mode: "bigint" })
+      .notNull()
+      .references(() => anonymousVisitors.id, { onDelete: "restrict" }),
+    playerId: bigint("player_id", { mode: "bigint" })
+      .notNull()
+      .references(() => players.id, { onDelete: "restrict" }),
+    usageDate: date("usage_date", { mode: "string" }).notNull(),
+    status: voteStatusEnum("status").notNull(),
+    riskReasonCodes: jsonb("risk_reason_codes")
+      .$type<string[]>()
+      .notNull()
+      .default(sql`'[]'::jsonb`),
+    ipRiskKey: bytea("ip_risk_key"),
+    createdAt: createdAt(),
+  },
+  (table) => [
+    uniqueIndex("event_mvp_one_vote_per_visitor_day")
+      .on(table.contestId, table.visitorId, table.usageDate)
+      .where(sql`${table.status} <> 'REVOKED'`),
+    index("event_mvp_vote_contest_player_idx").on(table.contestId, table.playerId, table.status),
+    check(
+      "event_mvp_vote_risk_reasons_array",
+      sql`jsonb_typeof(${table.riskReasonCodes}) = 'array'`,
+    ),
+    check(
+      "event_mvp_vote_ip_risk_key_sha256",
+      sql`${table.ipRiskKey} is null or octet_length(${table.ipRiskKey}) = 32`,
+    ),
+    check("event_mvp_vote_status_allowed", sql`${table.status} in ('VALID', 'SUSPICIOUS')`),
+  ],
+);

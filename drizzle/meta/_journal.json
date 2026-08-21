@@ -36,6 +36,13 @@
       "when": 1786809331347,
       "tag": "0004_edition_daily_quota_150",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1787275053549,
+      "tag": "0005_event_mvp",
+      "breakpoints": true
     }
   ]
 }

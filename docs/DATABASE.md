@@ -11,11 +11,13 @@ The complete V0.1 PostgreSQL model is implemented in:
 - `drizzle/0002_m8_risk_key_constraints.sql`
 - `drizzle/0003_player_hltv_profile_url.sql`
 - `drizzle/0004_edition_daily_quota_150.sql`
+- `drizzle/0005_event_mvp.sql`
 
 The initial migration creates 27 tables and 21 PostgreSQL enums. M8 adds `risk_observation`,
 `api_request_metric`, and persisted Ballot risk reasons through an ordered forward migration. The
 migrations are generated from the Drizzle schema, committed for review, and tested against an empty
-PostgreSQL 18 database.
+PostgreSQL 18 database. Event MVP adds `event_mvp_contest`, `event_mvp_candidate`, and
+`event_mvp_vote` (32 public tables). See `docs/EVENT_MVP.md`.
 
 M10 adds nullable `player.hltv_profile_url` as a human-facing reference. Its database constraint
 allows only direct HTTPS HLTV player-profile paths. It is deliberately separate from
@@ -41,6 +43,7 @@ allows only direct HTTPS HLTV player-profile paths. It is deliberately separate 
 | Area                       | Tables                                                                                                                                       |
 | -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
 | Identity and competition   | `team`, `player`, `roster_membership`, `edition`, `event`, `event_team_result`                                                               |
+| Event MVP                  | `event_mvp_contest`, `event_mvp_candidate`, `event_mvp_vote`                                                                                 |
 | Candidate Pool and ranking | `pool_team_entry`, `pool_player_entry`, `player_ranking`, `pair_aggregate`, `daily_ranking_snapshot`                                         |
 | Anonymous voting           | `anonymous_visitor`, `visitor_daily_usage`, `ballot`, `vote`                                                                                 |
 | Admin and audit            | `admin_user`, `admin_session`, `admin_audit_log`, `pool_change_log`, `moderation_audit_log`                                                  |
@@ -56,7 +59,7 @@ The migration SQL is the final enforcement layer for row-local and uniqueness ru
 | At most one active Edition                                                  | `edition_single_active` partial unique index                      |
 | At most one current roster row per player                                   | `roster_one_current_per_player` partial unique index              |
 | At most one open Ballot per visitor and Edition                             | `ballot_one_open_per_visitor_edition` partial unique index        |
-| At most one Vote per Ballot                                                 | `vote_ballot_unique`                                              |
+| At most one Event MVP vote per visitor per contest per day          | `event_mvp_one_vote_per_visitor_day` partial unique index             |
 | Optional Player HLTV URL is a direct HTTPS player-profile path              | `player_hltv_profile_url_valid`                                   |
 | Ballot pair is canonical and its orientation matches                        | `ballot_canonical_pair`, `ballot_orientation_matches_pair`        |
 | Ballot status, resolution, and timestamp agree                              | `ballot_resolution_state`                                         |

@@ -53,7 +53,8 @@ public HLTV player Rating / Firepower / honors / Top 20 / nationality, follow
 - Admission category explains entry and never affects pairing probability or score.
 - Do not automatically remove candidates, approve imported changes, or delete historical Votes.
 - Do not add Redis, GraphQL, microservices, a separate backend, mandatory Cloudflare, Turnstile, or
-  Event MVP to V0.1.
+  a second pairing-based Event MVP to V0.1. The Owner-approved `/current-event` daily +1 list is
+  documented in `docs/EVENT_MVP.md`.
 - Keep UI/API same-origin and business logic outside Next.js Route Handlers.
 - Never run live HLTV requests in tests or CI.
 - Do not invent production Candidate Pool data.

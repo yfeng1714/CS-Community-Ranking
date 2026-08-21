@@ -133,16 +133,17 @@ The implementation agent must not change these without owner approval.
 
 ## 2.5 Event MVP and annual editorial features
 
-Not included in V0.1:
+V0.1 originally deferred per-event MVP tabs. Owner later approved a **limited** Event MVP at
+`/current-event`: a hardcoded EWC list, daily visitor `+1` (not pair `+1/−1`), documented in
+`docs/EVENT_MVP.md`. Still not included:
 
-- Per-event MVP voting tabs.
 - Personal Top 20.
 - User accounts or Steam login.
 - Comments, forums, friends, or social feeds.
 - Dedicated historical GOAT Pool.
 - Complex annual editorial presentation.
 
-The database must not block those future features, but V0.1 must not implement them.
+The database must not block those remaining features. The Event MVP list is not the annual board.
 
 ---
 
@@ -2597,7 +2598,8 @@ An implementation agent must ask for owner approval before:
 - physically deleting Votes;
 - changing the daily quota semantics from Ballots issued to Votes submitted;
 - auto-advancing after a vote;
-- adding Event MVP to V0.1.
+- replacing the annual board with Event MVP scoring. The limited `/current-event` daily +1 list is
+  allowed and documented in `docs/EVENT_MVP.md`.
 
 ---
 

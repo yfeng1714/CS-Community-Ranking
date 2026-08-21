@@ -6,10 +6,11 @@ Milestone 5 is the first complete anonymous public journey. It provides:
 
 - `/` — random Vote pair, expandable details, Skip, result, and explicit Next;
 - `/ranking` — active-Edition competition ranking, client-side search, and score sort direction;
+- `/current-event` — hardcoded EWC Event MVP list with a daily +1 vote button;
 - `/player/{slug}` — public player identity, roster, score record, and approved stats;
 - `/about` — scoring, random-pairing, Candidate Pool explanation, and Bilibili / GitHub chips.
 
-The top navigation contains Vote, Ranking, and About. Player pages are reached through player links;
+The top navigation contains Vote, Ranking, **当期赛事 - EWC**, and About. Player pages are reached through player links;
 the About call-to-action links back to Vote and Ranking. The small community beta has no dedicated
 privacy/contact route; the Owner will reconsider one when the project has a custom domain or
 materially broader use. `CS 野榜` is a working identity pending the final name/domain/visual decision.

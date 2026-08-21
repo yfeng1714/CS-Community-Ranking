@@ -102,6 +102,14 @@ same domain queries directly, so their display contract cannot drift from the JS
 Ranking and Player roster projections include nullable `teamLogoUrl`; Ballot Player cards use the
 same additive field. It contains only a local public asset path, never the source URL or rights notes.
 
+### `POST /api/v1/event-mvp/votes`
+
+Casts today's Event MVP +1 for the JSON body `{ "playerSlug": "..." }`. Same mutation guard and
+visitor cookie as Ballot resolve. One non-revoked vote per visitor per Shanghai calendar day. Success
+is `200` with `{ alreadyVoted, playerSlug, status }`. `409 EVENT_MVP_ALREADY_VOTED` if the visitor
+already voted for a different player today; `404 EVENT_MVP_PLAYER_NOT_FOUND` if the slug is not on
+the current contest ballot. See `docs/EVENT_MVP.md`.
+
 ## Implemented in Milestone 6
 
 ### `POST /api/v1/admin/login`

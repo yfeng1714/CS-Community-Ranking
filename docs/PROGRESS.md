@@ -27,7 +27,8 @@
 - Ranking lists high scores first by default and can switch to low scores first. Equal scores still
   share a competition rank; display order inside a tie is win rate (defined rates before none), then
   valid PK count, then nickname. About replaces the old slogan header with Bilibili and GitHub
-  chips. Portrait recapture steps for future agents are `docs/HLTV_PROFILE_PORTRAITS.md`.
+  chips. Portrait recapture steps for future agents are `docs/HLTV_PROFILE_PORTRAITS.md`. Event MVP
+  is a separate `/current-event` daily +1 list for EWC Top 15 HLTV event Rating (`docs/EVENT_MVP.md`).
 
 - Vote cards slightly enlarge the nationality flag and Major/MVP chips. Public labels are
   **近三月 Rating 3.0** and **火力值**. If the three-month Rating is missing, an Owner-reviewed
