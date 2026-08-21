@@ -3,7 +3,11 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 
-import { compareEventMvpPlayers, type EventMvpPlayer } from "@/domain/event-mvp/service";
+import {
+  compareEventMvpPlayers,
+  withUniqueEventMvpRanks,
+  type EventMvpPlayer,
+} from "@/domain/event-mvp/service";
 
 import { CountryFlag } from "./country-flag";
 import { PlayerPortrait } from "./player-portrait";
@@ -64,16 +68,7 @@ export function EventMvpTable({
           const next = current.map((player) =>
             player.slug === nextSlug ? { ...player, votes: player.votes + 1 } : player,
           );
-          const sorted = [...next].sort(compareEventMvpPlayers);
-          let previousVotes: number | undefined;
-          let rank = 0;
-          return sorted.map((player, index) => {
-            if (previousVotes === undefined || player.votes !== previousVotes) {
-              rank = index + 1;
-              previousVotes = player.votes;
-            }
-            return { ...player, rank };
-          });
+          return withUniqueEventMvpRanks([...next].sort(compareEventMvpPlayers));
         });
       }
     } catch {
@@ -110,6 +105,7 @@ export function EventMvpTable({
               <th scope="col">选手</th>
               <th scope="col">票数</th>
               <th scope="col">赛事 Rating</th>
+              <th scope="col">Maps</th>
               <th scope="col">战队</th>
               <th scope="col">投票</th>
             </tr>
@@ -140,6 +136,7 @@ export function EventMvpTable({
                   </td>
                   <td className="ranking-table__score">{player.votes.toLocaleString("zh-CN")}</td>
                   <td>{rating(player.eventRating)}</td>
+                  <td>{player.maps ?? "—"}</td>
                   <td>
                     <span className="ranking-team">
                       {player.team ? <TeamLogo logoUrl={player.teamLogoUrl} size="small" /> : null}

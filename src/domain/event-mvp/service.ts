@@ -47,12 +47,21 @@ export interface EventMvpBoard {
 }
 
 export function compareEventMvpPlayers(
-  left: Pick<EventMvpPlayer, "eventRating" | "nickname" | "votes">,
-  right: Pick<EventMvpPlayer, "eventRating" | "nickname" | "votes">,
+  left: Pick<EventMvpPlayer, "eventRating" | "maps" | "nickname" | "votes">,
+  right: Pick<EventMvpPlayer, "eventRating" | "maps" | "nickname" | "votes">,
 ): number {
   if (left.votes !== right.votes) return right.votes - left.votes;
   if (left.eventRating !== right.eventRating) return right.eventRating - left.eventRating;
+  const leftMaps = left.maps ?? -1;
+  const rightMaps = right.maps ?? -1;
+  if (leftMaps !== rightMaps) return rightMaps - leftMaps;
   return left.nickname.localeCompare(right.nickname, "en");
+}
+
+export function withUniqueEventMvpRanks<T extends Pick<EventMvpPlayer, "votes">>(
+  sorted: readonly T[],
+): Array<T & { rank: number }> {
+  return sorted.map((player, index) => ({ ...player, rank: index + 1 }));
 }
 
 export class EventMvpService {
@@ -133,28 +142,7 @@ export class EventMvpService {
       }))
       .sort(compareEventMvpPlayers);
 
-    let previousVotes: number | undefined;
-    let rank = 0;
-    const playersOnBoard: EventMvpPlayer[] = sorted.map((row, index) => {
-      if (previousVotes === undefined || row.votes !== previousVotes) {
-        rank = index + 1;
-        previousVotes = row.votes;
-      }
-      return {
-        country: row.country,
-        eventRating: row.eventRating,
-        maps: row.maps,
-        nickname: row.nickname,
-        photoUrl: row.photoUrl,
-        rank,
-        slug: row.slug,
-        sourceRank: row.sourceRank,
-        team: row.team,
-        teamLogoUrl: row.teamLogoUrl,
-        teamShortName: row.teamShortName,
-        votes: row.votes,
-      };
-    });
+    const playersOnBoard: EventMvpPlayer[] = withUniqueEventMvpRanks(sorted);
 
     let todayVoteSlug: string | null = null;
     if (visitorId) {

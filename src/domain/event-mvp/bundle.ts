@@ -2,24 +2,53 @@ import { z } from "zod";
 
 import { DomainError } from "../error.ts";
 
-export const EVENT_MVP_BUNDLE_VERSION = "hltv-event-mvp-top15-json-v1";
+export const EVENT_MVP_BUNDLE_VERSION = "hltv-event-mvp-top10-json-v1";
 export const CURRENT_EVENT_MVP_SLUG = "ewc-2026";
 export const CURRENT_EVENT_MVP_PATH = "/current-event";
-export const EVENT_MVP_CANDIDATE_LIMIT = 15;
+export const EVENT_MVP_CANDIDATE_LIMIT = 10;
+export const EVENT_MVP_BUNDLE_FILE = "data/reviewed-sources/hltv-ewc-2026-top10.json";
 
 const slug = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);
 
-const recordSchema = z.strictObject({
-  countryCode: z.string().regex(/^[A-Z]{2}$/),
-  eventRating: z.string().regex(/^\d+\.\d{2}$/),
-  externalId: z.string().regex(/^[1-9]\d*$/),
-  externalSlug: slug,
-  maps: z.number().int().nonnegative(),
-  nickname: z.string().trim().min(1).max(100),
-  slug,
-  sourceRank: z.number().int().min(1).max(EVENT_MVP_CANDIDATE_LIMIT),
-  team: z.string().trim().min(1).max(100),
-});
+const recordSchema = z
+  .strictObject({
+    countryCode: z.string().regex(/^[A-Z]{2}$/),
+    eventRating: z.string().regex(/^\d+\.\d{2}$/),
+    externalId: z.string().regex(/^[1-9]\d*$/),
+    externalSlug: slug,
+    maps: z.number().int().nonnegative(),
+    nickname: z.string().trim().min(1).max(100),
+    realName: z.string().trim().min(1).max(200).optional(),
+    slug,
+    sourceRank: z.number().int().min(1).max(EVENT_MVP_CANDIDATE_LIMIT),
+    team: z.string().trim().min(1).max(100),
+    teamCountryCode: z
+      .string()
+      .regex(/^[A-Z]{2}$/)
+      .optional(),
+    teamExternalId: z
+      .string()
+      .regex(/^[1-9]\d*$/)
+      .optional(),
+    teamExternalSlug: slug.optional(),
+    teamShortName: z.string().trim().min(1).max(32).optional(),
+    teamSlug: slug.optional(),
+  })
+  .superRefine((record, context) => {
+    const teamFields = [
+      record.teamCountryCode,
+      record.teamExternalId,
+      record.teamExternalSlug,
+      record.teamShortName,
+      record.teamSlug,
+    ];
+    const present = teamFields.filter((value) => value !== undefined).length;
+    if (present === 0 || present === teamFields.length) return;
+    context.addIssue({
+      code: "custom",
+      message: "Event MVP team identity fields must be complete together",
+    });
+  });
 
 export const eventMvpBundleSchema = z.strictObject({
   contest: z.strictObject({
@@ -63,14 +92,14 @@ export function validateEventMvpBundle(input: unknown): EventMvpBundle {
   if (ranks.size !== EVENT_MVP_CANDIDATE_LIMIT) {
     throw new DomainError(
       "EVENT_MVP_COVERAGE_MISMATCH",
-      "Event MVP bundle must cover ranks 1–15 exactly once",
+      "Event MVP bundle must cover ranks 1–10 exactly once",
     );
   }
   for (let rank = 1; rank <= EVENT_MVP_CANDIDATE_LIMIT; rank += 1) {
     if (!ranks.has(rank)) {
       throw new DomainError(
         "EVENT_MVP_COVERAGE_MISMATCH",
-        "Event MVP bundle must cover ranks 1–15 exactly once",
+        "Event MVP bundle must cover ranks 1–10 exactly once",
       );
     }
   }

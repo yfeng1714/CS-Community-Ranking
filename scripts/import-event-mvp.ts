@@ -1,20 +1,36 @@
+import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { parseArgs } from "node:util";
 
-import { and, eq } from "drizzle-orm";
+import { and, eq, isNull, notInArray } from "drizzle-orm";
 
 import {
   eventMvpCandidates,
   eventMvpContests,
   playerExternalIdentities,
   players,
+  rosterMemberships,
+  teamExternalIdentities,
+  teams,
 } from "../src/db/schema/index.ts";
+import { logoAssetPath } from "../src/domain/assets/hltv-team-logos.ts";
+import { portraitAssetPath } from "../src/domain/assets/hltv-profile-portraits.ts";
+import type { AppDatabase } from "../src/domain/database.ts";
 import { DomainError } from "../src/domain/error.ts";
-import { validateEventMvpBundle, type EventMvpBundle } from "../src/domain/event-mvp/bundle.ts";
-import { upsertPlayerExternalIdentity } from "../src/domain/external-identities/service.ts";
-import { createPlayer } from "../src/domain/players/service.ts";
+import {
+  EVENT_MVP_BUNDLE_FILE,
+  validateEventMvpBundle,
+  type EventMvpBundle,
+  type EventMvpRecord,
+} from "../src/domain/event-mvp/bundle.ts";
+import {
+  upsertPlayerExternalIdentity,
+  upsertTeamExternalIdentity,
+} from "../src/domain/external-identities/service.ts";
+import { createPlayer, updatePlayer } from "../src/domain/players/service.ts";
 import { resolvePoolCliReferences } from "../src/domain/pool/service.ts";
+import { createTeam, updateTeam } from "../src/domain/teams/service.ts";
 import { cliArgs } from "./cli-args.ts";
 import { createPoolCliContext, printCliError } from "./pool-cli-support.ts";
 
@@ -31,7 +47,7 @@ const args = parseArgs({
 }).values;
 
 try {
-  const file = path.resolve(args.file ?? "data/reviewed-sources/hltv-ewc-2026-top15.json");
+  const file = path.resolve(args.file ?? EVENT_MVP_BUNDLE_FILE);
   const bundle = validateEventMvpBundle(JSON.parse(await readFile(file, "utf8")) as unknown);
   const summary = {
     contest: bundle.contest.slug,
@@ -72,8 +88,12 @@ try {
   printCliError(error);
 }
 
+function publicAssetExists(assetPath: string): boolean {
+  return existsSync(path.join(process.cwd(), "public", assetPath.replace(/^\//, "")));
+}
+
 async function importEventMvpBundle(
-  database: ReturnType<typeof createPoolCliContext>["database"],
+  database: AppDatabase,
   bundle: EventMvpBundle,
   actorAdminUserId: bigint,
 ) {
@@ -110,6 +130,7 @@ async function importEventMvpBundle(
   }
 
   const applied: Array<{ slug: string; status: "created" | "linked" }> = [];
+  const keptPlayerIds: bigint[] = [];
   for (const record of bundle.records) {
     const [byIdentity] = await database
       .select({ playerId: playerExternalIdentities.playerId })
@@ -123,6 +144,9 @@ async function importEventMvpBundle(
       .limit(1);
     let playerId = byIdentity?.playerId;
     let status: "created" | "linked" = "linked";
+    const photoPath = publicAssetExists(portraitAssetPath(record.slug))
+      ? portraitAssetPath(record.slug)
+      : null;
     if (!playerId) {
       const [existing] = await database
         .select({ id: players.id })
@@ -137,6 +161,8 @@ async function importEventMvpBundle(
           countryCode: record.countryCode,
           hltvProfileUrl: `https://www.hltv.org/player/${record.externalId}/${record.externalSlug}`,
           nickname: record.nickname,
+          ...(photoPath ? { photoPath } : {}),
+          ...(record.realName ? { realName: record.realName } : {}),
           reason: "Admit Event MVP candidate without pairing-pool admission",
           slug: record.slug,
         });
@@ -153,6 +179,13 @@ async function importEventMvpBundle(
         sourceUrl: `https://www.hltv.org/player/${record.externalId}/${record.externalSlug}`,
       });
     }
+    await fillEventOnlyIdentity(database, {
+      actorAdminUserId,
+      contestStartsAt: bundle.contest.startsAt,
+      photoPath,
+      playerId,
+      record,
+    });
     await database
       .insert(eventMvpCandidates)
       .values({
@@ -171,7 +204,151 @@ async function importEventMvpBundle(
           updatedAt: new Date(),
         },
       });
+    keptPlayerIds.push(playerId);
     applied.push({ slug: record.slug, status });
   }
+
+  await database
+    .delete(eventMvpCandidates)
+    .where(
+      and(
+        eq(eventMvpCandidates.contestId, contest.id),
+        notInArray(eventMvpCandidates.playerId, keptPlayerIds),
+      ),
+    );
+
   return applied;
+}
+
+async function fillEventOnlyIdentity(
+  database: AppDatabase,
+  input: {
+    actorAdminUserId: bigint;
+    contestStartsAt: string;
+    photoPath: string | null;
+    playerId: bigint;
+    record: EventMvpRecord;
+  },
+) {
+  const [player] = await database
+    .select({
+      photoPath: players.photoPath,
+      realName: players.realName,
+    })
+    .from(players)
+    .where(eq(players.id, input.playerId))
+    .limit(1);
+  if (!player) {
+    throw new DomainError("PLAYER_NOT_FOUND", `Player ${input.record.slug} was not written`);
+  }
+
+  const photoUpdate = !player.photoPath && input.photoPath ? { photoPath: input.photoPath } : {};
+  const realNameUpdate =
+    !player.realName && input.record.realName ? { realName: input.record.realName } : {};
+  if (photoUpdate.photoPath || realNameUpdate.realName) {
+    await updatePlayer(database, {
+      actorAdminUserId: input.actorAdminUserId,
+      playerId: input.playerId,
+      reason: "Fill Event MVP identity without pairing-pool admission",
+      ...photoUpdate,
+      ...realNameUpdate,
+    });
+  }
+
+  const teamId = await ensureEventTeam(database, input.actorAdminUserId, input.record);
+  if (!teamId) return;
+
+  const [currentRoster] = await database
+    .select({ id: rosterMemberships.id })
+    .from(rosterMemberships)
+    .where(and(eq(rosterMemberships.playerId, input.playerId), isNull(rosterMemberships.endsAt)))
+    .limit(1);
+  if (currentRoster) return;
+
+  await database.insert(rosterMemberships).values({
+    playerId: input.playerId,
+    source: "EVENT_MVP",
+    startsAt: input.contestStartsAt,
+    status: "STARTER",
+    teamId,
+  });
+}
+
+async function ensureEventTeam(
+  database: AppDatabase,
+  actorAdminUserId: bigint,
+  record: EventMvpRecord,
+): Promise<bigint | null> {
+  if (
+    !record.teamSlug ||
+    !record.teamExternalId ||
+    !record.teamExternalSlug ||
+    !record.teamCountryCode ||
+    !record.teamShortName
+  ) {
+    return null;
+  }
+
+  const logoPath = publicAssetExists(logoAssetPath(record.teamSlug, "webp"))
+    ? logoAssetPath(record.teamSlug, "webp")
+    : null;
+  const [byIdentity] = await database
+    .select({ teamId: teamExternalIdentities.teamId })
+    .from(teamExternalIdentities)
+    .where(
+      and(
+        eq(teamExternalIdentities.provider, "HLTV"),
+        eq(teamExternalIdentities.externalId, record.teamExternalId),
+      ),
+    )
+    .limit(1);
+  let teamId = byIdentity?.teamId;
+  if (!teamId) {
+    const [existing] = await database
+      .select({ id: teams.id })
+      .from(teams)
+      .where(eq(teams.slug, record.teamSlug))
+      .limit(1);
+    if (existing) {
+      teamId = existing.id;
+    } else {
+      const created = await createTeam(database, {
+        actorAdminUserId,
+        countryCode: record.teamCountryCode,
+        ...(logoPath ? { logoPath } : {}),
+        name: record.team,
+        reason: "Create Event MVP team without pairing-pool admission",
+        shortName: record.teamShortName,
+        slug: record.teamSlug,
+      });
+      teamId = created.id;
+    }
+    await upsertTeamExternalIdentity(database, {
+      actorAdminUserId,
+      externalId: record.teamExternalId,
+      externalSlug: record.teamExternalSlug,
+      provider: "HLTV",
+      reason: "Link Event MVP team to official HLTV identity",
+      sourceUrl: `https://www.hltv.org/team/${record.teamExternalId}/${record.teamExternalSlug}`,
+      teamId,
+    });
+  }
+
+  if (logoPath) {
+    const [team] = await database
+      .select({ logoPath: teams.logoPath })
+      .from(teams)
+      .where(eq(teams.id, teamId))
+      .limit(1);
+    if (team && !team.logoPath) {
+      await updateTeam(database, {
+        actorAdminUserId,
+        logoPath,
+        reason: "Fill Event MVP team logo without pairing-pool admission",
+        teamId,
+      });
+    }
+  }
+
+  return teamId;
 }

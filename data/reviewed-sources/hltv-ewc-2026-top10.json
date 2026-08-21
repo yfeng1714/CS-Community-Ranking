@@ -13,8 +13,8 @@
   },
   "notes": [
     "Official HLTV event Rating 3.0 leaderboard for Esports World Cup 2026 (event id 8261).",
-    "Top 15 rows from https://www.hltv.org/stats/players?event=8261 captured 2026-08-21. Public pages never fetch HLTV.",
-    "Four players are not in the pairing pool (xkacpersky, tenzy, dziugss, nqz); Event MVP import may create Player rows without pool admission."
+    "Top 10 rows from https://www.hltv.org/stats/players?event=8261 captured 2026-08-21. Public pages never fetch HLTV.",
+    "Two players are not in the pairing pool (xkacpersky, tenzy); Event MVP import may create Player/Team rows without pool admission."
   ],
   "records": [
     {
@@ -70,7 +70,13 @@
       "externalId": "23372",
       "externalSlug": "xkacpersky",
       "maps": 6,
-      "eventRating": "1.42"
+      "eventRating": "1.42",
+      "realName": "Kacper Gabara",
+      "teamSlug": "ninjas-in-pyjamas",
+      "teamShortName": "NIP",
+      "teamCountryCode": "DK",
+      "teamExternalId": "4411",
+      "teamExternalSlug": "ninjas-in-pyjamas"
     },
     {
       "sourceRank": 6,
@@ -114,7 +120,13 @@
       "externalId": "24173",
       "externalSlug": "tenzy",
       "maps": 9,
-      "eventRating": "1.27"
+      "eventRating": "1.27",
+      "realName": "Nikita Kochenyuk",
+      "teamSlug": "magic",
+      "teamShortName": "magic",
+      "teamCountryCode": "BY",
+      "teamExternalId": "13592",
+      "teamExternalSlug": "magic"
     },
     {
       "sourceRank": 10,
@@ -126,61 +138,6 @@
       "externalSlug": "jame",
       "maps": 5,
       "eventRating": "1.25"
-    },
-    {
-      "sourceRank": 11,
-      "nickname": "dumau",
-      "slug": "dumau",
-      "team": "Legacy",
-      "countryCode": "BR",
-      "externalId": "15698",
-      "externalSlug": "dumau",
-      "maps": 7,
-      "eventRating": "1.25"
-    },
-    {
-      "sourceRank": 12,
-      "nickname": "flameZ",
-      "slug": "flamez",
-      "team": "Vitality",
-      "countryCode": "IL",
-      "externalId": "16693",
-      "externalSlug": "flamez",
-      "maps": 8,
-      "eventRating": "1.25"
-    },
-    {
-      "sourceRank": 13,
-      "nickname": "dziugss",
-      "slug": "dziugss",
-      "team": "FUT",
-      "countryCode": "LT",
-      "externalId": "23553",
-      "externalSlug": "dziugss",
-      "maps": 7,
-      "eventRating": "1.25"
-    },
-    {
-      "sourceRank": 14,
-      "nickname": "nqz",
-      "slug": "nqz",
-      "team": "MIBR",
-      "countryCode": "BR",
-      "externalId": "19694",
-      "externalSlug": "nqz",
-      "maps": 5,
-      "eventRating": "1.23"
-    },
-    {
-      "sourceRank": 15,
-      "nickname": "HUASOPEEK",
-      "slug": "huasopeek",
-      "team": "9z",
-      "countryCode": "CL",
-      "externalId": "22613",
-      "externalSlug": "huasopeek",
-      "maps": 7,
-      "eventRating": "1.23"
     }
   ]
 }

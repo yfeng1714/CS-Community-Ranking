@@ -43,7 +43,10 @@ test("supports ranking search, player details, informational pages, and persiste
   await page.goto("/ranking");
   await expect(page.getByRole("heading", { name: "社区榜单", exact: true })).toBeVisible();
   await expect(page.locator("tbody tr")).toHaveCount(4);
-  await expect(page.getByRole("button", { name: "高分在前" })).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByRole("button", { name: "高分在前" })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
   const highest = (await page.locator("tbody tr").first().locator("strong").textContent()) ?? "";
   await page.getByRole("button", { name: "低分在前" }).click();
   await expect(page.locator("tbody tr").last().locator("strong")).toHaveText(highest);
@@ -59,6 +62,10 @@ test("supports ranking search, player details, informational pages, and persiste
   await expect(page.getByRole("link", { name: "当期赛事 - EWC" })).toBeVisible();
   await page.getByRole("link", { name: "当期赛事 - EWC" }).click();
   await expect(page.getByRole("heading", { name: "Esports World Cup 2026" })).toBeVisible();
+  await expect(page.getByRole("columnheader", { name: "Maps" })).toBeVisible();
+  await expect(
+    page.locator(".event-mvp-table tbody tr").first().locator(".ranking-table__rank"),
+  ).toHaveText("#1");
   await page.getByRole("button", { name: "投票 +1" }).first().click();
   await expect(page.getByRole("button", { name: "今日已投" })).toBeVisible();
 

@@ -2330,8 +2330,8 @@ button:disabled {
     display: none;
   }
 
-  .event-mvp-table th:nth-child(6),
-  .event-mvp-table td:nth-child(6) {
+  .event-mvp-table th:nth-child(7),
+  .event-mvp-table td:nth-child(7) {
     display: table-cell;
   }
 

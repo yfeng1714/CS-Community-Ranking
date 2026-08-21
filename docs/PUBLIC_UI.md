@@ -6,7 +6,7 @@ Milestone 5 is the first complete anonymous public journey. It provides:
 
 - `/` — random Vote pair, expandable details, Skip, result, and explicit Next;
 - `/ranking` — active-Edition competition ranking, client-side search, and score sort direction;
-- `/current-event` — hardcoded EWC Event MVP list with a daily +1 vote button;
+- `/current-event` — hardcoded EWC Top 10 Event MVP list with Maps, unique ranks, and a daily +1;
 - `/player/{slug}` — public player identity, roster, score record, and approved stats;
 - `/about` — scoring, random-pairing, Candidate Pool explanation, and Bilibili / GitHub chips.
 

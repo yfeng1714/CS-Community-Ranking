@@ -440,6 +440,22 @@
     {
       "assetPath": "/images/teams/lynn-vision.webp",
       "permission": "OWNER_ACCEPTED_PENDING_RIGHTS"
+    },
+    {
+      "assetPath": "/images/players/xkacpersky.webp",
+      "permission": "OWNER_ACCEPTED_PENDING_RIGHTS"
+    },
+    {
+      "assetPath": "/images/players/tenzy.webp",
+      "permission": "OWNER_ACCEPTED_PENDING_RIGHTS"
+    },
+    {
+      "assetPath": "/images/teams/ninjas-in-pyjamas.webp",
+      "permission": "OWNER_ACCEPTED_PENDING_RIGHTS"
+    },
+    {
+      "assetPath": "/images/teams/magic.webp",
+      "permission": "OWNER_ACCEPTED_PENDING_RIGHTS"
     }
   ]
 }
