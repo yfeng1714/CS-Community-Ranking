@@ -160,9 +160,10 @@ The 2026-08-17 set is `data/review-manual/special-retired-2026-08-17.json`: Mach
 Rating 0.78, Owner-provided portrait `/images/players/MachineWJQ.webp` — converted from a
 1080×1518 JPEG to a real 800×800 WebP so square frames and `nosniff` both work) and advent (career
 Rating 0.85, local HLTV profile portrait `/images/players/advent.webp`). After that admission the
-pairing pool is **92** players (**4,186** pairs). Review Manual portraits use
-`pnpm assets:capture-hltv-profile-portraits` then `pnpm assets:import-hltv-profile-portraits`;
-production `photoPath` updates are `pnpm players:apply-photos`. Review Manual logos use
+pairing pool is **92** players (**4,186** pairs). Review Manual portraits use the playbook in
+`docs/HLTV_PROFILE_PORTRAITS.md` (`pnpm assets:capture-hltv-profile-portraits` then
+`pnpm assets:import-hltv-profile-portraits`); production `photoPath` updates are
+`pnpm players:apply-photos` when a new path is attached. Review Manual logos use
 `pnpm assets:capture-hltv-team-logos` then `pnpm assets:import-hltv-team-logos`; production
 `logoPath` updates are `pnpm teams:apply-logos`.
 

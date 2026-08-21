@@ -117,14 +117,14 @@ afterAll(async () => {
 });
 
 describe("Milestone 5 public queries", () => {
-  it("publishes competition ranks and breaks equal-score display order by decisions", async () => {
+  it("publishes competition ranks and breaks equal-score display order by win rate then decisions", async () => {
     const ranking = await getPublicRanking(database);
 
     expect(ranking.edition?.code).toBe("2026");
     expect(ranking.players.map(({ nickname, rank, score }) => ({ nickname, rank, score }))).toEqual(
       [
-        { nickname: "Bolt", rank: 1, score: 2 },
         { nickname: "Ace", rank: 1, score: 2 },
+        { nickname: "Bolt", rank: 1, score: 2 },
         { nickname: "Clutch", rank: 3, score: 0 },
         { nickname: "Drift", rank: 3, score: 0 },
       ],

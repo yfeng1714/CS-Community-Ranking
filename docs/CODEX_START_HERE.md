@@ -38,7 +38,8 @@ Use `docs/LAUNCH_GATE_F.md` for all M10 production-data, beta, and launch eviden
 
 Always trust the latest `docs/PROGRESS.md` over this summary if they ever differ. For updating
 public HLTV player Rating / Firepower / honors / Top 20 / nationality, follow
-`docs/HLTV_PLAYER_STATS.md`. Do not enable live HLTV sync.
+`docs/HLTV_PLAYER_STATS.md`. Do not enable live HLTV sync. For uniform player portraits, follow
+`docs/HLTV_PROFILE_PORTRAITS.md` (official profile body shots, not ranking-page 200×200 crops).
 
 ## Non-negotiable product boundaries
 

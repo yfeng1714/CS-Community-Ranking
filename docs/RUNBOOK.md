@@ -60,7 +60,8 @@ playwright install chromium` if Playwright reports that the browser executable i
 
 Public-data smoke checks:
 
-- `/ranking` shows all seeded players, tied competition ranks, and client-side search.
+- `/ranking` shows all seeded players, tied competition ranks, client-side search, and a high/low
+  score order switch.
 - `/player/sample-ace` shows identity, roster, ranking, and deliberate `—`/missing-data states.
 - `/about` explains random pairing and scoring without defining what “better” means.
 - The footer and About page contain no retired `/privacy` link. Direct `/privacy` requests return
@@ -123,11 +124,12 @@ pnpm teams:apply-logos
 `assets:check` is deliberately a local Owner/developer verification: it requires the ignored
 `assets/attribution.json` source record and compares it with tracked `assets/registry.json` plus the
 served files. CI, production images, and public/Admin responses never receive the detailed record.
-Review Manual and advent portraits come from official HLTV player-profile body shots
-(`pnpm assets:capture-hltv-profile-portraits`), then local import, then
-`pnpm players:apply-photos` against the Railway tunnel. Core 70 portraits use the same profile
-body-shot capture with `--source CORE`; replacing the files at the existing `photoPath` values does
-not need a production path rewrite. Review Manual team logos come from official
+Review Manual and advent portraits come from official HLTV player-profile body shots.
+Follow `docs/HLTV_PROFILE_PORTRAITS.md` for capture/import (including `--source CORE` for the first
+70). Then local import, then `pnpm players:apply-photos` against the Railway tunnel when a **new**
+`photoPath` was attached. Core 70 portraits use the same profile body-shot capture with
+`--source CORE`; replacing the files at the existing `photoPath` values does not need a production
+path rewrite. Review Manual team logos come from official
 HLTV team pages (`pnpm assets:capture-hltv-team-logos`), then local import, then
 `pnpm teams:apply-logos`. Do not hotlink HLTV. MachineWJQ stays
 Owner-provided.

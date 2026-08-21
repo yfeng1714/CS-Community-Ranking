@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 
+import type { RankingSortDirection } from "@/domain/public/presentation";
 import type { PublicRankingPlayer } from "@/domain/public/types";
 
 import { CountryFlag } from "./country-flag";
@@ -20,17 +21,18 @@ function score(value: number): string {
 
 export function RankingTable({ players }: { players: PublicRankingPlayer[] }) {
   const [query, setQuery] = useState("");
+  const [direction, setDirection] = useState<RankingSortDirection>("desc");
   const filtered = useMemo(() => {
     const normalized = query.trim().toLocaleLowerCase("en");
-    if (!normalized) {
-      return players;
-    }
-    return players.filter((player) =>
-      [player.nickname, player.team, player.teamShortName, player.country]
-        .filter((value): value is string => Boolean(value))
-        .some((value) => value.toLocaleLowerCase("en").includes(normalized)),
-    );
-  }, [players, query]);
+    const matched = !normalized
+      ? players
+      : players.filter((player) =>
+          [player.nickname, player.team, player.teamShortName, player.country]
+            .filter((value): value is string => Boolean(value))
+            .some((value) => value.toLocaleLowerCase("en").includes(normalized)),
+        );
+    return direction === "asc" ? [...matched].reverse() : matched;
+  }, [direction, players, query]);
 
   return (
     <section aria-labelledby="ranking-table-title" className="ranking-board">
@@ -39,16 +41,34 @@ export function RankingTable({ players }: { players: PublicRankingPlayer[] }) {
           <span className="eyebrow">全体候选</span>
           <h2 id="ranking-table-title">社区实时排名</h2>
         </div>
-        <label className="ranking-search">
-          <SearchIcon />
-          <span className="sr-only">搜索选手或战队</span>
-          <input
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder="搜索选手或战队"
-            type="search"
-            value={query}
-          />
-        </label>
+        <div className="ranking-board__controls">
+          <div className="ranking-sort" role="group" aria-label="分数排序方向">
+            <button
+              aria-pressed={direction === "desc"}
+              onClick={() => setDirection("desc")}
+              type="button"
+            >
+              高分在前
+            </button>
+            <button
+              aria-pressed={direction === "asc"}
+              onClick={() => setDirection("asc")}
+              type="button"
+            >
+              低分在前
+            </button>
+          </div>
+          <label className="ranking-search">
+            <SearchIcon />
+            <span className="sr-only">搜索选手或战队</span>
+            <input
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="搜索选手或战队"
+              type="search"
+              value={query}
+            />
+          </label>
+        </div>
       </div>
 
       <div className="ranking-table-wrap">

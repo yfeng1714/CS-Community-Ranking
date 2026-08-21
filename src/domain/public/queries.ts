@@ -11,7 +11,13 @@ import {
 } from "../../db/schema/index.ts";
 import type { AppDatabase } from "../database.ts";
 import { peakHltvTop20 } from "../external-data/top20.ts";
-import { calculateWinRate, dataFreshness, toPublicCount, toPublicMetric } from "./presentation.ts";
+import {
+  calculateWinRate,
+  compareRankingOrder,
+  dataFreshness,
+  toPublicCount,
+  toPublicMetric,
+} from "./presentation.ts";
 import type {
   PublicEdition,
   PublicPlayerProfile,
@@ -55,16 +61,24 @@ export async function getActivePublicEdition(
 
 function presentRankingRows(rows: readonly RankingSourceRow[]): PublicRankingPlayer[] {
   const sorted = [...rows].sort((left, right) => {
-    if (left.score !== right.score) {
-      return right.score - left.score;
-    }
-    const decisionDifference =
-      right.wins + right.losses > left.wins + left.losses
-        ? 1
-        : right.wins + right.losses < left.wins + left.losses
-          ? -1
-          : 0;
-    return decisionDifference || left.nickname.localeCompare(right.nickname, "en");
+    const leftWins = Number(left.wins);
+    const leftLosses = Number(left.losses);
+    const rightWins = Number(right.wins);
+    const rightLosses = Number(right.losses);
+    return compareRankingOrder(
+      {
+        decisions: leftWins + leftLosses,
+        nickname: left.nickname,
+        score: left.score,
+        winRate: calculateWinRate(leftWins, leftLosses),
+      },
+      {
+        decisions: rightWins + rightLosses,
+        nickname: right.nickname,
+        score: right.score,
+        winRate: calculateWinRate(rightWins, rightLosses),
+      },
+    );
   });
   let previousScore: number | undefined;
   let rank = 0;

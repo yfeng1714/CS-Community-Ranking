@@ -43,6 +43,12 @@ test("supports ranking search, player details, informational pages, and persiste
   await page.goto("/ranking");
   await expect(page.getByRole("heading", { name: "社区榜单", exact: true })).toBeVisible();
   await expect(page.locator("tbody tr")).toHaveCount(4);
+  await expect(page.getByRole("button", { name: "高分在前" })).toHaveAttribute("aria-pressed", "true");
+  const highest = (await page.locator("tbody tr").first().locator("strong").textContent()) ?? "";
+  await page.getByRole("button", { name: "低分在前" }).click();
+  await expect(page.locator("tbody tr").last().locator("strong")).toHaveText(highest);
+  await page.getByRole("button", { name: "高分在前" }).click();
+  await expect(page.locator("tbody tr").first().locator("strong")).toHaveText(highest);
 
   await page.getByPlaceholder("搜索选手或战队").fill("Ace");
   await expect(page.locator("tbody tr")).toHaveCount(1);
@@ -51,7 +57,8 @@ test("supports ranking search, player details, informational pages, and persiste
   await expect(page.getByText("数据待同步", { exact: true })).toBeVisible();
 
   await page.getByRole("link", { name: "关于" }).click();
-  await expect(page.getByRole("heading", { name: "数据看专业榜，争论留给社区。" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Bilibili" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "GitHub" })).toBeVisible();
   await expect(page.getByRole("link", { name: "隐私", exact: true })).toHaveCount(0);
   const privacyResponse = await page.goto("/privacy");
   expect(privacyResponse?.status()).toBe(404);

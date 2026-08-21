@@ -83,8 +83,8 @@ See `docs/VOTE_RESOLUTION.md` for transaction ordering, counters, revocation, an
 ### `GET /api/v1/rankings`
 
 Returns the active Edition and its complete public ranking projection. Equal scores receive the
-same competition rank; equal-score rows are displayed by counted decisions descending, then
-nickname ascending. Counts are JSON numbers only after a safe-integer check. A successful response
+same competition rank; equal-score rows are displayed by win rate descending (`null` last), then
+counted decisions descending, then nickname ascending. Counts are JSON numbers only after a safe-integer check. A successful response
 uses `Cache-Control: public, max-age=15, stale-while-revalidate=45`; an unexpected failure returns a
 detail-free `503 RANKING_UNAVAILABLE` with `no-store`.
 

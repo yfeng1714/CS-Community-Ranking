@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ProductPageView } from "@/components/analytics/page-view";
+import { BilibiliIcon, GitHubIcon } from "@/components/icons";
 
 export const metadata: Metadata = {
   title: "关于与规则",
@@ -11,10 +12,32 @@ export default function AboutPage() {
   return (
     <main className="public-page reading-page" id="main-content">
       <ProductPageView event={{ eventType: "PAGE_VIEW", metadata: { page: "about" } }} />
-      <header className="reading-hero">
-        <span className="eyebrow">关于这张野榜</span>
-        <h1>数据看专业榜，争论留给社区。</h1>
-        <p>这里不定义“更强”是什么。近期状态、生涯成就、巅峰实力、个人喜好——你按自己的标准选。</p>
+      <header className="about-credits">
+        <h1 className="sr-only">关于与规则</h1>
+        <p>
+          <span>作者</span>
+          <a
+            className="about-chip"
+            href="https://space.bilibili.com/346373856"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            <BilibiliIcon />
+            Bilibili
+          </a>
+        </p>
+        <p>
+          <span>本项目已开源</span>
+          <a
+            className="about-chip"
+            href="https://github.com/yfeng1714/CS-Community-Ranking"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            <GitHubIcon />
+            GitHub
+          </a>
+        </p>
       </header>
 
       <section className="rule-strip" aria-label="核心规则">

@@ -153,7 +153,7 @@ and honest rights state to launch readiness; ignored `assets/attribution.json` k
 and detailed notes only for local Dev/Ops review. The Owner may accept provisional community-beta
 use as a warning while handling license questions separately. Run `pnpm assets:check` locally;
 never hotlink runtime assets. The source, normalization, and replacement plan is defined in
-`docs/IMAGE_SOURCING.md`.
+`docs/IMAGE_SOURCING.md`. Uniform HLTV player portraits follow `docs/HLTV_PROFILE_PORTRAITS.md`.
 
 Before Edition activation, `pnpm launch:check -- --edition <code>` additionally requires the latest
 approved HLTV/VRS snapshots to be within `EXTERNAL_SOURCE_MAX_AGE_DAYS`, and the latest successful

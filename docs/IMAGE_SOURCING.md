@@ -52,8 +52,9 @@ into the logo.
 Preferred target output is an 800×1000 WebP portrait at `/images/players/{player-slug}.webp`. Keep
 the face and upper body within the central safe area; apply the same crop ratio and background
 treatment across teams. Do not upscale a visibly low-resolution source merely to meet the nominal
-dimensions. The current complete HLTV set is the provider's consistent native 200×200 body-shot
-transform and is retained at that size rather than artificially enlarged.
+dimensions. The current complete HLTV set is the official **player-profile body shot** (typically
+around 400×417), not the ranking-page 200×200 crop. Follow `docs/HLTV_PROFILE_PORTRAITS.md` exactly
+when refreshing those files.
 
 Owner-provided Special portraits may arrive at a different size or as a JPEG saved with a `.webp`
 name. Production sends `X-Content-Type-Options: nosniff`, so the file must be real WebP bytes.
@@ -127,11 +128,13 @@ canonical, registry, and local-source counts then agreed at 70 Core portraits / 
 pending-rights assets.
 
 On 2026-08-18 a second portrait pass captured official HLTV **player-profile** body shots for the 20
-Review Manual starters plus advent (`pnpm assets:capture-hltv-profile-portraits`). The profile page
-stores the image on `data-cookieblock-src`; capture fetches that `img-cdn.hltv.org/playerbodyshot/`
-URL in-page, converts PNG to real WebP, and writes ignored local evidence. Import copies the 21
-files into `public/images/players/{slug}.webp`, appends registry/attribution, and sets manifest
-`photoPath` values. MachineWJQ remains `OWNER_PROVIDED`. Production `photoPath` is applied with
+Review Manual starters plus advent (`pnpm assets:capture-hltv-profile-portraits`). Follow
+`docs/HLTV_PROFILE_PORTRAITS.md` for the exact selector, rate limits, ignored evidence files, import
+flags, and when production `photoPath` must be rewritten. The profile page stores the image on
+`data-cookieblock-src`; capture fetches that `img-cdn.hltv.org/playerbodyshot/` URL in-page, converts
+PNG to real WebP, and writes ignored local evidence. Import copies the 21 files into
+`public/images/players/{slug}.webp`, appends registry/attribution, and sets manifest `photoPath`
+values. MachineWJQ remains `OWNER_PROVIDED`. Production `photoPath` is applied with
 `pnpm players:apply-photos`. Counts after portraits: 92 player portraits / 14 logos / 105
 pending-rights assets / 1 Owner-provided portrait. Representative Review Manual and advent crops
 were visually reviewed. Square UI frames still use `object-fit: cover` and
@@ -148,7 +151,8 @@ with `pnpm teams:apply-logos`. Counts: 92 player portraits / 18 logos / 109 pend
 
 On 2026-08-19 the Core 70 ranking-page 200×200 portraits were replaced with the same official
 HLTV **player-profile** body shots (`pnpm assets:capture-hltv-profile-portraits -- --source CORE`).
-Paths stay `/images/players/{slug}.webp`; only the bytes and ignored source URLs change.
+The repeatable steps are in `docs/HLTV_PROFILE_PORTRAITS.md`. Paths stay
+`/images/players/{slug}.webp`; only the bytes and ignored source URLs change.
 MachineWJQ remains `OWNER_PROVIDED`. Vote-card portraits are slightly larger (7.5rem) after this
 pass. Missing `majors_won` snapshots display as 🏆 0 Major so players without a Major winner badge
 match those captured as zero.

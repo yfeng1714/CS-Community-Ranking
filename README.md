@@ -114,7 +114,7 @@ If port `5432` is already occupied, set `POSTGRES_PORT` to another host port in
 | `pnpm launch:check -- --edition <code>` | Produce the fail-closed, read-only pre-activation readiness report |
 | `pnpm canonical:bootstrap [-- ...]` | Validate the DRAFT canonical manifest; explicit approved flags are required to apply it to an empty DB |
 | `pnpm assets:import-hltv-portraits -- --capture <file> --bundles <dir,...>` | Identity-check and import reviewed local HLTV portrait bundles |
-| `pnpm assets:capture-hltv-profile-portraits` | Local Playwright capture of official HLTV player-profile body shots (`--source CORE` for the first 70) |
+| `pnpm assets:capture-hltv-profile-portraits` | Local Playwright capture of official HLTV player-profile body shots; see `docs/HLTV_PROFILE_PORTRAITS.md` |
 | `pnpm assets:import-hltv-profile-portraits` | Copy captured profile portraits into `public/images`, registry, and manifests |
 | `pnpm players:apply-photos -- --actor owner --apply --confirm-player-photos` | Write manifest `photoPath` values onto existing Player rows |
 | `pnpm assets:capture-hltv-team-logos` | Local Playwright capture of official HLTV team-page logos for the four Review Manual teams |
@@ -150,6 +150,7 @@ If port `5432` is already occupied, set `POSTGRES_PORT` to another host port in
 - [`docs/VOTE_RESOLUTION.md`](docs/VOTE_RESOLUTION.md) — exactly-once resolution, ranking, revocation, and integrity checks
 - [`docs/PUBLIC_UI.md`](docs/PUBLIC_UI.md) — public pages, display rules, reload orchestration, and accessibility
 - [`docs/IMAGE_SOURCING.md`](docs/IMAGE_SOURCING.md) — image source priorities, provisional-rights status, and local import workflow
+- [`docs/HLTV_PROFILE_PORTRAITS.md`](docs/HLTV_PROFILE_PORTRAITS.md) — exact HLTV player-profile body-shot capture/import so portraits stay uniform
 - [`docs/ADMIN_CONSOLE.md`](docs/ADMIN_CONSOLE.md) — Admin sessions, mutation/audit workflows, and pending-review safety
 - [`docs/SECURITY.md`](docs/SECURITY.md) — security baseline
 - [`docs/STAGING_GATE_E.md`](docs/STAGING_GATE_E.md) — staging evidence checklist and Owner Review Gate E

@@ -1034,10 +1034,12 @@ Ties:
 
 - Players with equal score display the same rank.
 - Within a tied visual group, use:
-  1. valid decisions descending;
-  2. nickname ascending.
+  1. win rate descending (`null` after any defined rate);
+  2. valid decisions descending;
+  3. nickname ascending.
 
-These secondary fields are only display ordering. They do not change the tied rank.
+These secondary fields are only display ordering. They do not change the tied rank. The Ranking
+page can reverse the whole list to show low scores first; competition ranks stay attached to score.
 
 ## 9.2 Public fields
 

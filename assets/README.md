@@ -15,7 +15,7 @@ or permission-granted. This state is a launch warning rather than a technical bl
 replaced with a cleared asset later.
 
 See `docs/IMAGE_SOURCING.md` for source priorities, dimensions, naming, import phases, and the
-replacement workflow.
+replacement workflow. For HLTV player portraits, follow `docs/HLTV_PROFILE_PORTRAITS.md` exactly.
 
 Run `pnpm assets:check` locally before committing asset changes. It fails unless the local detailed
 records, tracked registry, and files under `public/images` agree exactly.

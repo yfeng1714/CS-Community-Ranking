@@ -5,9 +5,9 @@
 Milestone 5 is the first complete anonymous public journey. It provides:
 
 - `/` — random Vote pair, expandable details, Skip, result, and explicit Next;
-- `/ranking` — active-Edition competition ranking and client-side search;
+- `/ranking` — active-Edition competition ranking, client-side search, and score sort direction;
 - `/player/{slug}` — public player identity, roster, score record, and approved stats;
-- `/about` — short product, scoring, random-pairing, and Candidate Pool explanation.
+- `/about` — scoring, random-pairing, Candidate Pool explanation, and Bilibili / GitHub chips.
 
 The top navigation contains Vote, Ranking, and About. Player pages are reached through player links;
 the About call-to-action links back to Vote and Ranking. The small community beta has no dedicated
@@ -65,7 +65,9 @@ if the Skip response was lost, the same-choice resolve retry is idempotent.
 ## Ranking and Player display
 
 Ranking uses score descending and competition ranks (`1, 1, 3`). Equal-score display order is
-counted decisions descending, then nickname ascending; this ordering never changes the shared rank.
+win rate descending (`null` last), then counted decisions descending, then nickname ascending;
+this ordering never changes the shared rank. The Ranking toolbar can reverse the whole list
+(低分在前) without rewriting those ranks.
 Desktop exposes the complete record. Mobile prioritizes rank, player, and score; the Player page
 contains the expanded record.
 

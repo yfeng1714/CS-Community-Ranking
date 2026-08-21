@@ -1480,6 +1480,41 @@ button:disabled {
   letter-spacing: -0.04em;
 }
 
+.ranking-board__controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.7rem;
+}
+
+.ranking-sort {
+  display: inline-flex;
+  height: 42px;
+  padding: 0.18rem;
+  border: 1px solid var(--border);
+  border-radius: 0.7rem;
+  background: var(--surface-soft);
+}
+
+.ranking-sort button {
+  border: 0;
+  border-radius: 0.52rem;
+  padding: 0 0.85rem;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 750;
+}
+
+.ranking-sort button[aria-pressed="true"] {
+  background: var(--surface);
+  color: var(--foreground);
+  box-shadow: var(--shadow-soft);
+}
+
 .ranking-search {
   display: flex;
   align-items: center;
@@ -1880,6 +1915,48 @@ button:disabled {
   font-size: clamp(2.8rem, 6vw, 5.3rem);
 }
 
+.about-credits {
+  display: grid;
+  gap: 0.9rem;
+  padding: clamp(0.6rem, 3vw, 2rem) 0 clamp(2rem, 5vw, 4rem);
+}
+
+.about-credits p {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.7rem 1rem;
+  margin: 0;
+  color: var(--muted-strong);
+  font-size: 0.95rem;
+  font-weight: 650;
+}
+
+.about-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.48rem 1rem 0.48rem 0.72rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  box-shadow: var(--shadow-soft);
+  color: var(--foreground);
+  font-size: 0.92rem;
+  font-weight: 750;
+  text-decoration: none;
+}
+
+.about-chip:hover,
+.about-chip:focus-visible {
+  border-color: var(--brand);
+}
+
+.about-chip svg {
+  width: 1.15rem;
+  height: 1.15rem;
+}
+
 .rule-strip {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -2188,8 +2265,17 @@ button:disabled {
     flex-direction: column;
   }
 
+  .ranking-board__controls,
   .ranking-search {
     width: 100%;
+  }
+
+  .ranking-sort {
+    width: 100%;
+  }
+
+  .ranking-sort button {
+    flex: 1 1 0;
   }
 
   .ranking-table {

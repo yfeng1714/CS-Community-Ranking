@@ -9,7 +9,7 @@ import { getPublicRanking } from "@/domain/public/queries";
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "社区榜单",
-  description: "CS 野榜实时社区职业选手排名。相同分数共享相同排名。",
+  description: "CS 野榜实时社区职业选手排名。相同分数共享相同排名；同分先比胜率，再比有效对决次数。",
 };
 
 function formatDate(value: string | null): string {
@@ -35,7 +35,7 @@ export default async function RankingPage() {
             {ranking.edition ? `${ranking.edition.code} Edition` : "Edition 暂未开放"}
           </span>
           <h1>社区榜单</h1>
-          <p>每张有效票，胜者 +1，败者 -1。相同分数，共享同一排名。</p>
+          <p>每张有效票，胜者 +1，败者 -1。相同分数共享同一排名；同分先比胜率，再比有效对决次数。</p>
         </div>
         <div className="ranking-pulse">
           <span>入榜选手</span>
