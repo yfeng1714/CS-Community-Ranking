@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
+import { getTableName, is, Table } from "drizzle-orm";
 
-import { databaseIdentity, postgresCommand } from "../../scripts/backup-support.ts";
+import { criticalTables, databaseIdentity, postgresCommand } from "../../scripts/backup-support.ts";
+import * as schema from "../../src/db/schema/index.ts";
 
 describe("backup connection handling", () => {
   it("passes credentials through the environment instead of command arguments", () => {
@@ -30,5 +32,13 @@ describe("backup connection handling", () => {
     expect(() => postgresCommand("https://db.internal/ranking")).toThrow(
       "must use postgres:// or postgresql://",
     );
+  });
+
+  it("keeps the backup manifest table list synchronized with the application schema", () => {
+    const schemaTables = Object.values(schema)
+      .flatMap((value) => (is(value, Table) ? [getTableName(value as Table)] : []))
+      .sort();
+
+    expect([...criticalTables].sort()).toEqual(schemaTables);
   });
 });

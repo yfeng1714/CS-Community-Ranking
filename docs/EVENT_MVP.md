@@ -10,6 +10,10 @@ Public requests never fetch HLTV. Keep `HLTV_SYNC_ENABLED=false`.
 ## Product rules
 
 - Path: `/current-event`. Nav bubble between 榜单 and 关于: **当期赛事 - EWC**.
+- Voting stays open through the second `Asia/Shanghai` calendar day after the event's recorded
+  `endsAt`. For EWC (`endsAt` `2026-08-23`), the final voting date is `2026-08-25`; new votes close
+  automatically at `2026-08-26 00:00` Shanghai time. The page keeps the final table visible after
+  closure but disables vote buttons. The API independently enforces the same boundary.
 - Scoring: one visitor may give **+1 to one player per Asia/Shanghai calendar day**. No loser
   penalty. Tomorrow is a new vote; votes accumulate.
 - Anti-cheat reuse: anonymous Visitor cookie, mutation origin guard, per-visitor rate limit, IP
@@ -56,16 +60,16 @@ not on pairing-pool `event_team_result`. Source is the official HLTV prize distr
 (`https://www.hltv.org/events/8261/esports-world-cup-2026#PrizeDistribution`). Do not invent
 冠军/亚军/季军/殿军 until that table names 1st–4th.
 
-| Code | UI | HLTV prize row | Tie-break rank |
-| --- | --- | --- | --- |
-| `CHAMPION` | 冠军 | 1st | 1 |
-| `RUNNER_UP` | 亚军 | 2nd | 2 |
-| `THIRD` | 季军 | 3rd | 3 |
-| `FOURTH` | 殿军 | 4th | 4 |
-| `SEMIFINAL` | 四强 | unnamed 1st–4th while still playing | 4 |
-| `QUARTERFINAL` | 八强 | 5–8th | 5 |
-| `ROUND_OF_16` | 十六强 | 9–16th | 6 |
-| `GROUP` | 小组赛 | 17–32nd | 7 |
+| Code           | UI     | HLTV prize row                      | Tie-break rank |
+| -------------- | ------ | ----------------------------------- | -------------- |
+| `CHAMPION`     | 冠军   | 1st                                 | 1              |
+| `RUNNER_UP`    | 亚军   | 2nd                                 | 2              |
+| `THIRD`        | 季军   | 3rd                                 | 3              |
+| `FOURTH`       | 殿军   | 4th                                 | 4              |
+| `SEMIFINAL`    | 四强   | unnamed 1st–4th while still playing | 4              |
+| `QUARTERFINAL` | 八强   | 5–8th                               | 5              |
+| `ROUND_OF_16`  | 十六强 | 9–16th                              | 6              |
+| `GROUP`        | 小组赛 | 17–32nd                             | 7              |
 
 Missing standing sorts last. 2026-08-22 capture: Spirit / FURIA / FUT / Legacy = 四强; Falcons /
 Vitality = 八强; magic = 十六强; NiP / PARIVISION / MIBR = 小组赛.
@@ -93,8 +97,10 @@ There is **no** live plan to scrape this event hourly on Railway.
   visitors would still see the last imported snapshot.
 - Honest refresh path remains: local capture of the official table → reviewed JSON →
   `pnpm source:import-event-mvp` through a laptop SSH tunnel. If EWC is still running, recapture
-  after meaningful match days (or once daily at most). After `endsAt` (`2026-08-23`), freeze the
-  snapshot. Do not add a cron until Cloudflare access, a dedicated event parser, and a
+  after meaningful match days (or once daily at most). After `endsAt` (`2026-08-23`), make the final
+  source capture, then let the application keep voting open through `2026-08-25`. Freeze the stored
+  contest after that grace window for operational clarity; voting already fails closed based on
+  the date even if the row still says `ACTIVE`. Do not add a cron until Cloudflare access, a dedicated event parser, and a
   low-frequency schedule are explicitly approved.
 
 ## Local import (production needs a fresh SSH tunnel)

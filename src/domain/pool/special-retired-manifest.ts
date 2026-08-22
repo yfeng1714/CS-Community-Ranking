@@ -93,8 +93,11 @@ export async function createAndAdmitSpecialRetiredPlayers(
   },
 ) {
   const identityReason = `Owner-reviewed Special retired identities observed ${input.manifest.observedAt}`;
-  const admitted: Array<{ playerId: string; slug: string; status: "admitted" | "already_admitted" }> =
-    [];
+  const admitted: Array<{
+    playerId: string;
+    slug: string;
+    status: "admitted" | "already_admitted";
+  }> = [];
 
   for (const playerInput of input.manifest.players) {
     const [existing] = await database

@@ -140,16 +140,16 @@ Use the console for attributed, reversible product-data changes that should land
 PostgreSQL. Ask an agent when the work needs a code change, a capture/import playbook, a Railway
 tunnel, or a decision that is not a form on this page.
 
-| Do this in Admin | Ask an agent instead |
-| --- | --- |
-| Correct a Team/Player name, slug, logo/photo path, country code, or HLTV profile URL | Recapture/import HLTV stats, portraits, or ranking snapshots |
-| End a roster row and add the replacement starter from an already admitted Team | Change pairing math, Vote scoring, or public UI |
-| Disable/enable a Pool player's pairing with a reason | Reset the database, run migrations, or change env vars |
-| Create/transition Editions, confirm T1 events, record placements | Enable live HLTV sync or scrape `/stats/players/` |
-| Admit a Review Manual Team after its identity/roster already exist | Create a full new Team+roster via `pnpm pool:admit-review-manual`; if create showed “temporarily unavailable”, check Audit before retrying the same slug |
-| Approve or reject a pending import / Pool proposal after reading evidence | Invent Pool admissions without source snapshots |
-| Search a Vote by exact ID and revoke a known-bad Vote | Bulk-delete Votes, or inspect production logs/backups |
-| Read score integrity, audit logs, and the Pool update “next action” card | Debug parser drift or write a new capture script |
+| Do this in Admin                                                                     | Ask an agent instead                                                                                                                                     |
+| ------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Correct a Team/Player name, slug, logo/photo path, country code, or HLTV profile URL | Recapture/import HLTV stats, portraits, or ranking snapshots                                                                                             |
+| End a roster row and add the replacement starter from an already admitted Team       | Change pairing math, Vote scoring, or public UI                                                                                                          |
+| Disable/enable a Pool player's pairing with a reason                                 | Reset the database, run migrations, or change env vars                                                                                                   |
+| Create/transition Editions, confirm T1 events, record placements                     | Enable live HLTV sync or scrape `/stats/players/`                                                                                                        |
+| Admit a Review Manual Team after its identity/roster already exist                   | Create a full new Team+roster via `pnpm pool:admit-review-manual`; if create showed “temporarily unavailable”, check Audit before retrying the same slug |
+| Approve or reject a pending import / Pool proposal after reading evidence            | Invent Pool admissions without source snapshots                                                                                                          |
+| Search a Vote by exact ID and revoke a known-bad Vote                                | Bulk-delete Votes, or inspect production logs/backups                                                                                                    |
+| Read score integrity, audit logs, and the Pool update “next action” card             | Debug parser drift or write a new capture script                                                                                                         |
 
 Every Admin mutation requires a reason and writes an audit row. There is no physical delete. Do not
 paste database URLs or passwords into the console.

@@ -24,7 +24,19 @@ beforeAll(async () => {
     .insert(schema.players)
     .values({ nickname: "karrigan", professionalStatus: "ACTIVE", slug: "karrigan" })
     .returning({ id: schema.players.id });
-  if (!admin || !player) throw new Error("Failed to seed reviewed stats integration data");
+  const [edition] = await database
+    .insert(schema.editions)
+    .values({
+      code: "2026",
+      endsAt: new Date("2026-12-31T15:59:59Z"),
+      name: "Reviewed stats test",
+      startsAt: new Date("2025-12-31T16:00:00Z"),
+      status: "DRAFT",
+    })
+    .returning({ id: schema.editions.id });
+  if (!admin || !player || !edition) {
+    throw new Error("Failed to seed reviewed stats integration data");
+  }
   adminId = admin.id;
   await database.insert(schema.playerExternalIdentities).values({
     externalId: "429",
@@ -33,6 +45,13 @@ beforeAll(async () => {
     playerId: player.id,
     provider: "HLTV",
     sourceUrl: "https://www.hltv.org/player/429/karrigan",
+  });
+  await database.insert(schema.poolPlayerEntries).values({
+    admissionReason: "Reviewed stats integration fixture",
+    admissionType: "SPECIAL",
+    approvedBy: admin.id,
+    editionId: edition.id,
+    playerId: player.id,
   });
 });
 

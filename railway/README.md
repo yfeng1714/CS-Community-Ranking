@@ -12,6 +12,7 @@ Each Railway service is connected to this repository and assigned its matching c
 | `snapshot-ranking` | `/railway/job-snapshot-ranking.json` | daily 03:10 |
 | `report-kpi` | `/railway/report-kpi.json` | daily 03:30 |
 | `sync-vrs` | `/railway/job-sync-vrs.json` | Monday 04:00 |
+| `backup-production` | `/railway/job-backup-production.json` | daily 04:30 |
 
 Railway cron expressions are UTC. Scheduled commands are short-lived and must exit. Do not add a
 cron schedule to `web`; do not add a web health check to one-shot services.
@@ -24,10 +25,15 @@ The web pre-deploy command runs the committed migrations from the newly built im
 exit blocks that release before traffic switches. Never replace it with `db push` or seed staging
 from the deployment path.
 
+The backup service uses the dedicated `Dockerfile.backup`, PostgreSQL 18 client tools, the private
+`${{Postgres.DATABASE_URL}}` reference, and service-scoped R2 credentials. It writes only to a
+temporary container directory, verifies both R2 objects, removes the temporary dump, and exits. R2
+credentials must never be added to Web or the other jobs.
+
 HLTV has no automatic M9 service: its job requires reviewed URLs/date windows and remains a manual
 operator command until a low-frequency source schedule is explicitly approved. VRS weekly sync
 only stores a reviewable source snapshot; it cannot change the live Pool.
 
-Portable backup/restore is an owner operation through a Railway tunnel with PostgreSQL client tools
-matching the server's major version. The web/job image intentionally does not carry database client
-binaries or store backup files.
+Portable restore drills remain an Owner operation using matching PostgreSQL client tools. The
+ordinary web/job image intentionally does not carry database client binaries or store backup files;
+only the short-lived backup image does.

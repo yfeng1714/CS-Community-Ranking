@@ -210,13 +210,11 @@ proposal still requires separate Admin review.
 
 ## M10 launch-readiness gate
 
-Use `docs/LAUNCH_GATE_F.md` as the evidence record. The current Railway database is fictional M9
-staging even though its environment label is `production`; never relabel its Edition or disguise
-its fixtures as real history. ADR 0006 approves the lowest-cost boundary: after a final verified
-backup/restore/R2 copy and separate destructive-action approval, pause Web and all scheduled
-services, reset the confirmed existing Railway database's application schema in place, and rebuild
-it from committed migrations. Keep the same database service; do not create a second Railway DB.
-Create the production Admin and DRAFT Edition through audited commands, and never run either seed.
+Use `docs/LAUNCH_GATE_F.md` as the evidence record. The Owner-approved one-time reset was completed
+on 2026-08-15 and the Railway database now contains real beta history. ADR 0006's exception is
+consumed: never reset or seed production. Preserve all subsequent work through forward migrations,
+audited operations, and retained logical backups. Keep the existing single Railway PostgreSQL
+service unless a later scaling/recovery decision explicitly changes the architecture.
 
 To minimize paid overlap, first rehearse canonical data, source sync, conflict resolution, and the
 review-only Pool draft in a separate clean local database. Keep it distinct from the fictional
@@ -449,13 +447,39 @@ terminal:
 DATABASE_URL=<staging-tunnel-url> pnpm backup:create -- --output backups/staging.dump
 ```
 
-The ignored local `backups/` directory contains the dump and a non-secret manifest of critical-table
-row counts. Never commit either file. While data is fictional/rebuildable, back up at least weekly
+The ignored local `backups/` directory contains the dump and a non-secret manifest of all current
+application-table row counts, dump byte size, and SHA-256. Never commit either file. If a matching
+Railway-side `pg_dump` was transferred separately, create its manifest with:
+
+```bash
+DATABASE_URL=<source-tunnel-url> pnpm backup:manifest -- --dump backups/production.dump
+```
+
+While data is fictional/rebuildable, back up at least weekly
 and before consequential migrations/imports. Starting with meaningful closed-beta Votes, run daily,
 retain seven daily and four weekly recovery points, and keep a second independent protected copy.
 Local capacity is approved, but the laptop alone is not a disaster-recovery boundary. A private
 object store or an existing encrypted owner backup destination is acceptable; it must not become a
 public application dependency.
+
+Production uses the short-lived Railway `backup-production` cron at 04:30 Shanghai
+(`30 20 * * *` UTC). Its dedicated PostgreSQL 18 image receives the private
+`${{Postgres.DATABASE_URL}}` reference and bucket-scoped **Object Read & Write** R2 credentials only
+on that service. It creates the dump in an ephemeral directory, records checksum and all 32 table
+counts, uploads and verifies both R2 objects, removes the temporary files, and exits. Never place
+R2 credentials in Web or another job. Treat a missing successful daily deployment or a nonzero job
+exit as an operations incident and run the fallback from a trusted Mac:
+
+```bash
+pnpm backup:production
+```
+
+The fallback requires the Mac to be awake, online, and authenticated with Railway CLI. It keeps a
+valid local dump if the R2 step fails so an operator can retry with `backup:upload-r2`; it deletes
+only an incomplete dump that failed before PostgreSQL custom-format validation. R2 uploads are
+idempotent and refuse to overwrite an existing object whose size or SHA metadata differs. The
+Railway cron does not retain a local copy because its container filesystem is ephemeral; the live
+PostgreSQL database and the verified private R2 object are the independent provider copies.
 
 Create a new, empty scratch database and verify the complete restore at least monthly and after a
 material schema change:
@@ -465,8 +489,15 @@ DATABASE_URL=<source-url> RESTORE_DATABASE_URL=<empty-scratch-url> \
   pnpm backup:verify -- --dump backups/staging.dump
 ```
 
-The command refuses the source database and a nonempty target, runs `pg_restore --exit-on-error`,
-and compares exact row counts for ranking, Vote, Pool, visitor, and audit tables. Run integrity and
+The command verifies the dump size/checksum, refuses the source database and a nonempty target, runs
+`pg_restore --exit-on-error`, and compares every manifest table. If the operator restored the dump
+separately (for example inside Railway), compare it with:
+
+```bash
+DATABASE_URL=<restored-url> pnpm backup:compare -- --dump backups/production.dump
+```
+
+Run integrity and
 public smoke checks against the restored DB, record dump age and restore duration as measured RPO/RTO,
 then delete the scratch service through the Railway dashboard after review. Remove any temporary
 public database exposure/tunnel. The early-product target after real voting starts is RPO 24 hours

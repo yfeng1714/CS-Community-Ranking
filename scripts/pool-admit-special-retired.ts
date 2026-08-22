@@ -67,15 +67,11 @@ try {
         actorUsername,
         editionCode,
       });
-      const result = await createAndAdmitSpecialRetiredPlayers(
-        context.database,
-        context.service,
-        {
-          actorAdminUserId: references.actorAdminUserId,
-          editionId: references.editionId,
-          manifest,
-        },
-      );
+      const result = await createAndAdmitSpecialRetiredPlayers(context.database, context.service, {
+        actorAdminUserId: references.actorAdminUserId,
+        editionId: references.editionId,
+        manifest,
+      });
       const careerBundle = validateReviewedCareerRatingBundle({
         capturedAt: manifest.review.reviewedAt,
         notes: manifest.notes,

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { requireIsoDate, shiftIsoDateByMonths } from "@/domain/date";
+import { requireIsoDate, shiftIsoDateByDays, shiftIsoDateByMonths } from "@/domain/date";
 
 describe("requireIsoDate", () => {
   it("accepts real calendar dates, including leap day", () => {
@@ -22,5 +22,12 @@ describe("shiftIsoDateByMonths", () => {
 
   it("clamps overflow days to the last day of the target month", () => {
     expect(shiftIsoDateByMonths("2026-03-31", -1)).toBe("2026-02-28");
+  });
+});
+
+describe("shiftIsoDateByDays", () => {
+  it("moves across month and year boundaries", () => {
+    expect(shiftIsoDateByDays("2026-08-31", 2)).toBe("2026-09-02");
+    expect(shiftIsoDateByDays("2026-12-31", 1)).toBe("2027-01-01");
   });
 });

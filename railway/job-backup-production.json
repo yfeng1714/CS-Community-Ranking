@@ -1,0 +1,9 @@
+{
+  "$schema": "https://railway.com/railway.schema.json",
+  "build": { "dockerfilePath": "Dockerfile.backup" },
+  "deploy": {
+    "cronSchedule": "30 20 * * *",
+    "restartPolicyType": "NEVER",
+    "startCommand": "node scripts/job-backup-production.ts"
+  }
+}

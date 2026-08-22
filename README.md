@@ -5,18 +5,16 @@ simple pairwise votes.
 
 ## Status
 
-Milestones 0–9 are implemented and Owner Review Gate E was approved on 2026-08-14. M10 is now in
-review-only preparation: a fail-closed launch-readiness command, an Owner-approved 14-Team/70-Player
-canonical manifest, and Gate F evidence checklist are in place. An isolated local rehearsal has
-applied that manifest and admitted the Owner-approved, conflict-free 14-Team/70-Player Core Pool
-from approved August 3 VRS and August 10 HLTV evidence. Its pre-asset DRAFT launch-readiness report
-passes with only placeholder-image and optional-stat warnings. The repository now also contains the
-complete locally served and attributed 14-Team-logo/70-Player-portrait set.
-A separate local-only clone is ACTIVE for UI
-preview; the canonical rehearsal remains DRAFT and zeroed. No Railway reset, production Pool,
-production Edition activation, or closed beta has started. ADR 0006 selects a one-time
-in-place reset of the fictional Railway database after final verified backup evidence, so the launch
-plan keeps one Railway PostgreSQL service. The runtime foundation, full V0.1 database schema, data-driven
+Milestones 0–9 and Owner Review Gate E are complete. M10 is in its final evidence phase: the
+Owner-approved in-place cutover was completed on 2026-08-15, the real `2026 Beta Edition` is ACTIVE
+on Railway, and the pairing Pool now contains 14 Core Teams/70 starters, four Review Manual
+Teams/20 starters, and two retired Specials (92 enabled Players total). Current Player stats,
+portraits, Team logos, the reviewed EWC Event MVP beta, production smoke, and live integrity checks
+are in place. Event MVP voting automatically remains open through two Shanghai calendar days after
+an event ends. A current production logical dump has also passed an exact 32-table scratch restore
+and has a verified private R2 copy. A dedicated Railway cron now creates and verifies a private R2
+copy every day without depending on the Owner's Mac; the local command remains the manual recovery
+fallback. The runtime foundation, full V0.1 database schema, data-driven
 Candidate Pool, secure anonymous visitor identity, atomic random Ballot issuance, exactly-once
 Vote/ranking transactions, and the responsive public Vote/Ranking/Player vertical slice are in
 place, together with the authenticated Admin Console, fixture-tested VRS/HLTV adapters, external
@@ -24,11 +22,9 @@ snapshot approval, freshness, and review-only Candidate Pool drafts. Gate D rema
 import boundary: no provider result becomes a live Pool change automatically. M8 adds daily
 privacy-preserving network risk keys, observe/enforce risk collection, first-party analytics/KPIs,
 integrity and retention jobs, bounded public API protection, and site-wide security headers. The
-production image, migration-gated Railway topology, scheduled-service configs, staging smoke/load,
-and backup/restore verification are versioned. Direct Railway staging is live; the first retained
-local logical backup has passed a full 14-table restore and has a verified independent copy in a
-private Cloudflare R2 bucket. The M10 next boundary is real-data rehearsal, final in-place-reset
-evidence/approval, and Owner review under `docs/LAUNCH_GATE_F.md`.
+production image, migration-gated Railway topology, scheduled-service configs, smoke/load tooling,
+and backup/restore verification are versioned. The direct Railway beta is live at
+`https://yebangtv.up.railway.app`; `docs/LAUNCH_GATE_F.md` is the governing M10 sign-off record.
 
 Players may carry an optional validated HLTV profile URL for human reference. It is managed through
 the audited Admin flow and shown on the public Player page, while external provider identities
@@ -132,7 +128,12 @@ If port `5432` is already occupied, set `POSTGRES_PORT` to another host port in
 | `pnpm ops:smoke -- --origin <https-origin>` | Verify staging health, public routes, payloads, and security headers |
 | `pnpm ops:load -- --origin <https-origin> --confirm-staging` | Run a bounded, SKIP-only staging concurrency scenario |
 | `pnpm backup:create -- --output <file.dump>` | Create a portable PostgreSQL dump plus row-count manifest |
-| `pnpm backup:verify -- --dump <file.dump>` | Restore into a separate empty DB and verify critical-table counts |
+| `pnpm backup:manifest -- --dump <file.dump>` | Generate or refresh a size/checksum/all-table manifest for an existing dump |
+| `pnpm backup:compare -- --dump <file.dump>` | Compare a restored database with every count in the dump's manifest |
+| `pnpm backup:verify -- --dump <file.dump>` | Restore into a separate empty DB and verify all application-table counts, size, and checksum |
+| `pnpm backup:upload-r2 -- --dump <file.dump> --prefix <prefix>` | Idempotently upload and verify a dump/manifest pair in the private R2 bucket |
+| `pnpm backup:production` | Create a Railway-side production dump, retain its 32-table manifest locally, and verify their private R2 copies |
+| `pnpm backup:railway` | Run the Railway cron entry point locally with explicit database/R2 variables; production runs it from the dedicated backup image |
 
 ## Documentation
 

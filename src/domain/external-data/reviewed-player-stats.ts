@@ -1,7 +1,12 @@
 import { and, eq, ne } from "drizzle-orm";
 import { z } from "zod";
 
-import { playerExternalIdentities, players, playerStatSnapshots, poolPlayerEntries } from "../../db/schema/index.ts";
+import {
+  playerExternalIdentities,
+  players,
+  playerStatSnapshots,
+  poolPlayerEntries,
+} from "../../db/schema/index.ts";
 import { writeAdminAudit } from "../audit.ts";
 import type { AppDatabase } from "../database.ts";
 import { DomainError, requireNonBlank } from "../error.ts";
@@ -297,7 +302,9 @@ export async function importReviewedHltvPlayerStats(
           ne(players.professionalStatus, "RETIRED"),
         ),
       );
-    const identities = [...new Map(identityRows.map((identity) => [identity.externalId, identity])).values()];
+    const identities = [
+      ...new Map(identityRows.map((identity) => [identity.externalId, identity])).values(),
+    ];
     const identityByExternalId = new Map(
       identities.map((identity) => [identity.externalId, identity]),
     );

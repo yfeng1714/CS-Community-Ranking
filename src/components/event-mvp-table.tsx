@@ -22,9 +22,11 @@ function rating(value: number): string {
 export function EventMvpTable({
   players,
   todayVoteSlug,
+  votingOpen,
 }: {
   players: EventMvpPlayer[];
   todayVoteSlug: string | null;
+  votingOpen: boolean;
 }) {
   const [query, setQuery] = useState("");
   const [votedSlug, setVotedSlug] = useState(todayVoteSlug);
@@ -121,7 +123,7 @@ export function EventMvpTable({
           <tbody>
             {filtered.map((player) => {
               const selected = votedSlug === player.slug;
-              const disabled = Boolean(votedSlug) || pendingSlug !== null;
+              const disabled = !votingOpen || Boolean(votedSlug) || pendingSlug !== null;
               return (
                 <tr key={player.slug} data-voted={selected ? "true" : "false"}>
                   <td className="ranking-table__rank">#{player.rank}</td>
@@ -159,7 +161,13 @@ export function EventMvpTable({
                       onClick={() => void vote(player.slug)}
                       type="button"
                     >
-                      {selected ? "今日已投" : pendingSlug === player.slug ? "提交中" : "投票 +1"}
+                      {!votingOpen
+                        ? "投票已结束"
+                        : selected
+                          ? "今日已投"
+                          : pendingSlug === player.slug
+                            ? "提交中"
+                            : "投票 +1"}
                     </button>
                   </td>
                 </tr>
@@ -170,7 +178,8 @@ export function EventMvpTable({
       </div>
 
       {message ? <p className="event-mvp-message">{message}</p> : null}
-      {votedSlug ? (
+      {!votingOpen ? <p className="event-mvp-message">本期赛事 MVP 投票已结束。</p> : null}
+      {votedSlug && votingOpen ? (
         <p className="event-mvp-message">今天的 1 票已记下。明天还可以再投 1 票。</p>
       ) : null}
 

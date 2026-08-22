@@ -16,10 +16,11 @@ route are resolved. The private R2 disaster copy is also complete, and Gate E wa
 2026-08-14. ADR 0005 defers a custom domain and Cloudflare edge proxy until a measured trigger; they
 are not missing M9 inputs.
 
-## Before public launch
+## Later branding follow-up
 
-- Final public product name, domain, slogan, and visual identity. M5 deliberately uses `CS 野榜` as
-  a working identity rather than treating it as final branding.
+- The Owner confirmed `CS 野榜` and `2026 Beta Edition` are sufficient for the current
+  small-community launch scope on 2026-08-22. A later custom domain, slogan, and broader visual
+  identity remain deliberately reviewable rather than blocking this beta.
 
 ## Milestone 10 inputs and approvals
 
@@ -40,12 +41,18 @@ are not missing M9 inputs.
   The active Core Pool uses the reviewed, checksum-locked August 10 top-12 fallback without
   overstating it as top-20 Review Auto evidence. Revisit a permitted low-frequency adapter only when
   Review Auto or a later refresh needs it; do not bypass provider controls.
-- Complete Player-stat capture remains optional post-launch presentation work. The August 15 direct Player-stats
-  probe also returned HTTP 403, and browser inspection showed that the current page structure has
-  drifted from the saved parser fixture. A checksum-locked, exact-identity reviewed import now exists,
-  plus a no-overwrite template generator. One isolated 70-identity rehearsal imported only one
-  observed recent metric and left every unavailable value null. No partial stats bundle was imported
-  into Railway, so the public UI honestly shows missing values for all 70 Players.
+- Player-stat capture is now complete for all 90 non-retired pairing Players: the reviewed profile
+  bundle supplies recent Rating 3.0, Firepower, nationality, Major/MVP totals, and available HLTV
+  Top 20 history, and was applied to Railway on 2026-08-17. MachineWJQ has a separately reviewed
+  career Rating; retired Specials remain outside automatic recapture. Direct `/stats/players/`
+  automation is still disabled because of HTTP 403, so future refreshes use the bounded local
+  browser-capture and reviewed-import workflow.
+- The EWC Event MVP beta closes voting automatically after a two-day Shanghai-calendar grace
+  period. EWC ends on 2026-08-23, accepts votes through 2026-08-25, and closes at the start of
+  2026-08-26 Shanghai time.
+- The current production dump/restore drill, private R2 copy, and Railway-hosted daily cadence are
+  complete. The dedicated backup job no longer depends on the Owner's Mac; monthly restore drills
+  and the local fallback remain operator procedures.
 
 Resolved on 2026-08-14: the working launch label is `2026 Beta Edition`. The Owner later removed the
 personal email and dedicated privacy/contact page for the small community beta; reconsider both when

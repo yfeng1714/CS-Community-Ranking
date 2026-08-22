@@ -1,0 +1,30 @@
+FROM node:24.14.0-bookworm-slim AS node-base
+
+ENV PNPM_HOME=/pnpm
+ENV PATH=$PNPM_HOME:$PATH
+
+RUN corepack enable && corepack prepare pnpm@11.16.0 --activate
+
+WORKDIR /app
+
+FROM node-base AS dependencies
+
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
+RUN pnpm install --frozen-lockfile --prod
+
+FROM postgres:18-bookworm AS runner
+
+ENV NODE_ENV=production
+
+COPY --from=node-base /usr/local/ /usr/local/
+
+WORKDIR /app
+
+COPY --from=dependencies --chown=postgres:postgres /app/node_modules ./node_modules
+COPY --chown=postgres:postgres package.json ./
+COPY --chown=postgres:postgres scripts ./scripts
+
+USER postgres
+
+ENTRYPOINT []
+CMD ["node", "scripts/job-backup-production.ts"]

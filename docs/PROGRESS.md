@@ -13,7 +13,10 @@
   Core-only Pool with no conflicts or removals. Production `launch:check` returned `blocking: false`,
   2,415 possible pairs, healthy integrity, and only provisional-rights/missing-optional-stats
   warnings. Edition ID 1 is ACTIVE. The read-only direct-host smoke passed liveness, readiness,
-  public routes, 70-player ranking data, and six security headers without creating a test Vote.
+  public routes, 70-player ranking data, and six security headers without creating a test Vote. A
+  dedicated Railway `backup-production` cron now runs daily at 04:30 Shanghai and writes directly
+  to private R2 without depending on the Owner's Mac. Its first production execution completed in
+  three seconds and verified a 252,022-byte dump plus manifest.
 - **Review boundary:** The one-time pre-user reset exception is consumed. Railway now contains real
   beta data, so future work must preserve history with forward migrations and retained backups. The
   2026-08-17 Owner request admitted four Review Manual Teams (BC.Game, 100 Thieves, TYLOO, Lynn
@@ -206,10 +209,14 @@
   and optional one-Ballot SKIP mutation. `ops:load` runs a bounded fresh-visitor SKIP-only scenario,
   reports p50/p95/p99 and status counts, and caps requests/concurrency. Remote writes require
   `--confirm-staging`; ranking scores never change.
-- `backup:create` produces a PostgreSQL custom-format dump and manifest with exact critical-table
-  counts without putting credentials in process arguments. It refuses overwrite. `backup:verify`
-  refuses the source database and nonempty targets, restores with `--exit-on-error`, and compares 14
-  ranking/Vote/Pool/visitor/Admin-audit table counts. Backup files are ignored.
+- `backup:create` produces a PostgreSQL custom-format dump and manifest without putting credentials
+  in process arguments. The current manifest records size, SHA-256, and exact counts for all 32
+  application tables. `backup:verify` refuses the source database and nonempty targets, restores
+  with `--exit-on-error`, and compares every manifest table. Backup files are ignored.
+- `backup-production` is the seventh Railway cron and the only application service that receives
+  the bucket-scoped R2 credential. Its dedicated PostgreSQL 18/Node image writes to an ephemeral
+  directory, uploads and verifies both objects, removes the working copy, and exits. The ordinary
+  Web/job image and public request path remain unchanged.
 - The runbook now covers environment and private networking, release/migration failure, cron
   schedules, platform logs/notifications, spend controls, backup/restore, Cloudflare fallback,
   Mainland China A/B, load testing, and incident response. `docs/STAGING_GATE_E.md` makes every real
@@ -220,20 +227,21 @@
 
 ## Local validation
 
-| Command/check                       | Result | Notes                                                                                                                                                                                                                                                           |
-| ----------------------------------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `pnpm lint`                         | PASS   | Zero warnings.                                                                                                                                                                                                                                                  |
-| `pnpm format:check`                 | PASS   | Source, JSON configuration, tests, and docs formatted.                                                                                                                                                                                                          |
-| `pnpm typecheck`                    | PASS   | Strict TypeScript `6.0.3`, including the M10 report/CLI/test.                                                                                                                                                                                                   |
-| `pnpm test:unit`                    | PASS   | Latest pass: 40 files, 149 tests including Admin Pool-workflow sequencing, exact reviewed-HLTV top-12/top-20 validation, null-first stats templates, Railway, CLI, backup, security, launch safety, roster-authority policy, and asset-source validation.       |
-| `pnpm test:integration`             | PASS   | Full pass: 12 files, 46 tests against PostgreSQL 18, including external-source warning policy, the launch-readiness gate, nullable HLTV profile-URL migration/constraint, reviewed stats, and atomic 14-Team/70-Player canonical bootstrap with 239 audit rows. |
-| `pnpm db:migrate` / `pnpm db:check` | PASS   | Ordered migrations apply; journal is consistent.                                                                                                                                                                                                                |
-| Operational CLI execution           | PASS   | Integrity healthy/zero-sum; expiration and retention ran successfully.                                                                                                                                                                                          |
-| Local logical restore drill         | PASS   | PostgreSQL 18 custom dump restored to separate empty DB in 1.27s; all 14 critical table counts matched; scratch DB/dump removed.                                                                                                                                |
-| `pnpm build`                        | PASS   | Optimized Next.js `16.3.0` Webpack build and standalone traces.                                                                                                                                                                                                 |
-| `pnpm test:e2e`                     | PASS   | 6 public/Admin journeys in desktop/mobile Chromium from a cold start. Setup now applies committed migrations and uses pinned pnpm through Corepack; harmless dev-server aborted-stream messages remained during browser teardown.                               |
-| `git diff --check`                  | PASS   | No whitespace errors.                                                                                                                                                                                                                                           |
-| Production Docker rebuild           | PASS   | Pinned Node 24.14.0/pnpm 11.16.0 image built; final 190,565,606-byte image runs as `node`, excludes Vitest/TypeScript, and contains Web, migration, all six cron entry points, migrations, public assets, and Next static output.                               |
+| Command/check                       | Result | Notes                                                                                                                                                                                                                                                                                    |
+| ----------------------------------- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm lint`                         | PASS   | Zero warnings.                                                                                                                                                                                                                                                                           |
+| `pnpm format:check`                 | PASS   | Source, JSON configuration, tests, and docs formatted.                                                                                                                                                                                                                                   |
+| `pnpm typecheck`                    | PASS   | Strict TypeScript `6.0.3`, including the M10 report/CLI/test.                                                                                                                                                                                                                            |
+| `pnpm test:unit`                    | PASS   | Latest pass: 50 files, 190 tests, including schema-to-backup manifest drift protection, the dedicated Railway backup config, Event MVP boundaries, Admin Pool workflow, reviewed HLTV validation, security, launch safety, roster policy, and asset-source validation.                   |
+| `pnpm test:integration`             | PASS   | Full pass: 12 files, 46 tests against PostgreSQL 18, including external-source warning policy, the launch-readiness gate, nullable HLTV profile-URL migration/constraint, reviewed stats, and atomic 14-Team/70-Player canonical bootstrap with 239 audit rows.                          |
+| `pnpm db:migrate` / `pnpm db:check` | PASS   | Ordered migrations apply; journal is consistent.                                                                                                                                                                                                                                         |
+| Operational CLI execution           | PASS   | Integrity healthy/zero-sum; expiration and retention ran successfully.                                                                                                                                                                                                                   |
+| Local logical restore drill         | PASS   | PostgreSQL 18 custom dump restored to separate empty DB in 1.27s; all 14 critical table counts matched; scratch DB/dump removed.                                                                                                                                                         |
+| `pnpm build`                        | PASS   | Optimized Next.js `16.3.0` Webpack build and standalone traces.                                                                                                                                                                                                                          |
+| `pnpm test:e2e`                     | PASS   | 6 public/Admin journeys in desktop/mobile Chromium against the production standalone build. Setup applies committed migrations and invokes the pinned local Next binary without an interactive package-manager hop; the mobile suite verifies its intentional compact Event MVP columns. |
+| `git diff --check`                  | PASS   | No whitespace errors.                                                                                                                                                                                                                                                                    |
+| Production Docker rebuild           | PASS   | Pinned Node 24.14.0/pnpm 11.16.0 image built; final 190,565,606-byte image runs as `node`, excludes Vitest/TypeScript, and contains Web, migration, all six cron entry points, migrations, public assets, and Next static output.                                                        |
+| Railway backup image/execution      | PASS   | Dedicated PostgreSQL 18 image build succeeded; live deployment `8985354d-3ec6-4f90-9ea3-b3f387b7ccc1` completed in 3 seconds and verified its dump/manifest in private R2.                                                                                                               |
 
 Docker Desktop was restarted once because its Linux engine initially hung. It was used only for
 PostgreSQL/integration/restore work; the project database is stopped and Docker Desktop is quit after
@@ -244,9 +252,9 @@ this verification window.
 - M9 found that passing unit/integration tests did not prove the trusted CLI entry points could
   execute. Runtime alias resolution and pnpm separator normalization are now explicit, shared, and
   tested. All documented earlier CLI commands benefit from the correction.
-- Portable backups are owner-side/tunnel operations using PostgreSQL client tools matching the
-  Railway server major version. The application image intentionally does not carry a possibly older
-  Debian `pg_dump` or store backup artifacts.
+- Daily portable backups are a short-lived Railway cron using PostgreSQL 18 client tools and
+  service-scoped R2 credentials. Manual restore drills and fallback backups remain Owner-side/tunnel
+  operations. The ordinary application image still does not carry `pg_dump` or store artifacts.
 - Railway cron is UTC. Schedules are translated to Shanghai time and staggered after midnight to
   avoid a simultaneous database spike. HLTV is not automatically scheduled; weekly VRS creates only
   an approval-pending snapshot and cannot mutate the Candidate Pool.
@@ -364,12 +372,11 @@ this verification window.
 
 ## Next task
 
-Before inviting meaningful beta Votes, establish and evidence the daily logical-backup cadence and
-private R2 second-copy procedure required by ADR 0004. Then have the Owner confirm the existing
-Admin password still signs in after the hash-only account restoration, begin the small closed-beta
-observation window, and record traffic, latency, errors, resource usage, integrity, and backup
-recovery evidence for final Gate F sign-off. China Telecom/Unicom and an evening-peak China Mobile
-window remain useful observations when available, not route blockers.
+Commit and push the accumulated M10 changes, connect the new backup service to the same GitHub/main
+deployment source, then repeat production smoke and integrity on that release. Continue the small
+closed-beta observation window and record traffic, latency, errors, resource usage, integrity, and
+backup recovery evidence for final Gate F sign-off. China Telecom/Unicom and an evening-peak China
+Mobile window remain useful observations when available, not route blockers.
 
 Review Auto, the 2026 T1 whitelist, Special Players, a later recapture of the 20 Review Manual
 players' HLTV stats/images, a permitted low-frequency HLTV adapter, complete optional Player stats,

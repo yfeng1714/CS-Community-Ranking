@@ -273,7 +273,9 @@ export async function getPublicPlayerStats(
   const majorsWon = statRows.find(
     (row) => row.metric === "majors_won" && row.periodType === "CAREER",
   );
-  const mvpCount = statRows.find((row) => row.metric === "mvp_count" && row.periodType === "CAREER");
+  const mvpCount = statRows.find(
+    (row) => row.metric === "mvp_count" && row.periodType === "CAREER",
+  );
   const latestTop20CapturedAt = statRows.find(
     (row) => row.metric === "top20_rank" && row.periodType === "CAREER",
   )?.capturedAt;

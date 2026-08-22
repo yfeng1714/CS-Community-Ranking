@@ -62,4 +62,19 @@ describe("Railway config-as-code", () => {
     expect(config.deploy.startCommand).toContain("register-path-aliases.mjs");
     expect(config.deploy.startCommand).not.toContain("server.js");
   });
+
+  it("runs production backups in a dedicated PostgreSQL 18 cron image", async () => {
+    const config = await readConfig("job-backup-production.json");
+    const dockerfile = await readFile(path.join(root, "Dockerfile.backup"), "utf8");
+
+    expect(config.build.dockerfilePath).toBe("Dockerfile.backup");
+    expect(config.deploy.cronSchedule).toBe("30 20 * * *");
+    expect(config.deploy.healthcheckPath).toBeUndefined();
+    expect(config.deploy.preDeployCommand).toBeUndefined();
+    expect(config.deploy.restartPolicyType).toBe("NEVER");
+    expect(config.deploy.startCommand).toBe("node scripts/job-backup-production.ts");
+    expect(dockerfile).toContain("FROM postgres:18-bookworm AS runner");
+    expect(dockerfile).toContain('CMD ["node", "scripts/job-backup-production.ts"]');
+    expect(dockerfile).not.toContain("server.js");
+  });
 });

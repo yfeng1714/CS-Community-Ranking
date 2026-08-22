@@ -32,15 +32,15 @@ Skip on the Vote result panel uses the heading **已跳过**, not “这一票�
 Capture loads `https://www.hltv.org/player/{id}/{slug}` in local Playwright Chromium. Parser
 `hltv-player-profile-stats-html-v3` reads:
 
-| Field | Source on `/player/{id}/{slug}` | Stored as |
-| --- | --- | --- |
-| Past 3 months Rating 3.0 | `.player-stat` / `.statsVal` | `player_stat_snapshot.metric = rating_3_0` / `LAST_3_MONTHS` |
-| Past 3 months maps | `(Past 3 months • N maps)` | `maps` on the rating snapshot |
-| Firepower | `.player-stat` Firepower `N` | `firepower` / `LAST_3_MONTHS` |
-| Majors won | `.highlighted-stat` **Majors won**, else `.majorWinner` (`N x Major winner`) | `majors_won` / `CAREER` |
-| Total MVPs | `.highlighted-stat` **Total MVPs** when present, else the visible `.mvp-count` trophy badge | `mvp_count` / `CAREER` |
-| Highest Top 20 | `Top 20 overview` table (`#N best player in YY` + year column) | one `top20_rank` / `CAREER` snapshot per year; UI peaks the latest capture |
-| Nationality | `.player-summary-stat-box-left-flag` `…/flags/30x20/XX.gif` | `player.country_code` (ISO-2) |
+| Field                    | Source on `/player/{id}/{slug}`                                                             | Stored as                                                                  |
+| ------------------------ | ------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| Past 3 months Rating 3.0 | `.player-stat` / `.statsVal`                                                                | `player_stat_snapshot.metric = rating_3_0` / `LAST_3_MONTHS`               |
+| Past 3 months maps       | `(Past 3 months • N maps)`                                                                  | `maps` on the rating snapshot                                              |
+| Firepower                | `.player-stat` Firepower `N`                                                                | `firepower` / `LAST_3_MONTHS`                                              |
+| Majors won               | `.highlighted-stat` **Majors won**, else `.majorWinner` (`N x Major winner`)                | `majors_won` / `CAREER`                                                    |
+| Total MVPs               | `.highlighted-stat` **Total MVPs** when present, else the visible `.mvp-count` trophy badge | `mvp_count` / `CAREER`                                                     |
+| Highest Top 20           | `Top 20 overview` table (`#N best player in YY` + year column)                              | one `top20_rank` / `CAREER` snapshot per year; UI peaks the latest capture |
+| Nationality              | `.player-summary-stat-box-left-flag` `…/flags/30x20/XX.gif`                                 | `player.country_code` (ISO-2)                                              |
 
 Do **not** treat these as the same thing:
 
@@ -182,16 +182,16 @@ DATABASE_URL=<tunnel-url> pnpm source:import-reviewed-career-rating -- \
 
 ## Snapshot metrics written on import
 
-| Bundle field | Destination | `period_type` |
-| --- | --- | --- |
-| `recent.rating` + `recent.maps` | `player_stat_snapshot.metric = rating_3_0` | `LAST_3_MONTHS` |
-| `recent.firepower` | `firepower` | `LAST_3_MONTHS` |
-| `recent.adr` | `adr` | `LAST_3_MONTHS` |
-| `career.rating` | `career_rating` | `CAREER` |
-| `majorsWon` | `majors_won` | `CAREER` |
-| `mvpCount` | `mvp_count` | `CAREER` |
-| `top20Placements[]` | `top20_rank` (one row per year) | `CAREER` |
-| `countryCode` | `player.country_code` | identity, not a snapshot |
+| Bundle field                    | Destination                                | `period_type`            |
+| ------------------------------- | ------------------------------------------ | ------------------------ |
+| `recent.rating` + `recent.maps` | `player_stat_snapshot.metric = rating_3_0` | `LAST_3_MONTHS`          |
+| `recent.firepower`              | `firepower`                                | `LAST_3_MONTHS`          |
+| `recent.adr`                    | `adr`                                      | `LAST_3_MONTHS`          |
+| `career.rating`                 | `career_rating`                            | `CAREER`                 |
+| `majorsWon`                     | `majors_won`                               | `CAREER`                 |
+| `mvpCount`                      | `mvp_count`                                | `CAREER`                 |
+| `top20Placements[]`             | `top20_rank` (one row per year)            | `CAREER`                 |
+| `countryCode`                   | `player.country_code`                      | identity, not a snapshot |
 
 Public queries select only `provider = HLTV` for the snapshot fields. Other providers cannot occupy
 HLTV Rating, Firepower, ADR, honors, or Top 20.

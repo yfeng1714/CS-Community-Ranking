@@ -2,7 +2,12 @@ import { readFile } from "node:fs/promises";
 import { describe, expect, it } from "vitest";
 
 import { validateEventMvpBundle } from "@/domain/event-mvp/bundle";
-import { compareEventMvpPlayers, withUniqueEventMvpRanks } from "@/domain/event-mvp/service";
+import {
+  compareEventMvpPlayers,
+  eventMvpVotingEndsAt,
+  isEventMvpVotingOpen,
+  withUniqueEventMvpRanks,
+} from "@/domain/event-mvp/service";
 
 describe("event MVP bundle and ordering", () => {
   it("accepts the reviewed EWC candidate snapshot, including Top 10 dropouts", async () => {
@@ -75,5 +80,15 @@ describe("event MVP bundle and ordering", () => {
       ].sort(compareEventMvpPlayers),
     );
     expect(ranked.map((row) => row.rank)).toEqual([1, 2]);
+  });
+
+  it("keeps voting open for two Shanghai calendar days after the event ends", () => {
+    expect(eventMvpVotingEndsAt("2026-08-23")).toBe("2026-08-25");
+    expect(
+      isEventMvpVotingOpen("2026-08-23", new Date("2026-08-25T15:59:59Z"), "Asia/Shanghai"),
+    ).toBe(true);
+    expect(
+      isEventMvpVotingOpen("2026-08-23", new Date("2026-08-25T16:00:00Z"), "Asia/Shanghai"),
+    ).toBe(false);
   });
 });

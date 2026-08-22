@@ -57,14 +57,18 @@ export default async function CurrentEventPage() {
           <strong>{board.players.length}</strong>
           <small>
             {board.contest
-              ? `${formatDate(board.contest.startsAt)} – ${formatDate(board.contest.endsAt)}`
+              ? `赛事 ${formatDate(board.contest.startsAt)} – ${formatDate(board.contest.endsAt)} · 投票截止 ${formatDate(board.contest.votingEndsAt)}`
               : "等待导入赛事名单"}
           </small>
         </div>
       </header>
 
       {board.contest ? (
-        <EventMvpTable players={board.players} todayVoteSlug={board.todayVoteSlug} />
+        <EventMvpTable
+          players={board.players}
+          todayVoteSlug={board.todayVoteSlug}
+          votingOpen={board.contest.votingOpen}
+        />
       ) : (
         <section className="empty-state">
           <span className="eyebrow">准备中</span>

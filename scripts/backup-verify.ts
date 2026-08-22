@@ -6,6 +6,7 @@ import { Pool } from "pg";
 
 import {
   databaseIdentity,
+  dumpMetadata,
   postgresCommand,
   rowCounts,
   runCommand,
@@ -47,6 +48,13 @@ try {
 const manifest = JSON.parse(await readFile(`${dump}.json`, "utf8")) as BackupManifest;
 if (manifest.schemaVersion !== 1 || manifest.format !== "pg_dump-custom") {
   throw new Error("Unsupported or malformed backup manifest");
+}
+const metadata = await dumpMetadata(dump);
+if (manifest.dumpBytes !== undefined && manifest.dumpBytes !== metadata.dumpBytes) {
+  throw new Error("Backup size does not match its manifest");
+}
+if (manifest.sha256 !== undefined && manifest.sha256 !== metadata.sha256) {
+  throw new Error("Backup SHA-256 does not match its manifest");
 }
 const connection = postgresCommand(restoreUrl);
 const started = performance.now();

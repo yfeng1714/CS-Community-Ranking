@@ -49,11 +49,11 @@ the union (Core 70 + Review Manual 20 + advent). `listHltvProfilePortraitTargets
 `machinewjq`. With `exactOptionalPropertyTypes`, scripts must **omit** `source` when unset; do not
 pass `source: undefined`.
 
-| `--source` | Players | Ignored evidence JSON | Ignored image directory |
-| --- | --- | --- | --- |
-| `CORE` | 70 canonical starters | `data/reviewed-sources/hltv-profile-portraits-core-local.json` | `data/reviewed-sources/hltv-profile-portraits-core/` |
-| `REVIEW_MANUAL` (default when omitted for the 21-player pass) | 20 Review Manual + advent | `data/reviewed-sources/hltv-profile-portraits-local.json` | `data/reviewed-sources/hltv-profile-portraits/` |
-| `SPECIAL_RETIRED` | advent only (MachineWJQ excluded) | same default JSON/dir as Review Manual unless `--output` is set | same |
+| `--source`                                                    | Players                           | Ignored evidence JSON                                           | Ignored image directory                              |
+| ------------------------------------------------------------- | --------------------------------- | --------------------------------------------------------------- | ---------------------------------------------------- |
+| `CORE`                                                        | 70 canonical starters             | `data/reviewed-sources/hltv-profile-portraits-core-local.json`  | `data/reviewed-sources/hltv-profile-portraits-core/` |
+| `REVIEW_MANUAL` (default when omitted for the 21-player pass) | 20 Review Manual + advent         | `data/reviewed-sources/hltv-profile-portraits-local.json`       | `data/reviewed-sources/hltv-profile-portraits/`      |
+| `SPECIAL_RETIRED`                                             | advent only (MachineWJQ excluded) | same default JSON/dir as Review Manual unless `--output` is set | same                                                 |
 
 Those JSON/directories are gitignored. Never commit them. Preserve them with the Owner’s private
 operational evidence. `assets/attribution.json` is also gitignored; `assets/registry.json` is

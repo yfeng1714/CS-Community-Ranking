@@ -60,7 +60,7 @@ The migration SQL is the final enforcement layer for row-local and uniqueness ru
 | At most one active Edition                                                  | `edition_single_active` partial unique index                      |
 | At most one current roster row per player                                   | `roster_one_current_per_player` partial unique index              |
 | At most one open Ballot per visitor and Edition                             | `ballot_one_open_per_visitor_edition` partial unique index        |
-| At most one Event MVP vote per visitor per contest per day          | `event_mvp_one_vote_per_visitor_day` partial unique index             |
+| At most one Event MVP vote per visitor per contest per day                  | `event_mvp_one_vote_per_visitor_day` partial unique index         |
 | Optional Player HLTV URL is a direct HTTPS player-profile path              | `player_hltv_profile_url_valid`                                   |
 | Ballot pair is canonical and its orientation matches                        | `ballot_canonical_pair`, `ballot_orientation_matches_pair`        |
 | Ballot status, resolution, and timestamp agree                              | `ballot_resolution_state`                                         |

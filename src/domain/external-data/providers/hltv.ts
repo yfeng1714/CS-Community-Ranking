@@ -159,18 +159,18 @@ function parseAdr(body: string): number | null {
 }
 
 function parseCountryCode(body: string): string | null {
-  const flag = /<div[^>]*class=["'][^"']*\bplayer-summary-stat-box-left-flag\b[^"']*["'][^>]*>\s*<img\b([^>]+)>/i.exec(
-    body,
-  )?.[1];
-  const code = flag
-    ? /\/flags\/\d+x\d+\/([A-Za-z]{2})\.gif/i.exec(flag)?.[1]
-    : null;
+  const flag =
+    /<div[^>]*class=["'][^"']*\bplayer-summary-stat-box-left-flag\b[^"']*["'][^>]*>\s*<img\b([^>]+)>/i.exec(
+      body,
+    )?.[1];
+  const code = flag ? /\/flags\/\d+x\d+\/([A-Za-z]{2})\.gif/i.exec(flag)?.[1] : null;
   return code ? code.toUpperCase() : null;
 }
 
 function parseTop20Placements(body: string): Array<{ rank: number; year: number }> {
-  const section =
-    /<h2[^>]*>\s*Top 20 overview for[\s\S]*?<\/h2>\s*<table\b[\s\S]*?<\/table>/i.exec(body)?.[0];
+  const section = /<h2[^>]*>\s*Top 20 overview for[\s\S]*?<\/h2>\s*<table\b[\s\S]*?<\/table>/i.exec(
+    body,
+  )?.[0];
   if (!section) return [];
 
   const placements = new Map<number, number>();

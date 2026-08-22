@@ -5,6 +5,7 @@ import { migrate } from "drizzle-orm/node-postgres/migrator";
 
 import { getEnv } from "../src/config/env.ts";
 import { closeDatabasePool, getDatabase } from "../src/db/client.ts";
+import { seedDevelopmentData } from "../src/db/seed.ts";
 import { adminUsers } from "../src/db/schema/index.ts";
 import { hashAdminPassword } from "../src/domain/admin/auth.ts";
 
@@ -15,6 +16,7 @@ if (env.NODE_ENV === "production") {
 
 const database = getDatabase();
 await migrate(database, { migrationsFolder: path.resolve("drizzle") });
+await seedDevelopmentData(database);
 
 const passwordHash = await hashAdminPassword("playwright-only-password");
 const [existing] = await database

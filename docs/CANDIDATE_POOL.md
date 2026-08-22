@@ -18,11 +18,11 @@ The implementation lives under `src/domain/`:
 Admission categories explain why a candidate entered. They do not affect active-pool lookup,
 pairing probability, initial score, or later scoring behavior.
 
-| Category        | Implemented rule                                                                |
-| --------------- | ------------------------------------------------------------------------------- |
-| `CORE`          | HLTV or Valve VRS Top 12                                                        |
-| `REVIEW_AUTO`   | Either source Top 20 plus same-year whitelisted T1 Top 4 or Major Top 8         |
-| `REVIEW_MANUAL` | Explicit human approval with a nonblank public reason                           |
+| Category        | Implemented rule                                                                             |
+| --------------- | -------------------------------------------------------------------------------------------- |
+| `CORE`          | HLTV or Valve VRS Top 12                                                                     |
+| `REVIEW_AUTO`   | Either source Top 20 plus same-year whitelisted T1 Top 4 or Major Top 8                      |
+| `REVIEW_MANUAL` | Explicit human approval with a nonblank public reason                                        |
 | `SPECIAL`       | Explicit individual approval, a nonblank public reason, and `ACTIVE` or `RETIRED` pro status |
 
 Automatic evaluation is deterministic and provider-independent. Milestone 7 supplies it with

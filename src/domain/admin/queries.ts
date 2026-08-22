@@ -307,7 +307,10 @@ export async function getAdminConsoleData(
       status: row.status,
     })),
     voteSearch: {
-      hasMore: voteSearch === "" && voteRows.length === recentVoteLimit && recentVoteLimit < ADMIN_RECENT_VOTES_MAX,
+      hasMore:
+        voteSearch === "" &&
+        voteRows.length === recentVoteLimit &&
+        recentVoteLimit < ADMIN_RECENT_VOTES_MAX,
       invalid: !validVoteSearch,
       limit: recentVoteLimit,
       nextLimit: Math.min(recentVoteLimit + ADMIN_RECENT_VOTES_STEP, ADMIN_RECENT_VOTES_MAX),

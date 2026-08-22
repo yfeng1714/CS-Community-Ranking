@@ -39,7 +39,7 @@ test("votes, keeps the result visible, advances explicitly, and treats reload as
 
 test("supports ranking search, player details, informational pages, and persisted theme", async ({
   page,
-}) => {
+}, testInfo) => {
   await page.goto("/ranking");
   await expect(page.getByRole("heading", { name: "社区榜单", exact: true })).toBeVisible();
   await expect(page.locator("tbody tr")).toHaveCount(4);
@@ -62,8 +62,15 @@ test("supports ranking search, player details, informational pages, and persiste
   await expect(page.getByRole("link", { name: "当期赛事 - EWC" })).toBeVisible();
   await page.getByRole("link", { name: "当期赛事 - EWC" }).click();
   await expect(page.getByRole("heading", { name: "Esports World Cup 2026" })).toBeVisible();
-  await expect(page.getByRole("columnheader", { name: "Maps" })).toBeVisible();
-  await expect(page.getByRole("columnheader", { name: "成绩" })).toBeVisible();
+  const mapsHeader = page.locator(".event-mvp-table th", { hasText: "Maps" });
+  const standingHeader = page.locator(".event-mvp-table th", { hasText: "成绩" });
+  if (testInfo.project.name === "mobile-chromium") {
+    await expect(mapsHeader).toBeHidden();
+    await expect(standingHeader).toBeHidden();
+  } else {
+    await expect(mapsHeader).toBeVisible();
+    await expect(standingHeader).toBeVisible();
+  }
   await expect(
     page.locator(".event-mvp-table tbody tr").first().locator(".ranking-table__rank"),
   ).toHaveText("#1");

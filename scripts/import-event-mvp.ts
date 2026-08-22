@@ -226,7 +226,10 @@ async function importEventMvpBundle(
     })
     .from(eventMvpCandidates)
     .where(
-      and(eq(eventMvpCandidates.contestId, contest.id), gte(eventMvpCandidates.sourceRank, RANK_SHIFT)),
+      and(
+        eq(eventMvpCandidates.contestId, contest.id),
+        gte(eventMvpCandidates.sourceRank, RANK_SHIFT),
+      ),
     );
   leftovers.sort((left, right) => left.sourceRank - right.sourceRank);
   for (const leftover of leftovers) {

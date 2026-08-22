@@ -19,14 +19,14 @@ export function isHltvTop20Placement(value: HltvTop20Placement): boolean {
   );
 }
 
-export function peakHltvTop20(
-  placements: readonly HltvTop20Placement[],
-): HltvTop20Peak | null {
+export function peakHltvTop20(placements: readonly HltvTop20Placement[]): HltvTop20Peak | null {
   const valid = placements.filter(isHltvTop20Placement);
   if (valid.length === 0) return null;
   const rank = Math.min(...valid.map((placement) => placement.rank));
   const years = [
-    ...new Set(valid.filter((placement) => placement.rank === rank).map((placement) => placement.year)),
+    ...new Set(
+      valid.filter((placement) => placement.rank === rank).map((placement) => placement.year),
+    ),
   ].sort((left, right) => left - right);
   return { rank, years };
 }

@@ -14,7 +14,7 @@ Edition from `DRAFT` to `ACTIVE`.
       2026-08-15.
 - [x] The real Core-only 2026 Candidate Pool data was imported and approved on 2026-08-15.
 - [x] Real Edition `2026` was activated on 2026-08-15 after a blocking-free launch report.
-- [ ] Closed beta has started.
+- [x] Closed beta is active on the direct Railway host; current production history is preserved.
 - [ ] Gate F has Owner sign-off.
 
 Local rehearsal evidence as of 2026-08-14 (not production sign-off):
@@ -113,6 +113,40 @@ migrations and the approved backup policy.
   `c2c038ba-b2a9-41ac-ac51-5b4a8aac0be9`, and `1b831cdf-25c5-46f2-9fe8-4a3c87d24693`
   reached `SUCCESS`. All six exact UTC schedules and future next-run timestamps were verified.
 
+## Current recovery and integrity evidence — 2026-08-22
+
+- A current PostgreSQL 18 custom dump is retained locally as
+  `backups/production-2026-08-22T1250EDT.dump` (ignored, mode `0600`), 250,320 bytes, SHA-256
+  `380087094fb52b51cceaeb10e187e751b64ea522a90459563a0c1529b1c4ca3c`. Its ignored manifest
+  records exact counts for all 32 application tables rather than the earlier 14-table subset.
+- The dump restored without error into an empty scratch database in the same private Railway
+  PostgreSQL service. `pnpm backup:compare` matched every one of the 32 table counts exactly; the
+  scratch database was then dropped.
+- The tunnel helper exposed a database credential in operator output. It was treated as compromised:
+  the PostgreSQL role and Railway source variable were rotated, Postgres/Web/all six cron services
+  were redeployed successfully, temporary credential material was removed, and read-only production
+  smoke passed again on `https://yebangtv.up.railway.app` with 92 ranking Players.
+- A live integrity run at `2026-08-22T16:56:23Z` returned healthy with no violations: 101 valid
+  decision Votes, 50 valid Skips, score sum zero, and aggregate/ranking wins and losses of 101 each.
+- The exact dump and manifest were uploaded to private R2 with matching displayed sizes. A
+  bucket-scoped Object Read & Write account token was then created for daily backups and stored only
+  in ignored local `.env.backup` with mode `0600`. `backup:upload-r2` verified its first upload and
+  idempotent retry under `daily/2026-08-22/`.
+- A fresh end-to-end `backup:production` run created
+  `production-2026-08-23T013001CST.dump` (251,922 bytes, SHA-256
+  `cebbdad310580a300c9de4e8654d6fce07db8284adb59feabe21dc310aef3201`), recorded all 32 table
+  counts, retained the local pair with mode `0600`, and verified both private R2 objects under
+  `daily/2026-08-23/`.
+- Owner selected the Railway-hosted daily path on 2026-08-22. Dedicated cron service
+  `backup-production` (service `fc1f674d-5c2a-464b-a0f8-27bb87958b93`) is configured at
+  `30 20 * * *` UTC / 04:30 Shanghai with PostgreSQL 18 and only the private database reference plus
+  bucket-scoped R2 credentials. Verification deployment
+  `8985354d-3ec6-4f90-9ea3-b3f387b7ccc1` ran for three seconds, recorded exact counts for all 32
+  tables, and uploaded/verified the 252,022-byte
+  `daily/2026-08-23/production-2026-08-23T020900CST.dump` (SHA-256
+  `27a9566876c9ae50f2dc9a6b9b4aeb51bd09ec6458a283ec0933b766d9b7cb51`) plus manifest. Scheduled
+  deployment `9119c326-7324-4598-8fab-9c1b6f155973` is successful and its next run is registered.
+
 ## 1. Production environment decision
 
 - [x] Owner chose the lowest-cost, one-database in-place reset; no second Railway DB is planned.
@@ -124,8 +158,8 @@ migrations and the approved backup policy.
 - [x] Create the production Admin through a trusted operator path; never expose web registration.
 - [x] Create the real DRAFT Edition through the audited canonical bootstrap. Activation remained a
       separate action.
-- [ ] Establish the daily logical-backup cadence and private R2 second-copy procedure before the
-      first meaningful beta Vote.
+- [x] Establish the daily logical-backup cadence and private R2 second-copy procedure. The first
+      hosted execution and permanent next run are verified above.
 
 Why a clean state was required: Edition code is unique, the M9 `2026` Edition was ACTIVE, and its
 rows could not be disguised as production history. Because all pre-cutover rows were documented
@@ -174,12 +208,12 @@ database cost. See ADR 0006.
 Record the final counts and the reason/evidence for every non-Core entry. Admission category never
 changes pairing probability or score.
 
-| Category        | Teams | Players | Owner-reviewed evidence | Approved by/date   |
-| --------------- | ----: | ------: | ----------------------- | ------------------ |
-| Core            |    14 |      70 | Approved HLTV/VRS rank  | owner / 2026-08-15 |
-| Review Auto     |     0 |       0 | Deferred for beta       | owner / 2026-08-15 |
+| Category        | Teams | Players | Owner-reviewed evidence                                                                           | Approved by/date   |
+| --------------- | ----: | ------: | ------------------------------------------------------------------------------------------------- | ------------------ |
+| Core            |    14 |      70 | Approved HLTV/VRS rank                                                                            | owner / 2026-08-15 |
+| Review Auto     |     0 |       0 | Deferred for beta                                                                                 | owner / 2026-08-15 |
 | Review Manual   |     4 |      20 | Owner-reviewed 2026-08-17 HLTV team pages; public reasons in `data/review-manual/2026-08-17.json` | owner / 2026-08-17 |
-| Special players |   n/a |       2 | Owner-approved retired Specials 2026-08-18: MachineWJQ, advent | owner / 2026-08-18 |
+| Special players |   n/a |       2 | Owner-approved retired Specials 2026-08-18: MachineWJQ, advent                                    | owner / 2026-08-18 |
 
 Initial-beta scope decision on 2026-08-15: launch Core-only with the rehearsed 14 Teams and 70
 current starters. Review Auto, the 2026 T1 whitelist, and Special admissions remain deferred. On
@@ -215,7 +249,9 @@ data is frozen and excluded from HLTV recapture.
       community beta but remain explicit launch warnings for later Owner follow-up.
 - [x] The Owner deferred a public privacy/contact route and removed the personal email on 2026-08-14.
       Reconsider the route when a custom domain or materially broader use makes it useful.
-- [ ] Working/final product name and beta label are reviewed for the selected launch scope.
+- [x] On 2026-08-22 the Owner confirmed the current `CS 野榜` working name and `2026 Beta
+    Edition` label are sufficient for this small-community launch scope. A later custom-domain or
+      broader-branding pass may replace them without blocking this beta.
 
 Missing optional imagery, pending-rights assets, or HLTV stats may remain honest UI warnings;
 unattributed configured assets and unresolved identities may not be silently signed off.
@@ -245,20 +281,25 @@ the operational rows and Owner sign-off below remain human approvals that code c
 
 - [x] `blocking: false`; two warnings individually reviewed and recorded.
 - [x] Zero Player scores/wins/losses/skips before activation.
-- [ ] Vote correctness suite passes against production-like staging data.
+- [x] Vote correctness suite passes against production-like PostgreSQL data: 46 integration tests,
+      190 unit tests, and six desktop/mobile production-build E2E journeys on 2026-08-22. The
+      release pass also verified the responsive Event MVP column policy rather than requiring
+      desktop-only columns to remain visible on mobile.
 - [ ] Migration/build/release commit is frozen and recorded: **TBD**.
 - [x] Owner authorized exactly one audited `DRAFT` → `ACTIVE` transition on 2026-08-15.
 
 ## 6. Closed-beta window
 
-- [ ] Invite only the Owner-approved small tester set; record no personal identities in repository
-      evidence.
-- [ ] Test desktop/mobile and at least two browser/device families.
-- [ ] Record China Mobile; record Telecom/Unicom when testers are available as observations, not
+- [x] On 2026-08-22 the Owner confirmed the existing small tester scope is sufficient; no personal
+      tester identities are recorded in repository evidence.
+- [x] On 2026-08-22 the Owner confirmed the existing desktop/mobile and browser/device-family
+      coverage is sufficient for the selected small-community beta.
+- [x] Record China Mobile; record Telecom/Unicom when testers are available as observations, not
       invented passes/failures.
-- [ ] Direct Railway route remains the M10 launch route under ADR 0005. Cloudflare A/B is required
+- [x] Direct Railway route remains the M10 launch route under ADR 0005. Cloudflare A/B is required
       only if a custom domain/edge layer enters scope before sign-off.
-- [ ] Keep risk in observe mode and review false positives for shared NAT/campus/office networks.
+- [x] Keep risk in observe mode; current production configuration is `observe`. Final false-positive
+      review remains part of Owner sign-off.
 - [ ] Capture KPI, `/next`/`/resolve` errors and latency, skip rate, repeat visitors, DB connections,
       Web/DB CPU and memory, and Railway/R2 usage/spend alerts.
 - [ ] Tune daily full-weight quota or infrastructure rate limits only from measured evidence; record

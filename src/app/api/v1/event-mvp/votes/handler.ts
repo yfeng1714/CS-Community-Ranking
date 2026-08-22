@@ -123,6 +123,10 @@ export function createEventMvpVoteHandler(dependencies: {
             status: 409,
           },
           EVENT_MVP_NOT_ACTIVE: { message: "The current event contest is not open", status: 409 },
+          EVENT_MVP_VOTING_CLOSED: {
+            message: "The event MVP voting window has closed",
+            status: 409,
+          },
           EVENT_MVP_PLAYER_NOT_FOUND: {
             message: "That player is not on the event ballot",
             status: 404,

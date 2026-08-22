@@ -17,9 +17,15 @@ export default defineConfig({
     { name: "mobile-chromium", use: { ...devices["Pixel 7"] } },
   ],
   webServer: {
-    command: "node --env-file=.env scripts/e2e-setup.ts && corepack pnpm dev",
+    command:
+      "node --env-file=.env scripts/e2e-setup.ts && node node_modules/next/dist/bin/next build --webpack && node scripts/e2e-server.ts",
+    env: {
+      ADMIN_SESSION_SECRET: "e2e-admin-session-secret-not-for-production",
+      IP_HMAC_SECRET: "e2e-ip-hmac-secret-not-for-production-use",
+      VISITOR_TOKEN_HASH_PEPPER: "e2e-visitor-token-pepper-not-for-production",
+    },
     reuseExistingServer: !process.env.CI,
-    timeout: 120_000,
+    timeout: 180_000,
     url: "http://localhost:3000/api/health/live",
   },
 });

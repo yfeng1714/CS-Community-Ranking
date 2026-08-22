@@ -36,6 +36,14 @@ export function localIsoDate(date = new Date()): string {
   return `${date.getFullYear()}-${padUtc(date.getMonth() + 1)}-${padUtc(date.getDate())}`;
 }
 
+export function shiftIsoDateByDays(value: string, days: number, field = "Date"): string {
+  const iso = requireIsoDate(value, field);
+  const year = Number(iso.slice(0, 4));
+  const month = Number(iso.slice(5, 7));
+  const day = Number(iso.slice(8, 10));
+  return formatUtcIsoDate(new Date(Date.UTC(year, month - 1, day + days)));
+}
+
 export function shiftIsoDateByMonths(value: string, months: number, field = "Date"): string {
   const iso = requireIsoDate(value, field);
   const year = Number(iso.slice(0, 4));

@@ -76,3 +76,24 @@ retained. Its dump and manifest were copied to the private Standard-storage R2 b
 The remote object listing matched the local sizes exactly (136,706-byte dump and 483-byte manifest),
 and the temporary bucket-scoped upload token was revoked immediately afterward. This R2 use is an
 independent backup destination; it does not enable the deferred Cloudflare website edge layer.
+
+On 2026-08-22 the first current-production recovery point was retained locally, restored exactly
+across all 32 application tables, and copied to the same private bucket. The repository now provides
+`backup:production` for a Railway-side PostgreSQL 18 dump, local mode-`0600` manifest/checksum, and
+verified R2 upload in one command. A fresh end-to-end run produced the Shanghai-dated
+`production-2026-08-23T013001CST` pair and verified it under `daily/2026-08-23/`. Its permanent R2
+credential is limited to object read/write/list on this one bucket and remains in ignored local
+`.env.backup`; it is not a Web runtime secret.
+
+The Owner subsequently selected a Railway-hosted daily cron instead of a Mac schedule. The
+short-lived `backup-production` service runs at 04:30 Shanghai, after the other maintenance jobs,
+using a dedicated PostgreSQL 18 image, a private same-project database reference, and the same
+bucket-scoped R2 permission. Only this backup service receives the R2 runtime credential. It
+verifies both objects before deleting its ephemeral working copy and exiting. The manual
+`backup:production` path remains the local fallback and monthly restore-drill source.
+
+The first hosted verification deployment (`8985354d-3ec6-4f90-9ea3-b3f387b7ccc1`) completed in
+three seconds on 2026-08-22. It produced a 252,022-byte PostgreSQL custom archive with SHA-256
+`27a9566876c9ae50f2dc9a6b9b4aeb51bd09ec6458a283ec0933b766d9b7cb51`, recorded exact counts for all
+32 tables, and verified the dump/manifest pair under `daily/2026-08-23/`. The permanent scheduled
+deployment is successful with the next daily run registered.

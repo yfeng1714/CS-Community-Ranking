@@ -1,9 +1,10 @@
-import { access, mkdir, writeFile } from "node:fs/promises";
+import { access, chmod, mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { parseArgs } from "node:util";
 
 import {
   databaseIdentity,
+  dumpMetadata,
   postgresCommand,
   rowCounts,
   runCommand,
@@ -35,12 +36,14 @@ await runCommand(
   [...connection.args, "--format=custom", "--no-owner", "--file", output],
   connection.env,
 );
+await chmod(output, 0o600);
 const manifest: BackupManifest = {
   createdAt: new Date().toISOString(),
   database: databaseIdentity(databaseUrl),
   format: "pg_dump-custom",
   rowCounts: await rowCounts(databaseUrl),
   schemaVersion: 1,
+  ...(await dumpMetadata(output)),
 };
 await writeFile(`${output}.json`, `${JSON.stringify(manifest, null, 2)}\n`, { flag: "wx" });
 console.log(JSON.stringify({ dump: output, manifest: `${output}.json`, status: "created" }));

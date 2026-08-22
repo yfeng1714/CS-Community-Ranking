@@ -11,15 +11,12 @@ import {
 } from "../../db/schema/index.ts";
 import type { AppDatabase } from "../database.ts";
 import { dateInTimeZone } from "../ballots/date.ts";
+import { shiftIsoDateByDays } from "../date.ts";
 import { DomainError, requireDomainValue } from "../error.ts";
 import { toPublicMetric } from "../public/presentation.ts";
 import type { RiskAssessment } from "../../security/risk-monitor.ts";
 import { CURRENT_EVENT_MVP_SLUG } from "./bundle.ts";
-import {
-  eventMvpStandingRank,
-  isEventMvpStanding,
-  type EventMvpStanding,
-} from "./standing.ts";
+import { eventMvpStandingRank, isEventMvpStanding, type EventMvpStanding } from "./standing.ts";
 
 export interface EventMvpPlayer {
   country: string | null;
@@ -47,9 +44,21 @@ export interface EventMvpBoard {
     sourceUrl: string;
     startsAt: string;
     status: "ACTIVE" | "FROZEN";
+    votingEndsAt: string;
+    votingOpen: boolean;
   } | null;
   players: EventMvpPlayer[];
   todayVoteSlug: string | null;
+}
+
+export const EVENT_MVP_VOTING_GRACE_DAYS = 2;
+
+export function eventMvpVotingEndsAt(eventEndsAt: string): string {
+  return shiftIsoDateByDays(eventEndsAt, EVENT_MVP_VOTING_GRACE_DAYS, "Event end date");
+}
+
+export function isEventMvpVotingOpen(eventEndsAt: string, now: Date, timeZone: string): boolean {
+  return dateInTimeZone(now, timeZone) <= eventMvpVotingEndsAt(eventEndsAt);
 }
 
 export function compareEventMvpPlayers(
@@ -81,6 +90,7 @@ export class EventMvpService {
   ) {}
 
   async getBoard(visitorId: bigint | null, slug = CURRENT_EVENT_MVP_SLUG): Promise<EventMvpBoard> {
+    const now = this.now();
     const [contest] = await this.database
       .select()
       .from(eventMvpContests)
@@ -154,10 +164,14 @@ export class EventMvpService {
       .sort(compareEventMvpPlayers);
 
     const playersOnBoard: EventMvpPlayer[] = withUniqueEventMvpRanks(sorted);
+    const votingEndsAt = eventMvpVotingEndsAt(contest.endsAt);
+    const votingOpen =
+      contest.status === "ACTIVE" &&
+      isEventMvpVotingOpen(contest.endsAt, now, this.options.timeZone);
 
     let todayVoteSlug: string | null = null;
     if (visitorId) {
-      const usageDate = dateInTimeZone(this.now(), this.options.timeZone);
+      const usageDate = dateInTimeZone(now, this.options.timeZone);
       const [vote] = await this.database
         .select({ slug: players.slug })
         .from(eventMvpVotes)
@@ -184,6 +198,8 @@ export class EventMvpService {
         sourceUrl: contest.sourceUrl,
         startsAt: contest.startsAt,
         status: contest.status === "FROZEN" ? "FROZEN" : "ACTIVE",
+        votingEndsAt,
+        votingOpen,
       },
       players: playersOnBoard,
       todayVoteSlug,
@@ -197,6 +213,7 @@ export class EventMvpService {
     visitorId: bigint;
   }): Promise<{ alreadyVoted: boolean; playerSlug: string; status: "SUSPICIOUS" | "VALID" }> {
     return this.database.transaction(async (transaction) => {
+      const now = this.now();
       const [contest] = await transaction
         .select()
         .from(eventMvpContests)
@@ -210,6 +227,9 @@ export class EventMvpService {
         .limit(1);
       if (!contest) {
         throw new DomainError("EVENT_MVP_NOT_ACTIVE", "The current event contest is not open");
+      }
+      if (!isEventMvpVotingOpen(contest.endsAt, now, this.options.timeZone)) {
+        throw new DomainError("EVENT_MVP_VOTING_CLOSED", "The event MVP voting window has closed");
       }
 
       const [visitor] = await transaction
@@ -242,7 +262,7 @@ export class EventMvpService {
         );
       }
 
-      const usageDate = dateInTimeZone(this.now(), this.options.timeZone);
+      const usageDate = dateInTimeZone(now, this.options.timeZone);
       const [existing] = await transaction
         .select({ playerId: eventMvpVotes.playerId, status: eventMvpVotes.status })
         .from(eventMvpVotes)
