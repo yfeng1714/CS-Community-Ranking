@@ -15,6 +15,11 @@ import { DomainError, requireDomainValue } from "../error.ts";
 import { toPublicMetric } from "../public/presentation.ts";
 import type { RiskAssessment } from "../../security/risk-monitor.ts";
 import { CURRENT_EVENT_MVP_SLUG } from "./bundle.ts";
+import {
+  eventMvpStandingRank,
+  isEventMvpStanding,
+  type EventMvpStanding,
+} from "./standing.ts";
 
 export interface EventMvpPlayer {
   country: string | null;
@@ -28,6 +33,7 @@ export interface EventMvpPlayer {
   team: string | null;
   teamLogoUrl: string | null;
   teamShortName: string | null;
+  teamStanding: EventMvpStanding | null;
   votes: number;
 }
 
@@ -47,11 +53,14 @@ export interface EventMvpBoard {
 }
 
 export function compareEventMvpPlayers(
-  left: Pick<EventMvpPlayer, "eventRating" | "maps" | "nickname" | "votes">,
-  right: Pick<EventMvpPlayer, "eventRating" | "maps" | "nickname" | "votes">,
+  left: Pick<EventMvpPlayer, "eventRating" | "maps" | "nickname" | "teamStanding" | "votes">,
+  right: Pick<EventMvpPlayer, "eventRating" | "maps" | "nickname" | "teamStanding" | "votes">,
 ): number {
   if (left.votes !== right.votes) return right.votes - left.votes;
   if (left.eventRating !== right.eventRating) return right.eventRating - left.eventRating;
+  const leftStanding = eventMvpStandingRank(left.teamStanding);
+  const rightStanding = eventMvpStandingRank(right.teamStanding);
+  if (leftStanding !== rightStanding) return leftStanding - rightStanding;
   const leftMaps = left.maps ?? -1;
   const rightMaps = right.maps ?? -1;
   if (leftMaps !== rightMaps) return rightMaps - leftMaps;
@@ -94,6 +103,7 @@ export class EventMvpService {
         team: teams.name,
         teamLogoUrl: teams.logoPath,
         teamShortName: teams.shortName,
+        teamStanding: eventMvpCandidates.teamStanding,
       })
       .from(eventMvpCandidates)
       .innerJoin(players, eq(players.id, eventMvpCandidates.playerId))
@@ -138,6 +148,7 @@ export class EventMvpService {
         team: row.team,
         teamLogoUrl: row.teamLogoUrl,
         teamShortName: row.teamShortName,
+        teamStanding: isEventMvpStanding(row.teamStanding) ? row.teamStanding : null,
         votes: votesByPlayer.get(row.playerId) ?? 0,
       }))
       .sort(compareEventMvpPlayers);

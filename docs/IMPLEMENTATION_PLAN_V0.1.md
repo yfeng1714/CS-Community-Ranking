@@ -134,8 +134,8 @@ The implementation agent must not change these without owner approval.
 ## 2.5 Event MVP and annual editorial features
 
 V0.1 originally deferred per-event MVP tabs. Owner later approved a **limited** Event MVP at
-`/current-event`: a hardcoded EWC list, daily visitor `+1` (not pair `+1/−1`), documented in
-`docs/EVENT_MVP.md`. Still not included:
+`/current-event`: a hardcoded EWC list (current HLTV Top 10 plus retained dropouts), daily visitor
+`+1` (not pair `+1/−1`), Maps and 成绩 columns, documented in `docs/EVENT_MVP.md`. Still not included:
 
 - Personal Top 20.
 - User accounts or Steam login.

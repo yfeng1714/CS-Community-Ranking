@@ -8,6 +8,7 @@ import {
   withUniqueEventMvpRanks,
   type EventMvpPlayer,
 } from "@/domain/event-mvp/service";
+import { eventMvpStandingLabel } from "@/domain/event-mvp/standing";
 
 import { CountryFlag } from "./country-flag";
 import { PlayerPortrait } from "./player-portrait";
@@ -35,7 +36,13 @@ export function EventMvpTable({
     const normalized = query.trim().toLocaleLowerCase("en");
     if (!normalized) return rows;
     return rows.filter((player) =>
-      [player.nickname, player.team, player.teamShortName, player.country]
+      [
+        player.nickname,
+        player.team,
+        player.teamShortName,
+        player.country,
+        eventMvpStandingLabel(player.teamStanding),
+      ]
         .filter((value): value is string => Boolean(value))
         .some((value) => value.toLocaleLowerCase("en").includes(normalized)),
     );
@@ -105,6 +112,7 @@ export function EventMvpTable({
               <th scope="col">选手</th>
               <th scope="col">票数</th>
               <th scope="col">赛事 Rating</th>
+              <th scope="col">成绩</th>
               <th scope="col">Maps</th>
               <th scope="col">战队</th>
               <th scope="col">投票</th>
@@ -136,6 +144,7 @@ export function EventMvpTable({
                   </td>
                   <td className="ranking-table__score">{player.votes.toLocaleString("zh-CN")}</td>
                   <td>{rating(player.eventRating)}</td>
+                  <td>{eventMvpStandingLabel(player.teamStanding)}</td>
                   <td>{player.maps ?? "—"}</td>
                   <td>
                     <span className="ranking-team">

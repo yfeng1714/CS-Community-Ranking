@@ -1,12 +1,12 @@
 import { z } from "zod";
 
 import { DomainError } from "../error.ts";
+import { EVENT_MVP_STANDINGS } from "./standing.ts";
 
-export const EVENT_MVP_BUNDLE_VERSION = "hltv-event-mvp-top10-json-v1";
 export const CURRENT_EVENT_MVP_SLUG = "ewc-2026";
 export const CURRENT_EVENT_MVP_PATH = "/current-event";
-export const EVENT_MVP_CANDIDATE_LIMIT = 10;
-export const EVENT_MVP_BUNDLE_FILE = "data/reviewed-sources/hltv-ewc-2026-top10.json";
+export const EVENT_MVP_TOP_N = 10;
+export const EVENT_MVP_BUNDLE_FILE = "data/reviewed-sources/hltv-ewc-2026-candidates.json";
 
 const slug = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);
 
@@ -20,7 +20,7 @@ const recordSchema = z
     nickname: z.string().trim().min(1).max(100),
     realName: z.string().trim().min(1).max(200).optional(),
     slug,
-    sourceRank: z.number().int().min(1).max(EVENT_MVP_CANDIDATE_LIMIT),
+    sourceRank: z.number().int().min(1),
     team: z.string().trim().min(1).max(100),
     teamCountryCode: z
       .string()
@@ -33,6 +33,7 @@ const recordSchema = z
     teamExternalSlug: slug.optional(),
     teamShortName: z.string().trim().min(1).max(32).optional(),
     teamSlug: slug.optional(),
+    teamStanding: z.enum(EVENT_MVP_STANDINGS),
   })
   .superRefine((record, context) => {
     const teamFields = [
@@ -63,7 +64,7 @@ export const eventMvpBundleSchema = z.strictObject({
     startsAt: z.iso.date(),
   }),
   notes: z.array(z.string().trim().min(1).max(2_000)).min(1),
-  records: z.array(recordSchema).length(EVENT_MVP_CANDIDATE_LIMIT),
+  records: z.array(recordSchema).min(EVENT_MVP_TOP_N),
   version: z.literal(1),
 });
 
@@ -89,17 +90,11 @@ export function validateEventMvpBundle(input: unknown): EventMvpBundle {
     slugs.add(record.slug);
     ids.add(record.externalId);
   }
-  if (ranks.size !== EVENT_MVP_CANDIDATE_LIMIT) {
-    throw new DomainError(
-      "EVENT_MVP_COVERAGE_MISMATCH",
-      "Event MVP bundle must cover ranks 1–10 exactly once",
-    );
-  }
-  for (let rank = 1; rank <= EVENT_MVP_CANDIDATE_LIMIT; rank += 1) {
+  for (let rank = 1; rank <= EVENT_MVP_TOP_N; rank += 1) {
     if (!ranks.has(rank)) {
       throw new DomainError(
         "EVENT_MVP_COVERAGE_MISMATCH",
-        "Event MVP bundle must cover ranks 1–10 exactly once",
+        "Event MVP bundle must include the current HLTV top 10 exactly once",
       );
     }
   }

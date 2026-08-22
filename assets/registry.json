@@ -456,6 +456,22 @@
     {
       "assetPath": "/images/teams/magic.webp",
       "permission": "OWNER_ACCEPTED_PENDING_RIGHTS"
+    },
+    {
+      "assetPath": "/images/players/xfl0ud.webp",
+      "permission": "OWNER_ACCEPTED_PENDING_RIGHTS"
+    },
+    {
+      "assetPath": "/images/players/nqz.webp",
+      "permission": "OWNER_ACCEPTED_PENDING_RIGHTS"
+    },
+    {
+      "assetPath": "/images/teams/fut.webp",
+      "permission": "OWNER_ACCEPTED_PENDING_RIGHTS"
+    },
+    {
+      "assetPath": "/images/teams/mibr.webp",
+      "permission": "OWNER_ACCEPTED_PENDING_RIGHTS"
     }
   ]
 }

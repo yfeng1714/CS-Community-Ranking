@@ -43,6 +43,13 @@
       "when": 1787275053549,
       "tag": "0005_event_mvp",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1787367417429,
+      "tag": "0006_event_mvp_standing",
+      "breakpoints": true
     }
   ]
 }

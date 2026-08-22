@@ -116,7 +116,7 @@ If port `5432` is already occupied, set `POSTGRES_PORT` to another host port in
 | `pnpm assets:import-hltv-portraits -- --capture <file> --bundles <dir,...>` | Identity-check and import reviewed local HLTV portrait bundles |
 | `pnpm assets:capture-hltv-profile-portraits` | Local Playwright capture of official HLTV player-profile body shots; see `docs/HLTV_PROFILE_PORTRAITS.md` |
 | `pnpm assets:import-hltv-profile-portraits` | Copy captured profile portraits into `public/images`, registry, and manifests |
-| `pnpm source:import-event-mvp` | Dry-run or apply the reviewed EWC Top 10 Event MVP snapshot |
+| `pnpm source:import-event-mvp` | Dry-run or apply the reviewed EWC Event MVP snapshot |
 | `pnpm assets:capture-hltv-team-logos` | Local Playwright capture of official HLTV team-page logos for the four Review Manual teams |
 | `pnpm assets:import-hltv-team-logos` | Copy captured team logos into `public/images`, registry, and the Review Manual manifest |
 | `pnpm teams:apply-logos -- --actor owner --apply --confirm-team-logos` | Write manifest `logoPath` values onto existing Team rows |

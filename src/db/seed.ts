@@ -276,10 +276,10 @@ export async function seedDevelopmentData(database: Database): Promise<void> {
       .returning({ id: schema.eventMvpContests.id });
     const contest = requireRow(contestRow, "event mvp contest");
     const sampleRatings = [
-      { rating: "1.65", slug: "sample-ace" },
-      { rating: "1.40", slug: "sample-bolt" },
-      { rating: "1.21", slug: "sample-clutch" },
-      { rating: "1.05", slug: "sample-drift" },
+      { maps: 8, rating: "1.65", slug: "sample-ace", standing: "SEMIFINAL" },
+      { maps: 7, rating: "1.40", slug: "sample-bolt", standing: "QUARTERFINAL" },
+      { maps: 6, rating: "1.21", slug: "sample-clutch", standing: "ROUND_OF_16" },
+      { maps: 5, rating: "1.05", slug: "sample-drift", standing: "GROUP" },
     ] as const;
     for (const [index, entry] of sampleRatings.entries()) {
       const playerId = requireRow(playerIds.get(entry.slug), `player ${entry.slug}`);
@@ -288,16 +288,18 @@ export async function seedDevelopmentData(database: Database): Promise<void> {
         .values({
           contestId: contest.id,
           eventRating: entry.rating,
-          maps: 8 - index,
+          maps: entry.maps,
           playerId,
           sourceRank: index + 1,
+          teamStanding: entry.standing,
         })
         .onConflictDoUpdate({
           target: [schema.eventMvpCandidates.contestId, schema.eventMvpCandidates.playerId],
           set: {
             eventRating: entry.rating,
-            maps: 8 - index,
+            maps: entry.maps,
             sourceRank: index + 1,
+            teamStanding: entry.standing,
             updatedAt: new Date(),
           },
         });

@@ -992,6 +992,7 @@ export const eventMvpCandidates = pgTable(
     sourceRank: integer("source_rank").notNull(),
     eventRating: numeric("event_rating").notNull(),
     maps: integer("maps"),
+    teamStanding: text("team_standing"),
     createdAt: createdAt(),
     updatedAt: updatedAt(),
   },
@@ -1000,6 +1001,10 @@ export const eventMvpCandidates = pgTable(
     unique("event_mvp_candidate_rank_unique").on(table.contestId, table.sourceRank),
     check("event_mvp_candidate_rank_positive", sql`${table.sourceRank} >= 1`),
     check("event_mvp_candidate_maps_nonnegative", sql`${table.maps} is null or ${table.maps} >= 0`),
+    check(
+      "event_mvp_candidate_standing",
+      sql`${table.teamStanding} is null or ${table.teamStanding} in ('CHAMPION', 'RUNNER_UP', 'THIRD', 'FOURTH', 'SEMIFINAL', 'QUARTERFINAL', 'ROUND_OF_16', 'GROUP')`,
+    ),
   ],
 );
 

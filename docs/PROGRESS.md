@@ -20,7 +20,7 @@
   Vision / LVG) and their 20 current starters. On 2026-08-18 two retired Specials (MachineWJQ,
   advent) were admitted for closed-beta pairing tests. Review Auto and the 2026 T1 whitelist remain
   deferred. Closed-beta observation and final Owner Gate F sign-off remain.
-- **Last updated:** 2026-08-21
+- **Last updated:** 2026-08-22
 
 ## Completed in the repository
 
@@ -28,8 +28,9 @@
   share a competition rank; display order inside a tie is win rate (defined rates before none), then
   valid PK count, then nickname. About replaces the old slogan header with Bilibili and GitHub
   chips. Portrait recapture steps for future agents are `docs/HLTV_PROFILE_PORTRAITS.md`. Event MVP
-  is a separate `/current-event` daily +1 list for EWC Top 10 HLTV event Rating (`docs/EVENT_MVP.md`).
-  Ranks are unique; Maps is a column; Event-only identity (photo/team/logo) does not admit pairing.
+  is a separate `/current-event` daily +1 list for EWC HLTV event Rating (`docs/EVENT_MVP.md`).
+  Ranks are unique; Maps and 成绩 are columns; players who leave the HLTV Top 10 stay on the ballot;
+  Event-only identity (photo/team/logo) does not admit pairing.
 
 - Vote cards slightly enlarge the nationality flag and Major/MVP chips. Public labels are
   **近三月 Rating 3.0** and **火力值**. If the three-month Rating is missing, an Owner-reviewed

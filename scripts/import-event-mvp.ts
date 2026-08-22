@@ -3,7 +3,7 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { parseArgs } from "node:util";
 
-import { and, eq, isNull, notInArray } from "drizzle-orm";
+import { and, eq, gte, isNull, sql } from "drizzle-orm";
 
 import {
   eventMvpCandidates,
@@ -130,7 +130,16 @@ async function importEventMvpBundle(
   }
 
   const applied: Array<{ slug: string; status: "created" | "linked" }> = [];
-  const keptPlayerIds: bigint[] = [];
+  const RANK_SHIFT = 10_000;
+  await database
+    .update(eventMvpCandidates)
+    .set({
+      sourceRank: sql`${eventMvpCandidates.sourceRank} + ${RANK_SHIFT}`,
+      updatedAt: new Date(),
+    })
+    .where(eq(eventMvpCandidates.contestId, contest.id));
+
+  const keptRanks = new Set<number>();
   for (const record of bundle.records) {
     const [byIdentity] = await database
       .select({ playerId: playerExternalIdentities.playerId })
@@ -194,6 +203,7 @@ async function importEventMvpBundle(
         maps: record.maps,
         playerId,
         sourceRank: record.sourceRank,
+        teamStanding: record.teamStanding,
       })
       .onConflictDoUpdate({
         target: [eventMvpCandidates.contestId, eventMvpCandidates.playerId],
@@ -201,21 +211,33 @@ async function importEventMvpBundle(
           eventRating: record.eventRating,
           maps: record.maps,
           sourceRank: record.sourceRank,
+          teamStanding: record.teamStanding,
           updatedAt: new Date(),
         },
       });
-    keptPlayerIds.push(playerId);
+    keptRanks.add(record.sourceRank);
     applied.push({ slug: record.slug, status });
   }
 
-  await database
-    .delete(eventMvpCandidates)
+  const leftovers = await database
+    .select({
+      id: eventMvpCandidates.id,
+      sourceRank: eventMvpCandidates.sourceRank,
+    })
+    .from(eventMvpCandidates)
     .where(
-      and(
-        eq(eventMvpCandidates.contestId, contest.id),
-        notInArray(eventMvpCandidates.playerId, keptPlayerIds),
-      ),
+      and(eq(eventMvpCandidates.contestId, contest.id), gte(eventMvpCandidates.sourceRank, RANK_SHIFT)),
     );
+  leftovers.sort((left, right) => left.sourceRank - right.sourceRank);
+  for (const leftover of leftovers) {
+    let rank = leftover.sourceRank - RANK_SHIFT;
+    while (keptRanks.has(rank)) rank += 1;
+    keptRanks.add(rank);
+    await database
+      .update(eventMvpCandidates)
+      .set({ sourceRank: rank, updatedAt: new Date() })
+      .where(eq(eventMvpCandidates.id, leftover.id));
+  }
 
   return applied;
 }

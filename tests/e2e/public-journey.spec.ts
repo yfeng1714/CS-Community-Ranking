@@ -63,6 +63,7 @@ test("supports ranking search, player details, informational pages, and persiste
   await page.getByRole("link", { name: "当期赛事 - EWC" }).click();
   await expect(page.getByRole("heading", { name: "Esports World Cup 2026" })).toBeVisible();
   await expect(page.getByRole("columnheader", { name: "Maps" })).toBeVisible();
+  await expect(page.getByRole("columnheader", { name: "成绩" })).toBeVisible();
   await expect(
     page.locator(".event-mvp-table tbody tr").first().locator(".ranking-table__rank"),
   ).toHaveText("#1");

@@ -49,7 +49,7 @@ export default async function CurrentEventPage() {
           <h1>{board.contest?.name ?? "当期赛事尚未开放"}</h1>
           <p>
             每天可为一名选手投 1 票（+1）。这不影响社区榜的 +1/−1。排名不并列：先看票数，再看 HLTV
-            本赛事 Rating 3.0，再看 Maps。
+            本赛事 Rating 3.0，再看战队成绩，再看 Maps。
           </p>
         </div>
         <div className="ranking-pulse">
