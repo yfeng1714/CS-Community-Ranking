@@ -77,8 +77,9 @@ column or a second stats table.
 
 Identity coverage is the union of `data/canonical/2026-beta.json` (70 Core HLTV IDs) and
 `--review-manual data/review-manual/2026-08-17.json` (20 Review Manual IDs). Import requires that
-bundle to cover every **non-retired** `player_external_identity` HLTV ID exactly once (90 after the
-2026-08-17 Review Manual admission). Retired Special identities (MachineWJQ, advent) are excluded
+bundle to cover every **non-retired pairing-pool** HLTV identity exactly once (90 after the
+2026-08-17 Review Manual admission). Event-only Event MVP identities (no `pool_player_entry`) are
+not part of this coverage. Retired Special identities (MachineWJQ, advent) are excluded
 because their data does not change. Do not invent Rating for the new 20; recapture their official
 profiles, then resume into the existing ignored 70-player JSON so Core snapshots stay. The output
 JSON is Git-ignored:

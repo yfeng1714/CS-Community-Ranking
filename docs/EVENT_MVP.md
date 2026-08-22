@@ -46,7 +46,8 @@ Current snapshot `capturedAt` `2026-08-22T03:10:00.000Z` has 13 ballot rows: HLT
 kept dropouts `n1ssim` (13), `kyousuke` (15), and `niko` (37). Event-only identities (not in the
 pairing pool): `xkacpersky` (Ninjas in Pyjamas), `tenzy` (magic), `xfl0ud` (FUT), `nqz` (MIBR).
 `try` is already in the pairing pool. Import may create Event-only Player/Team rows, attach local
-portraits/logos, and write a STARTER roster **without** admitting them to pairing.
+portraits/logos, and write a STARTER roster **without** admitting them to pairing. Event-only HLTV identities are not required by `pnpm source:import-reviewed-hltv-stats`;
+that import covers pairing-pool players only.
 
 ## Team standing (成绩)
 
@@ -75,7 +76,8 @@ If a candidate has no photo/team/logo in our DB, fill them from official HLTV pr
 pages using the same local-copy rule as the pool: profile `playerbodyshot` and team-page
 `teamlogo` (night-only when HLTV publishes one), converted to WebP under `public/images/`. Do not
 hotlink `img-cdn.hltv.org`. Do not recapture retired Specials. Do not add Event-only people to the
-pairing pool.
+pairing pool. Event-only HLTV identities are not required by `pnpm source:import-reviewed-hltv-stats`;
+that import covers pairing-pool players only.
 
 ## Automatic HLTV event sync — investigated, not implemented
 

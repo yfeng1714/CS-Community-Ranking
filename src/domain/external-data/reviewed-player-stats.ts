@@ -1,7 +1,7 @@
 import { and, eq, ne } from "drizzle-orm";
 import { z } from "zod";
 
-import { playerExternalIdentities, players, playerStatSnapshots } from "../../db/schema/index.ts";
+import { playerExternalIdentities, players, playerStatSnapshots, poolPlayerEntries } from "../../db/schema/index.ts";
 import { writeAdminAudit } from "../audit.ts";
 import type { AppDatabase } from "../database.ts";
 import { DomainError, requireNonBlank } from "../error.ts";
@@ -281,7 +281,7 @@ export async function importReviewedHltvPlayerStats(
   const capturedAt = new Date(input.bundle.capturedAt);
 
   return database.transaction(async (transaction) => {
-    const identities = await transaction
+    const identityRows = await transaction
       .select({
         countryCode: players.countryCode,
         externalId: playerExternalIdentities.externalId,
@@ -290,12 +290,14 @@ export async function importReviewedHltvPlayerStats(
       })
       .from(playerExternalIdentities)
       .innerJoin(players, eq(players.id, playerExternalIdentities.playerId))
+      .innerJoin(poolPlayerEntries, eq(poolPlayerEntries.playerId, players.id))
       .where(
         and(
           eq(playerExternalIdentities.provider, "HLTV"),
           ne(players.professionalStatus, "RETIRED"),
         ),
       );
+    const identities = [...new Map(identityRows.map((identity) => [identity.externalId, identity])).values()];
     const identityByExternalId = new Map(
       identities.map((identity) => [identity.externalId, identity]),
     );
@@ -311,7 +313,7 @@ export async function importReviewedHltvPlayerStats(
     if (missingIds.length > 0 || unknownIds.length > 0) {
       throw new DomainError(
         "REVIEWED_HLTV_STATS_COVERAGE_MISMATCH",
-        "Reviewed HLTV stats must cover every non-retired HLTV Player identity exactly once",
+        "Reviewed HLTV stats must cover every non-retired pairing-pool HLTV Player identity exactly once",
         { missingIds, unknownIds },
       );
     }
