@@ -15,7 +15,7 @@ Edition from `DRAFT` to `ACTIVE`.
 - [x] The real Core-only 2026 Candidate Pool data was imported and approved on 2026-08-15.
 - [x] Real Edition `2026` was activated on 2026-08-15 after a blocking-free launch report.
 - [x] Closed beta is active on the direct Railway host; current production history is preserved.
-- [ ] Gate F has Owner sign-off.
+- [x] Gate F received Owner sign-off on 2026-08-22.
 
 Local rehearsal evidence as of 2026-08-14 (not production sign-off):
 
@@ -147,6 +147,41 @@ migrations and the approved backup policy.
   `27a9566876c9ae50f2dc9a6b9b4aeb51bd09ec6458a283ec0933b766d9b7cb51`) plus manifest. Scheduled
   deployment `9119c326-7324-4598-8fab-9c1b6f155973` is successful and its next run is registered.
 
+## Frozen M10 release evidence — 2026-08-22
+
+- Frozen implementation commit `0ee759d9ae048a1c9539f9d3b6a007e462c282ea` is on GitHub
+  `main`. Web deployment `4cb80a0e-bf9e-4db0-9530-990867725493` resolved `/railway/web.json`,
+  applied committed migrations, passed readiness, and reached `SUCCESS` on that exact commit.
+- Read-only smoke passed `https://yebangtv.up.railway.app`: live/ready health, public routes, 92
+  ranking Players, and all six security headers. `/admin` redirects to the protected login and the
+  login route returns `200`; the Owner confirmed the existing Admin-access evidence is sufficient
+  for this release. The live Event MVP page shows the `2026-08-25` voting cutoff.
+- Live integrity at `2026-08-22T21:38:27Z` is healthy: 107 valid decisions, 55 valid Skips, 107
+  wins/losses, ranking Skip total 110, score sum zero, and no violations.
+- Seven-day route evidence records 169 `/next` requests (15 expected `403 ORIGIN_REJECTED`, no
+  server errors, p50/p95 42.0/128.8 ms) and 95 `/resolve` requests (zero errors, p50/p95 37.0/76.3
+  ms). The current Shanghai-day KPI reports 35 API requests, zero server errors, p50/p95 38/115 ms,
+  four visitors, two repeat visitors, and 45.45% Skip rate. Web logs contain zero application errors
+  and Railway HTTP logs contain zero `5xx` responses in the reviewed seven-day window.
+- One database connection was active after the check. Railway's seven-day resource summary showed
+  approximately 0.00047 vCPU / 324 MB for Web and 0.00009 vCPU / 69 MB for PostgreSQL; the database
+  volume used 221 MB of 5 GB. Current-project usage in the billing period was approximately $0.62,
+  far below the configured $10 email threshold and $25 hard limit.
+- The `backup-production` service is now connected to `yfeng1714/CS-Community-Ranking` `main` with
+  config `/railway/job-backup-production.json`. Source deployment
+  `5b7fecc1-2768-4855-aaf1-db91331db0be` resolved `Dockerfile.backup` and succeeded on the frozen
+  commit. A controlled immediate restart then created a 253,291-byte 32-table dump (SHA-256
+  `a51cdfb511091b55b5aa043da5751f6035380a6a8de23509ad24b78949bdde8e`) and verified both objects at
+  `daily/2026-08-23/production-2026-08-23T054223CST.dump`. The service was left at
+  `30 20 * * *` UTC / daily 04:30 Shanghai with its next run registered. Private R2 contains 16
+  objects totaling 1,801,865 bytes (about 0.00168 GiB), far below its included storage allowance;
+  the Owner's Cloudflare usage alert remains the billing notification path.
+- The evidence is too small to justify a quota or infrastructure-limit change. Daily full-weight
+  quota remains 150 and risk remains `observe`; the Owner confirmed the current small-beta evidence
+  and device/tester scope are sufficient. Railway failed-job email, spend controls, Cloudflare
+  alert, direct-China-Mobile route evidence, Runbook freeze/rollback/restore procedures, and the
+  Owner-as-operator contact are the accepted V0.1 operations baseline.
+
 ## 1. Production environment decision
 
 - [x] Owner chose the lowest-cost, one-database in-place reset; no second Railway DB is planned.
@@ -249,8 +284,8 @@ data is frozen and excluded from HLTV recapture.
       community beta but remain explicit launch warnings for later Owner follow-up.
 - [x] The Owner deferred a public privacy/contact route and removed the personal email on 2026-08-14.
       Reconsider the route when a custom domain or materially broader use makes it useful.
-- [x] On 2026-08-22 the Owner confirmed the current `CS 野榜` working name and `2026 Beta
-    Edition` label are sufficient for this small-community launch scope. A later custom-domain or
+- [x] On 2026-08-22 the Owner confirmed the current `CS 野榜` working name and
+      `2026 Beta Edition` label are sufficient for this small-community launch scope. A later custom-domain or
       broader-branding pass may replace them without blocking this beta.
 
 Missing optional imagery, pending-rights assets, or HLTV stats may remain honest UI warnings;
@@ -285,7 +320,8 @@ the operational rows and Owner sign-off below remain human approvals that code c
       190 unit tests, and six desktop/mobile production-build E2E journeys on 2026-08-22. The
       release pass also verified the responsive Event MVP column policy rather than requiring
       desktop-only columns to remain visible on mobile.
-- [ ] Migration/build/release commit is frozen and recorded: **TBD**.
+- [x] Migration/build/release commit is frozen and recorded:
+      `0ee759d9ae048a1c9539f9d3b6a007e462c282ea`.
 - [x] Owner authorized exactly one audited `DRAFT` → `ACTIVE` transition on 2026-08-15.
 
 ## 6. Closed-beta window
@@ -300,24 +336,30 @@ the operational rows and Owner sign-off below remain human approvals that code c
       only if a custom domain/edge layer enters scope before sign-off.
 - [x] Keep risk in observe mode; current production configuration is `observe`. Final false-positive
       review remains part of Owner sign-off.
-- [ ] Capture KPI, `/next`/`/resolve` errors and latency, skip rate, repeat visitors, DB connections,
+- [x] Capture KPI, `/next`/`/resolve` errors and latency, skip rate, repeat visitors, DB connections,
       Web/DB CPU and memory, and Railway/R2 usage/spend alerts.
-- [ ] Tune daily full-weight quota or infrastructure rate limits only from measured evidence; record
-      old value, new value, reason, and Owner approval.
-- [ ] Run integrity after the window and prove the retained daily backup plus private second copy.
+- [x] Tune daily full-weight quota or infrastructure rate limits only from measured evidence; record
+      old value, new value, reason, and Owner approval. Review result: 150 → 150 and no infrastructure
+      change because the measured sample is too small; Owner confirmed the evidence is sufficient.
+- [x] Run integrity after the window and prove the retained daily backup plus private second copy.
 
 ## 7. Launch sign-off
 
-- [ ] No unresolved correctness, security, data, identity, roster, licensing, route, backup, or
+- [x] No unresolved correctness, security, data, identity, roster, licensing, route, backup, or
       operational blocker remains.
-- [ ] Direct Railway Mainland China decision is documented; Cloudflare status is explicit.
-- [ ] Rollback/freeze/restore contacts and procedures were reviewed.
-- [ ] Final smoke, integrity, logs, alerts, and Admin access pass on the frozen release.
-- [ ] Owner approves Gate F and public V0.1 launch.
+- [x] Direct Railway Mainland China decision is documented; Cloudflare status is explicit.
+- [x] Rollback/freeze/restore contacts and procedures were reviewed.
+- [x] Final smoke, integrity, logs, alerts, and Admin access pass on the frozen release.
+- [x] Owner approved Gate F and public V0.1 launch on 2026-08-22.
 
-**Owner:** TBD
+**Owner:** `owner`
 
-**Decision/date:** TBD
+**Decision/date:** APPROVED / 2026-08-22
 
-**Edition/deployment/commit:** TBD
-**Accepted warnings/follow-ups:** TBD
+**Edition/deployment/commit:** `2026` / `4cb80a0e-bf9e-4db0-9530-990867725493` /
+`0ee759d9ae048a1c9539f9d3b6a007e462c282ea`
+
+**Accepted warnings/follow-ups:** Owner-accepted pending asset rights; Review Auto and the completed
+2026 T1 whitelist deferred; automatic HLTV retrieval disabled in favor of reviewed local capture;
+custom domain, Cloudflare edge, China Telecom/Unicom observations, broader branding/privacy/contact,
+and final Event MVP source freeze remain later follow-ups rather than V0.1 blockers.

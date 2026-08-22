@@ -236,12 +236,12 @@
 | `pnpm test:integration`             | PASS   | Full pass: 12 files, 46 tests against PostgreSQL 18, including external-source warning policy, the launch-readiness gate, nullable HLTV profile-URL migration/constraint, reviewed stats, and atomic 14-Team/70-Player canonical bootstrap with 239 audit rows.                          |
 | `pnpm db:migrate` / `pnpm db:check` | PASS   | Ordered migrations apply; journal is consistent.                                                                                                                                                                                                                                         |
 | Operational CLI execution           | PASS   | Integrity healthy/zero-sum; expiration and retention ran successfully.                                                                                                                                                                                                                   |
-| Local logical restore drill         | PASS   | PostgreSQL 18 custom dump restored to separate empty DB in 1.27s; all 14 critical table counts matched; scratch DB/dump removed.                                                                                                                                                         |
+| Local logical restore drill         | PASS   | Current PostgreSQL 18 custom dump restored to an empty scratch database; all 32 application-table counts, dump size, and SHA-256 matched; scratch DB was removed.                                                                                                                        |
 | `pnpm build`                        | PASS   | Optimized Next.js `16.3.0` Webpack build and standalone traces.                                                                                                                                                                                                                          |
 | `pnpm test:e2e`                     | PASS   | 6 public/Admin journeys in desktop/mobile Chromium against the production standalone build. Setup applies committed migrations and invokes the pinned local Next binary without an interactive package-manager hop; the mobile suite verifies its intentional compact Event MVP columns. |
 | `git diff --check`                  | PASS   | No whitespace errors.                                                                                                                                                                                                                                                                    |
-| Production Docker rebuild           | PASS   | Pinned Node 24.14.0/pnpm 11.16.0 image built; final 190,565,606-byte image runs as `node`, excludes Vitest/TypeScript, and contains Web, migration, all six cron entry points, migrations, public assets, and Next static output.                                                        |
-| Railway backup image/execution      | PASS   | Dedicated PostgreSQL 18 image build succeeded; live deployment `8985354d-3ec6-4f90-9ea3-b3f387b7ccc1` completed in 3 seconds and verified its dump/manifest in private R2.                                                                                                               |
+| Production Docker/release           | PASS   | Pinned Node 24.14.0/pnpm 11.16.0 Web image built locally and Railway deployment `4cb80a0e-bf9e-4db0-9530-990867725493` resolved the committed Dockerfile/config, migrations, readiness check, and frozen commit.                                                                         |
+| Railway backup image/execution      | PASS   | GitHub-backed deployment `5b7fecc1-2768-4855-aaf1-db91331db0be` resolved the dedicated PostgreSQL 18 image; its controlled run created a 253,291-byte dump and verified the 32-table dump/manifest pair in private R2.                                                                   |
 
 Docker Desktop was restarted once because its Linux engine initially hung. It was used only for
 PostgreSQL/integration/restore work; the project database is stopped and Docker Desktop is quit after
@@ -262,9 +262,8 @@ this verification window.
   DNS-only/direct mutation checks use sequential configuration windows or separate deployments;
   accepting two permanent production origins is not an approved shortcut.
 - ADR 0004 records the owner-approved low-cost recovery baseline: Railway Hobby plus retained
-  logical backups, with local capacity allowed and an independent second copy required before real
-  public launch. The first retained dump/cadence is not complete merely because the restore drill
-  passed.
+  logical backups, with local capacity allowed and private R2 as the independent second copy. The
+  daily Railway cadence, current exact restore drill, and frozen-release backup execution now pass.
 - ADR 0005 records the owner-approved direct Railway baseline. The custom domain and Cloudflare A/B
   are deferred until traffic, abuse, cost, branding, scale, or route evidence justifies them. No
   application redesign is needed because correctness and anti-abuse truth do not depend on the edge.
@@ -372,13 +371,14 @@ this verification window.
 
 ## Next task
 
-Commit and push the accumulated M10 changes, connect the new backup service to the same GitHub/main
-deployment source, then repeat production smoke and integrity on that release. Continue the small
-closed-beta observation window and record traffic, latency, errors, resource usage, integrity, and
-backup recovery evidence for final Gate F sign-off. China Telecom/Unicom and an evening-peak China
-Mobile window remain useful observations when available, not route blockers.
+Milestone 10 and Gate F are complete. The Owner approved public V0.1 launch on 2026-08-22 after the
+frozen implementation was committed, pushed, deployed, smoke-tested, integrity-checked, and backed
+up through the GitHub-connected Railway job. Continue normal post-launch operation: review failed
+jobs and spend alerts, confirm the daily R2 backup, monitor integrity/KPI/resource evidence, and
+freeze the final EWC Event MVP source after its voting window closes.
 
-Review Auto, the 2026 T1 whitelist, Special Players, a later recapture of the 20 Review Manual
-players' HLTV stats/images, a permitted low-frequency HLTV adapter, complete optional Player stats,
-final branding, custom domain, and Cloudflare edge remain deliberate later follow-ups. The ADR 0006
-reset is consumed and must never be repeated against the real beta history.
+Review Auto, the 2026 T1 whitelist, a permitted low-frequency HLTV adapter, future roster/stat/asset
+refreshes, final Event MVP capture/freeze, broader branding, privacy/contact, a custom domain, and
+Cloudflare edge remain deliberate later follow-ups. China Telecom/Unicom are useful route
+observations when devices become available, not blockers. The ADR 0006 reset is consumed and must
+never be repeated against the real beta history.
