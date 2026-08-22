@@ -2,8 +2,8 @@
 
 ## Current position
 
-- **Milestone:** 10 — Candidate Pool V1, closed beta, and launch (**in progress; production beta
-  active, final Gate F sign-off pending**)
+- **Milestone:** 10 — Candidate Pool V1, closed beta, and launch (**complete; Gate F approved and
+  public V0.1 launched on 2026-08-22**)
 - **Status:** The Owner-approved ADR 0006 cutover was executed on 2026-08-15. A final fictional-
   staging dump matched Railway and local SHA-256, restored with all critical counts, and was copied
   to private R2. The existing Railway database was reset in place with Web/crons stopped, committed
@@ -16,13 +16,16 @@
   public routes, 70-player ranking data, and six security headers without creating a test Vote. A
   dedicated Railway `backup-production` cron now runs daily at 04:30 Shanghai and writes directly
   to private R2 without depending on the Owner's Mac. Its first production execution completed in
-  three seconds and verified a 252,022-byte dump plus manifest.
+  three seconds and verified a 252,022-byte dump plus manifest. Frozen-release smoke, integrity,
+  resource, route, Admin-access, alert, and backup evidence passed; the Owner approved Gate F and
+  public V0.1 launch on 2026-08-22.
 - **Review boundary:** The one-time pre-user reset exception is consumed. Railway now contains real
   beta data, so future work must preserve history with forward migrations and retained backups. The
   2026-08-17 Owner request admitted four Review Manual Teams (BC.Game, 100 Thieves, TYLOO, Lynn
   Vision / LVG) and their 20 current starters. On 2026-08-18 two retired Specials (MachineWJQ,
   advent) were admitted for closed-beta pairing tests. Review Auto and the 2026 T1 whitelist remain
-  deferred. Closed-beta observation and final Owner Gate F sign-off remain.
+  deferred. Accepted post-launch limitations and alternatives are centralized in
+  `docs/CURRENT_LIMITATIONS.md`.
 - **Last updated:** 2026-08-22
 
 ## Completed in the repository
@@ -30,7 +33,7 @@
 - Ranking lists high scores first by default and can switch to low scores first. Equal scores still
   share a competition rank; display order inside a tie is win rate (defined rates before none), then
   valid PK count, then nickname. About replaces the old slogan header with author and GitHub
-  chips (Bilibili display name 世界第一可爱睦子米). Nationality flags are local SVGs so Windows
+  chips (Bilibili display real Id). Nationality flags are local SVGs so Windows
   Chrome/Edge show BR/CN as flags rather than letters. The player-profile nickname is slightly
   smaller than the first oversized identity heading. Portrait recapture steps for future agents are `docs/HLTV_PROFILE_PORTRAITS.md`. Event MVP
   is a separate `/current-event` daily +1 list for EWC HLTV event Rating (`docs/EVENT_MVP.md`).

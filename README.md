@@ -5,9 +5,9 @@ simple pairwise votes.
 
 ## Status
 
-Milestones 0–9 and Owner Review Gate E are complete. M10 is in its final evidence phase: the
-Owner-approved in-place cutover was completed on 2026-08-15, the real `2026 Beta Edition` is ACTIVE
-on Railway, and the pairing Pool now contains 14 Core Teams/70 starters, four Review Manual
+Milestones 0–10 and Owner Review Gates E/F are complete. The Owner approved the public V0.1 launch
+on 2026-08-22 after the in-place cutover completed on 2026-08-15. The real `2026 Beta Edition` is
+ACTIVE on Railway, and the pairing Pool now contains 14 Core Teams/70 starters, four Review Manual
 Teams/20 starters, and two retired Specials (92 enabled Players total). Current Player stats,
 portraits, Team logos, the reviewed EWC Event MVP beta, production smoke, and live integrity checks
 are in place. Event MVP voting automatically remains open through two Shanghai calendar days after
@@ -140,6 +140,7 @@ If port `5432` is already occupied, set `POSTGRES_PORT` to another host port in
 - [`docs/CS_Community_Ranking_Product_Decision_Chronicle_V0.1.md`](docs/CS_Community_Ranking_Product_Decision_Chronicle_V0.1.md) — product intent and decision history
 - [`docs/IMPLEMENTATION_PLAN_V0.1.md`](docs/IMPLEMENTATION_PLAN_V0.1.md) — milestone implementation plan
 - [`docs/PROGRESS.md`](docs/PROGRESS.md) — current implementation status
+- [`docs/CURRENT_LIMITATIONS.md`](docs/CURRENT_LIMITATIONS.md) — candid register of current drawbacks, accepted tradeoffs, and available alternatives
 - [`docs/IMPLEMENTATION_REVIEW_2026-08-12.md`](docs/IMPLEMENTATION_REVIEW_2026-08-12.md) — independent Gate D findings, corrections, and verification evidence
 - [`docs/RUNBOOK.md`](docs/RUNBOOK.md) — development and operational procedures
 - [`docs/API.md`](docs/API.md) — API conventions
