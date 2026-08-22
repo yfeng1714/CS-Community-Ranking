@@ -1080,14 +1080,18 @@ button:disabled {
   line-height: 1;
 }
 
-.country-flag__emoji {
-  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
-  font-size: 1.05em;
-  line-height: 1;
+.country-flag__image {
+  display: block;
+  width: 1.15em;
+  height: 0.86em;
+  border-radius: 2px;
+  object-fit: cover;
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--foreground) 16%, transparent);
 }
 
-.vote-card__identity .country-flag__emoji {
-  font-size: 1.4em;
+.vote-card__identity .country-flag__image {
+  width: 1.5em;
+  height: 1.12em;
 }
 
 .country-flag--missing {
@@ -1691,8 +1695,9 @@ button:disabled {
   font-size: 0.8rem;
 }
 
-.ranking-player .country-flag__emoji {
-  font-size: 0.95rem;
+.ranking-player .country-flag__image {
+  width: 1.05em;
+  height: 0.79em;
 }
 
 .ranking-empty {
@@ -1752,10 +1757,10 @@ button:disabled {
 
 .player-profile__identity h1 {
   margin: 0.55rem 0 0;
-  font-size: clamp(3.5rem, 8vw, 7rem);
+  font-size: clamp(2.9rem, 6.5vw, 5.4rem);
   font-weight: 950;
-  letter-spacing: -0.09em;
-  line-height: 0.84;
+  letter-spacing: -0.07em;
+  line-height: 0.9;
 }
 
 .player-profile__real-name {
@@ -1786,8 +1791,9 @@ button:disabled {
   margin: 0.85rem 0 0;
 }
 
-.player-profile__meta .country-flag__emoji {
-  font-size: 1.15em;
+.player-profile__meta .country-flag__image {
+  width: 1.25em;
+  height: 0.94em;
 }
 
 .player-profile__rank {
@@ -1979,6 +1985,7 @@ button:disabled {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
+  max-width: 100%;
   padding: 0.48rem 1rem 0.48rem 0.72rem;
   border: 1px solid var(--border);
   border-radius: 999px;

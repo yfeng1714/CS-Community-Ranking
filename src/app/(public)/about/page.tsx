@@ -23,7 +23,7 @@ export default function AboutPage() {
             target="_blank"
           >
             <BilibiliIcon />
-            Bilibili
+            世界第一可爱睦子米
           </a>
         </p>
         <p>

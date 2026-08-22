@@ -1,17 +1,21 @@
+import { existsSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-import { countryFlagEmoji } from "@/domain/public/country-flag";
+import { countryFlagImageSrc } from "@/domain/public/country-flag";
 
-describe("country flag emoji", () => {
-  it("turns ISO-2 codes into regional-indicator flags", () => {
-    expect(countryFlagEmoji("FR")).toBe("🇫🇷");
-    expect(countryFlagEmoji("dk")).toBe("🇩🇰");
-    expect(countryFlagEmoji("GB")).toBe("🇬🇧");
+describe("country flag images", () => {
+  it("maps ISO-2 codes to local SVGs, including Windows-broken emoji flags", () => {
+    expect(countryFlagImageSrc("BR")).toBe("/flags/br.svg");
+    expect(countryFlagImageSrc("cn")).toBe("/flags/cn.svg");
+    expect(countryFlagImageSrc("GB")).toBe("/flags/gb.svg");
+    expect(existsSync("public/flags/br.svg")).toBe(true);
+    expect(existsSync("public/flags/cn.svg")).toBe(true);
   });
 
-  it("rejects values that are not ISO-2", () => {
-    expect(countryFlagEmoji("France")).toBeNull();
-    expect(countryFlagEmoji("")).toBeNull();
-    expect(countryFlagEmoji("X")).toBeNull();
+  it("rejects values that are not a local ISO-2 flag", () => {
+    expect(countryFlagImageSrc("France")).toBeNull();
+    expect(countryFlagImageSrc("")).toBeNull();
+    expect(countryFlagImageSrc("X")).toBeNull();
+    expect(countryFlagImageSrc("ZZ")).toBeNull();
   });
 });

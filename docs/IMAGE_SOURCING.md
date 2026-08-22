@@ -160,3 +160,7 @@ match those captured as zero.
 The preserved local rehearsal databases were bootstrapped before both asset passes and still contain
 null image paths. A fresh canonical bootstrap/reset will receive the Core 84 configured paths; do not
 describe the old rehearsal report as evidence that the post-asset database was tested.
+
+UI nationality flags live at `/flags/{iso2}.svg`. They are the 4×3 set from flag-icons (MIT), not
+player/team rights-tracked assets, and `pnpm assets:check` does not scan them. Serve them from this
+origin only; do not hotlink a flag CDN.

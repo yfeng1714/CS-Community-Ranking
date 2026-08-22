@@ -26,8 +26,10 @@
 
 - Ranking lists high scores first by default and can switch to low scores first. Equal scores still
   share a competition rank; display order inside a tie is win rate (defined rates before none), then
-  valid PK count, then nickname. About replaces the old slogan header with Bilibili and GitHub
-  chips. Portrait recapture steps for future agents are `docs/HLTV_PROFILE_PORTRAITS.md`. Event MVP
+  valid PK count, then nickname. About replaces the old slogan header with author and GitHub
+  chips (Bilibili display name 世界第一可爱睦子米). Nationality flags are local SVGs so Windows
+  Chrome/Edge show BR/CN as flags rather than letters. The player-profile nickname is slightly
+  smaller than the first oversized identity heading. Portrait recapture steps for future agents are `docs/HLTV_PROFILE_PORTRAITS.md`. Event MVP
   is a separate `/current-event` daily +1 list for EWC HLTV event Rating (`docs/EVENT_MVP.md`).
   Ranks are unique; Maps and 成绩 are columns; players who leave the HLTV Top 10 stay on the ballot;
   Event-only identity (photo/team/logo) does not admit pairing.
@@ -60,7 +62,7 @@
   checksum `2dc1b4b5ada7bada9350865e1740b1ce0f36c0bf89f21cbc51e670fb52b6a84c`. Production import
   applied 2026-08-17 (`APPLIED`, 90/90 recent Rating).
 
-- Public identity polish: nationality is a mini flag emoji from the ISO-2 code; Majors/MVPs render
+- Public identity polish: nationality is a local SVG flag from the ISO-2 code; Majors/MVPs render
   as `🏆 N Major` / `🏅 N MVP` chips. Admin Vote moderation now lists 10 recent Votes by default
   with **Load more** (20 more, cap 200). Exact-ID search is unchanged. See `docs/ADMIN_CONSOLE.md`
   for when to use `/admin` versus an agent.

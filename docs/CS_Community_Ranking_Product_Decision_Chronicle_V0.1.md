@@ -20,7 +20,7 @@
 </tbody>
 </table>
 
-**版本** V0.1.35
+**版本** V0.1.36
 
 **日期** 2026-08-22
 
@@ -93,6 +93,8 @@
 **Owner Event MVP Top 10** 2026-08-21（V0.1.34；名单收成 Rating 前 10；表增加 Maps；排名不并列；Event-only 选手补身份但不进 pairing；HLTV 赛事不同步到 Railway cron）
 
 **Owner Event MVP 成绩与留人** 2026-08-22（V0.1.35；Top 10 新人入表、掉出 Top 10 的人保留；成绩列来自 HLTV 奖金表；排序为票数 → Rating → 成绩 → Maps）
+
+**Owner 公开 UI 修补** 2026-08-22（V0.1.36；国籍改为本地 SVG 国旗，修复 Windows Chrome/Edge 把 BR/CN 显示成字母；选手页 ID 略缩小；关于页作者筹码改为 Bilibili 名「世界第一可爱睦子米」）
 
 **定位** 产品背景、决策记录与后续 Review Context
 
@@ -313,6 +315,8 @@ Owner 放入仓库的 `MachineWJQ.webp` 实际是 1080×1518 JPEG 且扩展名�
 Owner 提供肖像保持不动。公开页面仍然不向 HLTV 发请求。同日再补四支 Review Manual 队标：从官方
 战队页采集 `teamlogo`（100 Thieves 取 night-only 以适配深色容器；TYLOO 的 SVG 渲染为透明
 512×512 PNG），本地保存后写入 `logoPath`。2026-08-19 Owner 要求把最初 70 张 Ranking-page 肖像也换成同一套选手主页 body shot，使全池头像风格一致；投票卡上无 Major 记录的选手（HLTV 未写出该字段、库中为 null）一律显示 🏆 0 Major，与明确记为 0 的选手相同；头像更清晰后投票卡照片略放大。MachineWJQ 仍为 Owner 提供肖像。公开页面仍然不向 HLTV 发请求。后续代理必须按 `docs/HLTV_PROFILE_PORTRAITS.md` 用同一套选手主页 body shot 回采，不得回到 Ranking-page 200×200。2026-08-20 Owner 要求榜单增加升序/降序开关；同分时先比胜率（无有效对决的胜率排在后面），仍平则有效对决次数多的在前；竞争名次仍只由分数决定。关于页去掉原口号标题，改为作者 Bilibili 与项目 GitHub 的筹码链接。同日 Owner 解冻有限 Event MVP：导航增加「当期赛事 - EWC」，路径 `/current-event`，计分是每位访客每个上海自然日给一名选手 +1，不改常驻榜的真随机与 +1/−1。名单取官方 HLTV `stats/players?event=8261` Rating 3.0 前 15；同分先比社区票再比赛事 Rating。步骤见 `docs/EVENT_MVP.md`。2026-08-21 Owner 把名单收成 Rating 前 10，表上增加 Maps，排名不再并列（票数 → Rating → 更多 Maps）。不在配对池的选手（xKacpersky、tenzy）补了本地肖像/战队/队标，仍不进 pairing。HLTV 赛事数据没有做成 Railway 小时级同步：现有 cron 不含 HLTV，直连仍 403，公开请求不得拉 HLTV。
+
+2026-08-22 Owner 在 Mac / iPhone 上能看到 emoji 国旗，但 Windows Chrome / Edge 把巴西、中国等显示成字母 `BR` / `CN`：Windows 不会把区域指示符拼成旗。国籍改为本地 4×3 SVG（`/flags/{iso2}.svg`，flag-icons MIT），不走 CDN、不改 CSP `img-src`。同日选手资料卡上的 ID 略缩小；关于页作者筹码保留 Bilibili 标，文案改为真实 ID「世界第一可爱睦子米」。
 
 <table>
 <colgroup>

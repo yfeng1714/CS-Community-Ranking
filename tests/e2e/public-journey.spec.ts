@@ -71,7 +71,7 @@ test("supports ranking search, player details, informational pages, and persiste
   await expect(page.getByRole("button", { name: "今日已投" })).toBeVisible();
 
   await page.getByRole("link", { name: "关于" }).click();
-  await expect(page.getByRole("link", { name: "Bilibili" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "世界第一可爱睦子米" })).toBeVisible();
   await expect(page.getByRole("link", { name: "GitHub" })).toBeVisible();
   await expect(page.getByRole("link", { name: "隐私", exact: true })).toHaveCount(0);
   const privacyResponse = await page.goto("/privacy");

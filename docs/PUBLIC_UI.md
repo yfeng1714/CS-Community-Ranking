@@ -8,7 +8,7 @@ Milestone 5 is the first complete anonymous public journey. It provides:
 - `/ranking` — active-Edition competition ranking, client-side search, and score sort direction;
 - `/current-event` — EWC Event MVP list (current HLTV Top 10 plus retained dropouts) with Maps, 成绩, unique ranks, and a daily +1;
 - `/player/{slug}` — public player identity, roster, score record, and approved stats;
-- `/about` — scoring, random-pairing, Candidate Pool explanation, and Bilibili / GitHub chips.
+- `/about` — scoring, random-pairing, Candidate Pool explanation, and author / GitHub chips (Bilibili display name 世界第一可爱睦子米).
 
 The top navigation contains Vote, Ranking, **当期赛事 - EWC**, and About. Player pages are reached through player links;
 the About call-to-action links back to Vote and Ranking. The small community beta has no dedicated
@@ -22,7 +22,7 @@ left player, `2` for the right player, and `S` for Skip. The default card shows 
 Rating is missing, an Owner-reviewed career Rating may occupy that same slot as **生涯 Rating**.
 If both are missing, the slot stays **近三月 Rating 3.0** / `—`. Majors won and Total MVPs sit under the identity line when
 captured (`🏆 2 Major` / `🏅 32 MVP` chips; zeros are shown; the line is omitted only when both
-values are missing). Nationality is a mini flag from the stored ISO-2 `country` code, or `国籍待补`.
+values are missing). Nationality is a locally served 4×3 SVG flag from the stored ISO-2 `country` code (`/flags/{code}.svg`, vendored from flag-icons), or `国籍待补`. Emoji flags are not used: Windows Chrome/Edge render regional-indicator pairs as letters such as `BR` / `CN`.
 The player-page eyebrow is **现役选手**, **退役选手**, or **当前未参与新对决**. Square portraits use
 `object-fit: cover` and `object-position: center top` so a non-200×200 Owner photo still keeps the
 head in frame.
