@@ -742,35 +742,6 @@ button:disabled {
   height: 1.1rem;
 }
 
-.site-footer {
-  margin-top: 5rem;
-  border-top: 1px solid var(--border);
-}
-
-.site-footer__inner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: min(100% - 2rem, 1240px);
-  min-height: 96px;
-  margin: 0 auto;
-  color: var(--muted);
-  font-size: 0.86rem;
-}
-
-.site-footer__inner p {
-  margin: 0;
-}
-
-.site-footer__links {
-  display: flex;
-  gap: 1.25rem;
-}
-
-.site-footer__links a:hover {
-  color: var(--foreground);
-}
-
 .eyebrow {
   display: block;
   color: var(--brand-strong);
@@ -2012,6 +1983,7 @@ button:disabled {
   grid-template-columns: repeat(3, 1fr);
   gap: 1px;
   overflow: hidden;
+  margin-top: 1rem;
   border: 1px solid var(--border);
   border-radius: 1.35rem;
   background: var(--border);
@@ -2031,8 +2003,7 @@ button:disabled {
 }
 
 .rule-strip h2,
-.reading-grid h2,
-.about-cta h2 {
+.reading-grid h2 {
   margin: 4rem 0 0.6rem;
   font-size: 1.55rem;
   letter-spacing: -0.05em;
@@ -2067,40 +2038,6 @@ button:disabled {
 
 .reading-grid p + p {
   margin-top: 1rem;
-}
-
-.about-cta {
-  display: flex;
-  align-items: end;
-  justify-content: space-between;
-  gap: 2rem;
-  margin-top: 1rem;
-  padding: clamp(1.5rem, 4vw, 3rem);
-  border-radius: 1.25rem;
-  background: var(--foreground);
-  color: var(--background);
-}
-
-.about-cta .eyebrow {
-  color: color-mix(in srgb, var(--background) 66%, transparent);
-}
-
-.about-cta h2 {
-  max-width: 650px;
-  margin: 0.5rem 0 0;
-  font-size: clamp(1.8rem, 3.5vw, 3rem);
-}
-
-.about-cta > div:last-child {
-  display: flex;
-  flex: 0 0 auto;
-  gap: 0.6rem;
-}
-
-.about-cta .button--ghost {
-  border-color: color-mix(in srgb, var(--background) 25%, transparent);
-  background: transparent;
-  color: var(--background);
 }
 
 .empty-state > p {
@@ -2153,11 +2090,6 @@ button:disabled {
     margin-left: auto;
     margin-right: 1rem;
     font-size: 2.5rem;
-  }
-
-  .about-cta {
-    align-items: flex-start;
-    flex-direction: column;
   }
 }
 
@@ -2390,18 +2322,6 @@ button:disabled {
 
   .rule-strip article {
     min-height: 220px;
-  }
-
-  .about-cta > div:last-child {
-    flex-direction: column;
-    width: 100%;
-  }
-
-  .site-footer__inner {
-    align-items: flex-start;
-    flex-direction: column;
-    justify-content: center;
-    gap: 0.7rem;
   }
 }
 

@@ -9,14 +9,14 @@
     "eventUrl": "https://www.hltv.org/events/8261/esports-world-cup-2026",
     "startsAt": "2026-08-12",
     "endsAt": "2026-08-23",
-    "capturedAt": "2026-08-22T03:10:00.000Z"
+    "capturedAt": "2026-08-23T02:12:00.000Z"
   },
   "notes": [
     "Official HLTV event Rating 3.0 leaderboard for Esports World Cup 2026 (event id 8261).",
-    "Current HLTV Top 10 from https://www.hltv.org/stats/players?event=8261 captured 2026-08-22. Public pages never fetch HLTV.",
-    "Players who leave the HLTV Top 10 stay on the ballot with their current event stats. This snapshot keeps kyousuke (15), n1ssim (13), and niko (37). Import must not delete candidates missing from a later file.",
-    "New Top 10 entries xfl0ud and nqz are not in the pairing pool; try already is. Event MVP import may create Player/Team rows without pool admission.",
-    "teamStanding is the player's current team result on the official HLTV prize distribution https://www.hltv.org/events/8261/esports-world-cup-2026#PrizeDistribution, not Liquipedia or BO3. 1st–4th were still unnamed at capture, so Spirit/FURIA/FUT/Legacy are SEMIFINAL (四强)."
+    "Current HLTV Top 10 from https://www.hltv.org/stats/players?event=8261 captured 2026-08-23. Public pages never fetch HLTV.",
+    "Players who leave the HLTV Top 10 stay on the ballot with their current event stats. This snapshot keeps kyousuke (13), niko (33), and n1ssim (38). Import must not delete candidates missing from a later file.",
+    "No new Top 10 identities versus the previous snapshot. Event-only players remain xkacpersky, tenzy, xfl0ud, and nqz. try is already in the pairing pool.",
+    "teamStanding is the player's current team result on the official HLTV prize distribution https://www.hltv.org/events/8261/esports-world-cup-2026#PrizeDistribution, not Liquipedia or BO3. 1st–4th were still unnamed at capture (grand final Spirit vs FUT scheduled 2026-08-23), so Spirit/FUT/FURIA/Legacy stay SEMIFINAL (四强)."
   ],
   "records": [
     {
@@ -39,8 +39,8 @@
       "countryCode": "RU",
       "externalId": "21167",
       "externalSlug": "donk",
-      "maps": 11,
-      "eventRating": "1.54",
+      "maps": 13,
+      "eventRating": "1.55",
       "teamStanding": "SEMIFINAL"
     },
     {
@@ -75,36 +75,6 @@
     },
     {
       "sourceRank": 5,
-      "nickname": "KSCERATO",
-      "slug": "kscerato",
-      "team": "FURIA",
-      "countryCode": "BR",
-      "externalId": "15631",
-      "externalSlug": "kscerato",
-      "maps": 10,
-      "eventRating": "1.27",
-      "teamStanding": "SEMIFINAL"
-    },
-    {
-      "sourceRank": 6,
-      "nickname": "xfl0ud",
-      "slug": "xfl0ud",
-      "team": "FUT",
-      "countryCode": "TR",
-      "externalId": "19187",
-      "externalSlug": "xfl0ud",
-      "maps": 9,
-      "eventRating": "1.27",
-      "realName": "Yasin Koç",
-      "teamSlug": "fut",
-      "teamShortName": "FUT",
-      "teamCountryCode": "TR",
-      "teamExternalId": "13286",
-      "teamExternalSlug": "fut",
-      "teamStanding": "SEMIFINAL"
-    },
-    {
-      "sourceRank": 7,
       "nickname": "tenzy",
       "slug": "tenzy",
       "team": "magic",
@@ -122,19 +92,19 @@
       "teamStanding": "ROUND_OF_16"
     },
     {
-      "sourceRank": 8,
-      "nickname": "try",
-      "slug": "try",
-      "team": "Legacy",
-      "countryCode": "AR",
-      "externalId": "19869",
-      "externalSlug": "try",
-      "maps": 9,
+      "sourceRank": 6,
+      "nickname": "KSCERATO",
+      "slug": "kscerato",
+      "team": "FURIA",
+      "countryCode": "BR",
+      "externalId": "15631",
+      "externalSlug": "kscerato",
+      "maps": 13,
       "eventRating": "1.26",
       "teamStanding": "SEMIFINAL"
     },
     {
-      "sourceRank": 9,
+      "sourceRank": 7,
       "nickname": "Jame",
       "slug": "jame",
       "team": "PARIVISION",
@@ -146,7 +116,19 @@
       "teamStanding": "GROUP"
     },
     {
-      "sourceRank": 10,
+      "sourceRank": 8,
+      "nickname": "try",
+      "slug": "try",
+      "team": "Legacy",
+      "countryCode": "AR",
+      "externalId": "19869",
+      "externalSlug": "try",
+      "maps": 11,
+      "eventRating": "1.24",
+      "teamStanding": "SEMIFINAL"
+    },
+    {
+      "sourceRank": 9,
       "nickname": "nqz",
       "slug": "nqz",
       "team": "MIBR",
@@ -164,19 +146,25 @@
       "teamStanding": "GROUP"
     },
     {
-      "sourceRank": 13,
-      "nickname": "n1ssim",
-      "slug": "n1ssim",
-      "team": "Legacy",
-      "countryCode": "BR",
-      "externalId": "19686",
-      "externalSlug": "n1ssim",
-      "maps": 9,
-      "eventRating": "1.21",
+      "sourceRank": 10,
+      "nickname": "xfl0ud",
+      "slug": "xfl0ud",
+      "team": "FUT",
+      "countryCode": "TR",
+      "externalId": "19187",
+      "externalSlug": "xfl0ud",
+      "maps": 12,
+      "eventRating": "1.23",
+      "realName": "Yasin Koç",
+      "teamSlug": "fut",
+      "teamShortName": "FUT",
+      "teamCountryCode": "TR",
+      "teamExternalId": "13286",
+      "teamExternalSlug": "fut",
       "teamStanding": "SEMIFINAL"
     },
     {
-      "sourceRank": 15,
+      "sourceRank": 13,
       "nickname": "kyousuke",
       "slug": "kyousuke",
       "team": "Falcons",
@@ -188,7 +176,7 @@
       "teamStanding": "QUARTERFINAL"
     },
     {
-      "sourceRank": 37,
+      "sourceRank": 33,
       "nickname": "NiKo",
       "slug": "niko",
       "team": "Falcons",
@@ -198,6 +186,18 @@
       "maps": 7,
       "eventRating": "1.12",
       "teamStanding": "QUARTERFINAL"
+    },
+    {
+      "sourceRank": 38,
+      "nickname": "n1ssim",
+      "slug": "n1ssim",
+      "team": "Legacy",
+      "countryCode": "BR",
+      "externalId": "19686",
+      "externalSlug": "n1ssim",
+      "maps": 11,
+      "eventRating": "1.10",
+      "teamStanding": "SEMIFINAL"
     }
   ]
 }

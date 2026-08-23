@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { ProductPageView } from "@/components/analytics/page-view";
 import { BilibiliIcon, GitHubIcon } from "@/components/icons";
 
@@ -40,24 +39,6 @@ export default function AboutPage() {
         </p>
       </header>
 
-      <section className="rule-strip" aria-label="核心规则">
-        <article>
-          <span>01</span>
-          <h2>两个人</h2>
-          <p>服务器从当期候选池中等概率随机抽取，左右位置也独立随机。</p>
-        </article>
-        <article>
-          <span>02</span>
-          <h2>选一个</h2>
-          <p>有效票让胜者 +1、败者 -1。没有 Elo、权重或隐藏公式。</p>
-        </article>
-        <article>
-          <span>03</span>
-          <h2>或者跳过</h2>
-          <p>Skip 不改变分数，但会消耗这次随机机会并留下可审计记录。</p>
-        </article>
-      </section>
-
       <div className="reading-grid">
         <section>
           <span className="eyebrow">候选池</span>
@@ -77,19 +58,22 @@ export default function AboutPage() {
         </section>
       </div>
 
-      <section className="about-cta">
-        <div>
-          <span className="eyebrow">这不是客观真理</span>
-          <h2>它是一张公开、简单、可审计的社区意见榜。</h2>
-        </div>
-        <div>
-          <Link className="button button--primary" href="/">
-            开始投票
-          </Link>
-          <Link className="button button--ghost" href="/ranking">
-            查看社区榜
-          </Link>
-        </div>
+      <section className="rule-strip" aria-label="核心规则">
+        <article>
+          <span>01</span>
+          <h2>两个人</h2>
+          <p>服务器从当期候选池中等概率随机抽取，左右位置也独立随机。</p>
+        </article>
+        <article>
+          <span>02</span>
+          <h2>选一个</h2>
+          <p>有效票让胜者 +1、败者 -1。没有 Elo、权重或隐藏公式。</p>
+        </article>
+        <article>
+          <span>03</span>
+          <h2>或者跳过</h2>
+          <p>Skip 不改变分数，但会消耗这次随机机会并留下可审计记录。</p>
+        </article>
       </section>
     </main>
   );

@@ -46,8 +46,8 @@ BO3’s 7.x “group stage ranking” or Liquipedia. Node Playwright often gets 
 `/stats/players/`; capture from a browser that already passed the challenge, then save
 `data/reviewed-sources/hltv-ewc-2026-candidates.json`. Public pages only read Postgres.
 
-Current snapshot `capturedAt` `2026-08-22T03:10:00.000Z` has 13 ballot rows: HLTV ranks 1–10 plus
-kept dropouts `n1ssim` (13), `kyousuke` (15), and `niko` (37). Event-only identities (not in the
+Current snapshot `capturedAt` `2026-08-23T02:12:00.000Z` has 13 ballot rows: HLTV ranks 1–10 plus
+kept dropouts `kyousuke` (13), `niko` (33), and `n1ssim` (38). Event-only identities (not in the
 pairing pool): `xkacpersky` (Ninjas in Pyjamas), `tenzy` (magic), `xfl0ud` (FUT), `nqz` (MIBR).
 `try` is already in the pairing pool. Import may create Event-only Player/Team rows, attach local
 portraits/logos, and write a STARTER roster **without** admitting them to pairing. Event-only HLTV identities are not required by `pnpm source:import-reviewed-hltv-stats`;
@@ -71,8 +71,9 @@ not on pairing-pool `event_team_result`. Source is the official HLTV prize distr
 | `ROUND_OF_16`  | 十六强 | 9–16th                              | 6              |
 | `GROUP`        | 小组赛 | 17–32nd                             | 7              |
 
-Missing standing sorts last. 2026-08-22 capture: Spirit / FURIA / FUT / Legacy = 四强; Falcons /
-Vitality = 八强; magic = 十六强; NiP / PARIVISION / MIBR = 小组赛.
+Missing standing sorts last. 2026-08-23 capture: Spirit / FURIA / FUT / Legacy = 四强 (1st–4th still
+unnamed on the prize table; grand final Spirit vs FUT); Falcons / Vitality = 八强; magic = 十六强;
+NiP / PARIVISION / MIBR = 小组赛.
 
 ## Event-only identity
 

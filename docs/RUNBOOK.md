@@ -65,8 +65,9 @@ Public-data smoke checks:
 - `/ranking` shows all seeded players, tied competition ranks, client-side search, and a high/low
   score order switch.
 - `/player/sample-ace` shows identity, roster, ranking, and deliberate `—`/missing-data states.
-- `/about` explains random pairing and scoring without defining what “better” means.
-- The footer and About page contain no retired `/privacy` link. Direct `/privacy` requests return
+- `/about` explains random pairing and scoring without defining what “better” means. It has no
+  “客观真理” CTA box. The public layout has no footer tagline or “规则与候选池” link.
+- Direct `/privacy` requests return
   the ordinary Next.js not-found response for the small community beta.
 
 Admin smoke checks:

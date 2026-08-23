@@ -21,12 +21,12 @@ describe("event MVP bundle and ordering", () => {
       "donk",
       "xkacpersky",
       "zywoo",
-      "kscerato",
-      "xfl0ud",
       "tenzy",
-      "try",
+      "kscerato",
       "jame",
+      "try",
       "nqz",
+      "xfl0ud",
     ]);
     expect(slugs).toContain("kyousuke");
     expect(slugs).toContain("n1ssim");

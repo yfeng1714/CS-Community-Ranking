@@ -26,19 +26,23 @@
   advent) were admitted for closed-beta pairing tests. Review Auto and the 2026 T1 whitelist remain
   deferred. Accepted post-launch limitations and alternatives are centralized in
   `docs/CURRENT_LIMITATIONS.md`.
-- **Last updated:** 2026-08-22
+- **Last updated:** 2026-08-23
 
 ## Completed in the repository
 
 - Ranking lists high scores first by default and can switch to low scores first. Equal scores still
   share a competition rank; display order inside a tie is win rate (defined rates before none), then
   valid PK count, then nickname. About replaces the old slogan header with author and GitHub
-  chips (Bilibili display real Id). Nationality flags are local SVGs so Windows
+  chips (Bilibili display name 世界第一可爱睦子米). About no longer has the “客观真理” CTA or a
+  public footer tagline/“规则与候选池” link; 候选池 and 计票与节奏 sit above the 01–03 strip.
+  Nationality flags are local SVGs so Windows
   Chrome/Edge show BR/CN as flags rather than letters. The player-profile nickname is slightly
   smaller than the first oversized identity heading. Portrait recapture steps for future agents are `docs/HLTV_PROFILE_PORTRAITS.md`. Event MVP
   is a separate `/current-event` daily +1 list for EWC HLTV event Rating (`docs/EVENT_MVP.md`).
   Ranks are unique; Maps and 成绩 are columns; players who leave the HLTV Top 10 stay on the ballot;
-  Event-only identity (photo/team/logo) does not admit pairing.
+  Event-only identity (photo/team/logo) does not admit pairing. The 2026-08-23 official recapture
+  kept the same 13 ballot names, updated maps/ratings, and left 1st–4th unnamed (Spirit vs FUT
+  grand final still pending).
 
 - Vote cards slightly enlarge the nationality flag and Major/MVP chips. Public labels are
   **近三月 Rating 3.0** and **火力值**. If the three-month Rating is missing, an Owner-reviewed
