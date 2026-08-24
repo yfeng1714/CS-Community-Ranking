@@ -17,7 +17,7 @@
     "Every Event MVP sync must recapture player stats (rank / maps / Rating 3.0) and rewrite teamStanding from the official HLTV prize distribution https://www.hltv.org/events/8261/esports-world-cup-2026#PrizeDistribution. Do not leave SEMIFINAL (四强) after 1st–4th are named.",
     "Prize table 2026-08-24: 1st Spirit, 2nd FUT, 3rd Legacy, 4th FURIA, 5–8th Vitality/Falcons/MOUZ/G2, 9–16th includes magic, 17–32nd includes NiP/PARIVISION/MIBR/9z.",
     "Players who leave the HLTV Top 10 stay on the ballot with their current event stats. This snapshot keeps kscerato (11), kyousuke (12), xfl0ud (28), niko (34), and n1ssim (35). Import must not delete candidates missing from a later file.",
-    "New Top 10 identities versus the previous snapshot: flamez (already in the pairing pool) and huasopeek (Event-only; 9z photo/logo already local). Other Event-only players remain xkacpersky, tenzy, xfl0ud, and nqz. try is already in the pairing pool."
+    "New Top 10 identities versus the previous snapshot: flamez and huasopeek (both already in the pairing pool). Other Event-only players remain xkacpersky, tenzy, xfl0ud, and nqz. try is already in the pairing pool."
   ],
   "records": [
     {

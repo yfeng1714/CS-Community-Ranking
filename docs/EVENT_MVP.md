@@ -49,7 +49,7 @@ BO3’s 7.x “group stage ranking” or Liquipedia. Node Playwright often gets 
 Current snapshot `capturedAt` `2026-08-24T00:17:00.000Z` has 15 ballot rows: HLTV ranks 1–10 plus
 kept dropouts `kscerato` (11), `kyousuke` (12), `xfl0ud` (28), `niko` (34), and `n1ssim` (35).
 Event-only identities (not in the pairing pool): `xkacpersky` (Ninjas in Pyjamas), `tenzy` (magic),
-`xfl0ud` (FUT), `nqz` (MIBR), `huasopeek` (9z). `try` and `flamez` are already in the pairing pool.
+`xfl0ud` (FUT), `nqz` (MIBR). `try`, `flamez`, and `huasopeek` are already in the pairing pool.
 Import may create Event-only Player/Team rows, attach local portraits/logos, and write a STARTER
 roster **without** admitting them to pairing. Event-only HLTV identities are not required by
 `pnpm source:import-reviewed-hltv-stats`; that import covers pairing-pool players only.
