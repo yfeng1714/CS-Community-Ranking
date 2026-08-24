@@ -11,7 +11,8 @@
 7. Check `/api/health/live` and `/api/health/ready`.
 8. Open `/` for the public Vote page, `/ranking` for the public ranking, and `/current-event` for
    the EWC Event MVP list (seeded locally; production needs `pnpm source:import-event-mvp` after
-   migrate).
+   migrate). Every Event MVP import must recapture HLTV player stats **and** prize-table 成绩 in the
+   same reviewed JSON; see `docs/EVENT_MVP.md`.
 
 Create the first real local Admin from a trusted terminal (the password prompt is hidden):
 

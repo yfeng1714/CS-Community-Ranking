@@ -9,14 +9,15 @@
     "eventUrl": "https://www.hltv.org/events/8261/esports-world-cup-2026",
     "startsAt": "2026-08-12",
     "endsAt": "2026-08-23",
-    "capturedAt": "2026-08-23T02:12:00.000Z"
+    "capturedAt": "2026-08-24T00:17:00.000Z"
   },
   "notes": [
     "Official HLTV event Rating 3.0 leaderboard for Esports World Cup 2026 (event id 8261).",
-    "Current HLTV Top 10 from https://www.hltv.org/stats/players?event=8261 captured 2026-08-23. Public pages never fetch HLTV.",
-    "Players who leave the HLTV Top 10 stay on the ballot with their current event stats. This snapshot keeps kyousuke (13), niko (33), and n1ssim (38). Import must not delete candidates missing from a later file.",
-    "No new Top 10 identities versus the previous snapshot. Event-only players remain xkacpersky, tenzy, xfl0ud, and nqz. try is already in the pairing pool.",
-    "teamStanding is the player's current team result on the official HLTV prize distribution https://www.hltv.org/events/8261/esports-world-cup-2026#PrizeDistribution, not Liquipedia or BO3. 1st–4th were still unnamed at capture (grand final Spirit vs FUT scheduled 2026-08-23), so Spirit/FUT/FURIA/Legacy stay SEMIFINAL (四强)."
+    "Current HLTV Top 10 from https://www.hltv.org/stats/players?event=8261 captured 2026-08-24 after the grand final. Public pages never fetch HLTV.",
+    "Every Event MVP sync must recapture player stats (rank / maps / Rating 3.0) and rewrite teamStanding from the official HLTV prize distribution https://www.hltv.org/events/8261/esports-world-cup-2026#PrizeDistribution. Do not leave SEMIFINAL (四强) after 1st–4th are named.",
+    "Prize table 2026-08-24: 1st Spirit, 2nd FUT, 3rd Legacy, 4th FURIA, 5–8th Vitality/Falcons/MOUZ/G2, 9–16th includes magic, 17–32nd includes NiP/PARIVISION/MIBR/9z.",
+    "Players who leave the HLTV Top 10 stay on the ballot with their current event stats. This snapshot keeps kscerato (11), kyousuke (12), xfl0ud (28), niko (34), and n1ssim (35). Import must not delete candidates missing from a later file.",
+    "New Top 10 identities versus the previous snapshot: flamez (already in the pairing pool) and huasopeek (Event-only; 9z photo/logo already local). Other Event-only players remain xkacpersky, tenzy, xfl0ud, and nqz. try is already in the pairing pool."
   ],
   "records": [
     {
@@ -39,9 +40,9 @@
       "countryCode": "RU",
       "externalId": "21167",
       "externalSlug": "donk",
-      "maps": 13,
-      "eventRating": "1.55",
-      "teamStanding": "SEMIFINAL"
+      "maps": 17,
+      "eventRating": "1.50",
+      "teamStanding": "CHAMPION"
     },
     {
       "sourceRank": 3,
@@ -93,15 +94,15 @@
     },
     {
       "sourceRank": 6,
-      "nickname": "KSCERATO",
-      "slug": "kscerato",
-      "team": "FURIA",
-      "countryCode": "BR",
-      "externalId": "15631",
-      "externalSlug": "kscerato",
-      "maps": 13,
+      "nickname": "try",
+      "slug": "try",
+      "team": "Legacy",
+      "countryCode": "AR",
+      "externalId": "19869",
+      "externalSlug": "try",
+      "maps": 14,
       "eventRating": "1.26",
-      "teamStanding": "SEMIFINAL"
+      "teamStanding": "THIRD"
     },
     {
       "sourceRank": 7,
@@ -117,18 +118,6 @@
     },
     {
       "sourceRank": 8,
-      "nickname": "try",
-      "slug": "try",
-      "team": "Legacy",
-      "countryCode": "AR",
-      "externalId": "19869",
-      "externalSlug": "try",
-      "maps": 11,
-      "eventRating": "1.24",
-      "teamStanding": "SEMIFINAL"
-    },
-    {
-      "sourceRank": 9,
       "nickname": "nqz",
       "slug": "nqz",
       "team": "MIBR",
@@ -146,25 +135,49 @@
       "teamStanding": "GROUP"
     },
     {
-      "sourceRank": 10,
-      "nickname": "xfl0ud",
-      "slug": "xfl0ud",
-      "team": "FUT",
-      "countryCode": "TR",
-      "externalId": "19187",
-      "externalSlug": "xfl0ud",
-      "maps": 12,
+      "sourceRank": 9,
+      "nickname": "HUASOPEEK",
+      "slug": "huasopeek",
+      "team": "9z",
+      "countryCode": "CL",
+      "externalId": "22613",
+      "externalSlug": "huasopeek",
+      "maps": 7,
       "eventRating": "1.23",
-      "realName": "Yasin Koç",
-      "teamSlug": "fut",
-      "teamShortName": "FUT",
-      "teamCountryCode": "TR",
-      "teamExternalId": "13286",
-      "teamExternalSlug": "fut",
-      "teamStanding": "SEMIFINAL"
+      "realName": "Matias Ibañez Hernandez",
+      "teamSlug": "9z",
+      "teamShortName": "9z",
+      "teamCountryCode": "UY",
+      "teamExternalId": "9996",
+      "teamExternalSlug": "9z",
+      "teamStanding": "GROUP"
     },
     {
-      "sourceRank": 13,
+      "sourceRank": 10,
+      "nickname": "flameZ",
+      "slug": "flamez",
+      "team": "Vitality",
+      "countryCode": "IL",
+      "externalId": "16693",
+      "externalSlug": "flamez",
+      "maps": 11,
+      "eventRating": "1.22",
+      "teamStanding": "QUARTERFINAL"
+    },
+    {
+      "sourceRank": 11,
+      "nickname": "KSCERATO",
+      "slug": "kscerato",
+      "team": "FURIA",
+      "countryCode": "BR",
+      "externalId": "15631",
+      "externalSlug": "kscerato",
+      "maps": 16,
+      "eventRating": "1.21",
+      "teamStanding": "FOURTH"
+    },
+    {
+      "sourceRank": 12,
       "nickname": "kyousuke",
       "slug": "kyousuke",
       "team": "Falcons",
@@ -176,7 +189,25 @@
       "teamStanding": "QUARTERFINAL"
     },
     {
-      "sourceRank": 33,
+      "sourceRank": 28,
+      "nickname": "xfl0ud",
+      "slug": "xfl0ud",
+      "team": "FUT",
+      "countryCode": "TR",
+      "externalId": "19187",
+      "externalSlug": "xfl0ud",
+      "maps": 16,
+      "eventRating": "1.13",
+      "realName": "Yasin Koç",
+      "teamSlug": "fut",
+      "teamShortName": "FUT",
+      "teamCountryCode": "TR",
+      "teamExternalId": "13286",
+      "teamExternalSlug": "fut",
+      "teamStanding": "RUNNER_UP"
+    },
+    {
+      "sourceRank": 34,
       "nickname": "NiKo",
       "slug": "niko",
       "team": "Falcons",
@@ -188,16 +219,16 @@
       "teamStanding": "QUARTERFINAL"
     },
     {
-      "sourceRank": 38,
+      "sourceRank": 35,
       "nickname": "n1ssim",
       "slug": "n1ssim",
       "team": "Legacy",
       "countryCode": "BR",
       "externalId": "19686",
       "externalSlug": "n1ssim",
-      "maps": 11,
-      "eventRating": "1.10",
-      "teamStanding": "SEMIFINAL"
+      "maps": 14,
+      "eventRating": "1.11",
+      "teamStanding": "THIRD"
     }
   ]
 }

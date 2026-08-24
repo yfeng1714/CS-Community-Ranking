@@ -1419,6 +1419,18 @@ button:disabled {
   line-height: 1.7;
 }
 
+.page-hero--event h1 {
+  font-size: clamp(2.15rem, 5.5vw, 4.4rem);
+  line-height: 0.92;
+}
+
+.page-hero--event p {
+  max-width: 560px;
+  margin-top: 0.75rem;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
 .ranking-pulse {
   display: grid;
   flex: 0 0 220px;
@@ -1562,6 +1574,15 @@ button:disabled {
   padding: 0.85rem 1.5rem 1.2rem;
   color: var(--muted-strong);
   font-size: 0.82rem;
+}
+
+.event-mvp-standing--champion {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: var(--warning);
+  font-weight: 750;
+  white-space: nowrap;
 }
 
 .ranking-table-wrap {
@@ -2236,6 +2257,10 @@ button:disabled {
   .page-hero h1,
   .reading-hero h1 {
     font-size: clamp(3rem, 17vw, 5rem);
+  }
+
+  .page-hero--event h1 {
+    font-size: clamp(2rem, 11vw, 3.4rem);
   }
 
   .ranking-pulse {

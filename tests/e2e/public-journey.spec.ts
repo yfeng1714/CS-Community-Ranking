@@ -62,6 +62,7 @@ test("supports ranking search, player details, informational pages, and persiste
   await expect(page.getByRole("link", { name: "当期赛事 - EWC" })).toBeVisible();
   await page.getByRole("link", { name: "当期赛事 - EWC" }).click();
   await expect(page.getByRole("heading", { name: "Esports World Cup 2026" })).toBeVisible();
+  await expect(page.getByText("当前赛事不影响社区总榜的+1/−1")).toBeVisible();
   const mapsHeader = page.locator(".event-mvp-table th", { hasText: "Maps" });
   const standingHeader = page.locator(".event-mvp-table th", { hasText: "成绩" });
   if (testInfo.project.name === "mobile-chromium") {

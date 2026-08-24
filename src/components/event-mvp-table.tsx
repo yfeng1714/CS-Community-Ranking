@@ -146,7 +146,16 @@ export function EventMvpTable({
                   </td>
                   <td className="ranking-table__score">{player.votes.toLocaleString("zh-CN")}</td>
                   <td>{rating(player.eventRating)}</td>
-                  <td>{eventMvpStandingLabel(player.teamStanding)}</td>
+                  <td>
+                    {player.teamStanding === "CHAMPION" ? (
+                      <span className="event-mvp-standing event-mvp-standing--champion">
+                        <span aria-hidden="true">🏆</span>
+                        {eventMvpStandingLabel(player.teamStanding)}
+                      </span>
+                    ) : (
+                      eventMvpStandingLabel(player.teamStanding)
+                    )}
+                  </td>
                   <td>{player.maps ?? "—"}</td>
                   <td>
                     <span className="ranking-team">

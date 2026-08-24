@@ -46,12 +46,28 @@ BO3’s 7.x “group stage ranking” or Liquipedia. Node Playwright often gets 
 `/stats/players/`; capture from a browser that already passed the challenge, then save
 `data/reviewed-sources/hltv-ewc-2026-candidates.json`. Public pages only read Postgres.
 
-Current snapshot `capturedAt` `2026-08-23T02:12:00.000Z` has 13 ballot rows: HLTV ranks 1–10 plus
-kept dropouts `kyousuke` (13), `niko` (33), and `n1ssim` (38). Event-only identities (not in the
-pairing pool): `xkacpersky` (Ninjas in Pyjamas), `tenzy` (magic), `xfl0ud` (FUT), `nqz` (MIBR).
-`try` is already in the pairing pool. Import may create Event-only Player/Team rows, attach local
-portraits/logos, and write a STARTER roster **without** admitting them to pairing. Event-only HLTV identities are not required by `pnpm source:import-reviewed-hltv-stats`;
-that import covers pairing-pool players only.
+Current snapshot `capturedAt` `2026-08-24T00:17:00.000Z` has 15 ballot rows: HLTV ranks 1–10 plus
+kept dropouts `kscerato` (11), `kyousuke` (12), `xfl0ud` (28), `niko` (34), and `n1ssim` (35).
+Event-only identities (not in the pairing pool): `xkacpersky` (Ninjas in Pyjamas), `tenzy` (magic),
+`xfl0ud` (FUT), `nqz` (MIBR), `huasopeek` (9z). `try` and `flamez` are already in the pairing pool.
+Import may create Event-only Player/Team rows, attach local portraits/logos, and write a STARTER
+roster **without** admitting them to pairing. Event-only HLTV identities are not required by
+`pnpm source:import-reviewed-hltv-stats`; that import covers pairing-pool players only.
+
+## Recapture checklist (stats **and** 成绩)
+
+Every Event MVP sync must update **both** surfaces in the same reviewed JSON. Import already writes
+`event_rating`, `maps`, `source_rank`, **and** `team_standing`; a snapshot that only refreshes Rating
+will leave stale 成绩 on the page.
+
+1. Recapture the Rating 3.0 table (`/stats/players?event=8261`): current Top 10 plus every previous
+   ballot player who dropped, with live rank / maps / rating. Add new Top 10 identities; do not
+   delete dropouts.
+2. Recapture the official HLTV prize distribution (`#PrizeDistribution`) and rewrite `teamStanding`
+   for **every** ballot team. When 1st–4th rows name teams, promote `SEMIFINAL` to `CHAMPION` /
+   `RUNNER_UP` / `THIRD` / `FOURTH`. Do not leave 四强 after the table names winners. Do not use
+   Liquipedia or BO3.
+3. Dry-run then apply `pnpm source:import-event-mvp` through a fresh laptop SSH tunnel.
 
 ## Team standing (成绩)
 
@@ -71,9 +87,9 @@ not on pairing-pool `event_team_result`. Source is the official HLTV prize distr
 | `ROUND_OF_16`  | 十六强 | 9–16th                              | 6              |
 | `GROUP`        | 小组赛 | 17–32nd                             | 7              |
 
-Missing standing sorts last. 2026-08-23 capture: Spirit / FURIA / FUT / Legacy = 四强 (1st–4th still
-unnamed on the prize table; grand final Spirit vs FUT); Falcons / Vitality = 八强; magic = 十六强;
-NiP / PARIVISION / MIBR = 小组赛.
+Missing standing sorts last. 2026-08-24 capture (prize table named 1st–4th after Spirit beat FUT
+3–1): Spirit = 冠军; FUT = 亚军; Legacy = 季军; FURIA = 殿军; Falcons / Vitality = 八强;
+magic = 十六强; NiP / PARIVISION / MIBR / 9z = 小组赛. The 成绩 column shows a trophy next to 冠军.
 
 ## Event-only identity
 
@@ -96,13 +112,14 @@ There is **no** live plan to scrape this event hourly on Railway.
 - Direct Node and often Playwright get Cloudflare 403 on the event stats table. Public requests
   must never fetch HLTV. An hourly Railway cron would hammer HLTV and fail closed, then page
   visitors would still see the last imported snapshot.
-- Honest refresh path remains: local capture of the official table → reviewed JSON →
-  `pnpm source:import-event-mvp` through a laptop SSH tunnel. If EWC is still running, recapture
-  after meaningful match days (or once daily at most). After `endsAt` (`2026-08-23`), make the final
-  source capture, then let the application keep voting open through `2026-08-25`. Freeze the stored
-  contest after that grace window for operational clarity; voting already fails closed based on
-  the date even if the row still says `ACTIVE`. Do not add a cron until Cloudflare access, a dedicated event parser, and a
-  low-frequency schedule are explicitly approved.
+- Honest refresh path remains: local capture of the official **stats table and prize 成绩** →
+  reviewed JSON → `pnpm source:import-event-mvp` through a laptop SSH tunnel. Recapture both in the
+  same snapshot. If EWC is still running, recapture after meaningful match days (or once daily at
+  most). After `endsAt` (`2026-08-23`), the 2026-08-24 source is the post-final capture; voting stays
+  open through `2026-08-25`. Freeze the stored contest after that grace window for operational
+  clarity; voting already fails closed based on the date even if the row still says `ACTIVE`. Do not
+  add a cron until Cloudflare access, a dedicated event parser, and a low-frequency schedule are
+  explicitly approved.
 
 ## Local import (production needs a fresh SSH tunnel)
 

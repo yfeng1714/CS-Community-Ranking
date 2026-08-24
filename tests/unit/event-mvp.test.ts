@@ -15,24 +15,30 @@ describe("event MVP bundle and ordering", () => {
       JSON.parse(await readFile("data/reviewed-sources/hltv-ewc-2026-candidates.json", "utf8")),
     );
     const slugs = bundle.records.map((record) => record.slug);
-    expect(bundle.records).toHaveLength(13);
+    expect(bundle.records).toHaveLength(15);
     expect(slugs.slice(0, 10)).toEqual([
       "m0nesy",
       "donk",
       "xkacpersky",
       "zywoo",
       "tenzy",
-      "kscerato",
-      "jame",
       "try",
+      "jame",
       "nqz",
-      "xfl0ud",
+      "huasopeek",
+      "flamez",
     ]);
+    expect(slugs).toContain("kscerato");
     expect(slugs).toContain("kyousuke");
+    expect(slugs).toContain("xfl0ud");
     expect(slugs).toContain("n1ssim");
     expect(slugs).toContain("niko");
     expect(slugs).not.toContain("dumau");
     expect(bundle.records.every((record) => record.teamStanding)).toBe(true);
+    expect(bundle.records.find((record) => record.slug === "donk")?.teamStanding).toBe("CHAMPION");
+    expect(bundle.records.find((record) => record.slug === "xfl0ud")?.teamStanding).toBe(
+      "RUNNER_UP",
+    );
   });
 
   it("orders by votes, then event rating, then team standing, then maps, then nickname", () => {

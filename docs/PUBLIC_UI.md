@@ -6,7 +6,9 @@ Milestone 5 is the first complete anonymous public journey. It provides:
 
 - `/` — random Vote pair, expandable details, Skip, result, and explicit Next;
 - `/ranking` — active-Edition competition ranking, client-side search, and score sort direction;
-- `/current-event` — EWC Event MVP list (current HLTV Top 10 plus retained dropouts) with Maps, 成绩, unique ranks, and a daily +1;
+- `/current-event` — EWC Event MVP list (current HLTV Top 10 plus retained dropouts) with Maps, 成绩, unique ranks, and a daily +1.
+  The event title/subtitle are slightly smaller than Ranking’s `社区榜单` hero. Subtitle copy is
+  `每天可为一名选手投 1 票（+1）。当前赛事不影响社区总榜的+1/−1`. A 🏆 marks 冠军 in the 成绩 column.
 - `/player/{slug}` — public player identity, roster, score record, and approved stats;
 - `/about` — scoring, random-pairing, and Candidate Pool explanation, with author / GitHub chips
   (Bilibili display name 世界第一可爱睦子米). Pool/rhythm copy sits above the 01–03 rule strip.

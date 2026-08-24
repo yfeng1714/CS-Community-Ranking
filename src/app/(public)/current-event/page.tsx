@@ -43,14 +43,11 @@ export default async function CurrentEventPage() {
   return (
     <main className="public-page ranking-page" id="main-content">
       <ProductPageView event={{ eventType: "PAGE_VIEW", metadata: { page: "current-event" } }} />
-      <header className="page-hero page-hero--ranking">
+      <header className="page-hero page-hero--event">
         <div>
           <span className="eyebrow">{board.contest?.navLabel ?? "当期赛事"}</span>
           <h1>{board.contest?.name ?? "当期赛事尚未开放"}</h1>
-          <p>
-            每天可为一名选手投 1 票（+1）。这不影响社区榜的 +1/−1。排名不并列：先看票数，再看 HLTV
-            本赛事 Rating 3.0，再看战队成绩，再看 Maps。
-          </p>
+          <p>每天可为一名选手投 1 票（+1）。当前赛事不影响社区总榜的+1/−1</p>
         </div>
         <div className="ranking-pulse">
           <span>候选选手</span>

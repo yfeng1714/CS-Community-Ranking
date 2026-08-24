@@ -26,7 +26,7 @@
   advent) were admitted for closed-beta pairing tests. Review Auto and the 2026 T1 whitelist remain
   deferred. Accepted post-launch limitations and alternatives are centralized in
   `docs/CURRENT_LIMITATIONS.md`.
-- **Last updated:** 2026-08-23
+- **Last updated:** 2026-08-24
 
 ## Completed in the repository
 
@@ -40,9 +40,11 @@
   smaller than the first oversized identity heading. Portrait recapture steps for future agents are `docs/HLTV_PROFILE_PORTRAITS.md`. Event MVP
   is a separate `/current-event` daily +1 list for EWC HLTV event Rating (`docs/EVENT_MVP.md`).
   Ranks are unique; Maps and 成绩 are columns; players who leave the HLTV Top 10 stay on the ballot;
-  Event-only identity (photo/team/logo) does not admit pairing. The 2026-08-23 official recapture
-  kept the same 13 ballot names, updated maps/ratings, and left 1st–4th unnamed (Spirit vs FUT
-  grand final still pending).
+  Event-only identity (photo/team/logo) does not admit pairing. The 2026-08-24 official recapture
+  after the grand final added `huasopeek` and `flamez` (new Top 10), kept dropouts, and rewrote 成绩
+  from the named HLTV prize table (Spirit 冠军 / FUT 亚军 / Legacy 季军 / FURIA 殿军). Future event
+  syncs must always recapture stats **and** prize 成绩 together. The event page title is slightly
+  smaller than Ranking; champion 成绩 shows a trophy.
 
 - Vote cards slightly enlarge the nationality flag and Major/MVP chips. Public labels are
   **近三月 Rating 3.0** and **火力值**. If the three-month Rating is missing, an Owner-reviewed
