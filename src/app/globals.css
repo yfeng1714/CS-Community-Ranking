@@ -1959,23 +1959,6 @@ button:disabled {
   font-size: clamp(2.8rem, 6vw, 5.3rem);
 }
 
-.about-credits {
-  display: grid;
-  gap: 0.9rem;
-  padding: clamp(0.6rem, 3vw, 2rem) 0 clamp(2rem, 5vw, 4rem);
-}
-
-.about-credits p {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.7rem 1rem;
-  margin: 0;
-  color: var(--muted-strong);
-  font-size: 0.95rem;
-  font-weight: 650;
-}
-
 .about-chip {
   display: inline-flex;
   align-items: center;
@@ -2045,7 +2028,7 @@ button:disabled {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 1rem;
-  margin-top: 1rem;
+  margin-top: clamp(0.6rem, 3vw, 2rem);
 }
 
 .reading-grid section {
@@ -2053,6 +2036,24 @@ button:disabled {
   border: 1px solid var(--border);
   border-radius: 1.25rem;
   background: var(--surface);
+}
+
+.reading-grid__wide {
+  grid-column: 1 / -1;
+}
+
+.reading-grid .about-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.7rem 1rem;
+  margin-top: 1rem;
+}
+
+.reading-grid .about-chip-row span {
+  color: var(--muted-strong);
+  font-size: 0.86rem;
+  font-weight: 650;
 }
 
 .reading-grid h2 {

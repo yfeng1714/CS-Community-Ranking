@@ -65,3 +65,43 @@ the project gains a custom domain or materially broader usage.
 
 When a question changes frozen product meaning or a major technical decision, document the answer in
 an ADR and update the Implementation Plan or Product Decision Chronicle as appropriate.
+
+## Presence and daily visitors (investigated 2026-08-24, not implemented)
+
+The Owner asked whether the site can show **current online users** and **daily total users**. First-party
+data already exists, but it does not support an honest public counter without new product work.
+
+What we already store:
+
+- `anonymous_visitor.last_seen_at` updates when `VisitorIdentityService.find` runs (Ballot
+  issue/resolve and `/api/v1/events` when a visitor cookie already exists).
+- `product_event` records `PAGE_VIEW` / `RANKING_VIEW` / etc. Attributed rows have `visitor_id`;
+  a page view **without** a cookie is stored with `visitor_id` null and **does not mint** identity
+  (`docs/API.md`). Raw events are purged after 90 days.
+- Daily KPI `ballot.visitors` is the count of visitors who received a Ballot that Shanghai date
+  (`visitor_daily_usage`), not all people who opened the site.
+
+Why that is not “online now” or “daily users”:
+
+- Identity is created on the first Ballot mutation, not on a read-only visit. Ranking/About lurkers
+  never get a cookie, so they never appear in `last_seen_at` or attributed events.
+- There is no heartbeat. A cookied visitor who leaves a Vote pair open stops generating events;
+  `last_seen_at` is only as fresh as the last find/page-view. Counting `last_seen_at` in the last
+  five minutes would miss idle tabs and most first-time readers.
+- Distinct `product_event.visitor_id` for today undercounts lurkers and overcounts nothing useful
+  from null-visitor rows (those are page loads, not people).
+- Third-party analytics, raw IPs, or Cloudflare-only counts would conflict with Mainland-first
+  first-party metrics and the anonymous-cookie model.
+
+If implemented later, the honest path is still first-party and cookie-based:
+
+1. **Daily unique visitors:** mint (or reuse) the visitor cookie on the first public mutation *or*
+   a dedicated presence POST, then `COUNT(DISTINCT visitor_id)` for `Asia/Shanghai` midnight–midnight.
+   KPI Ballot visitors can stay as a separate “people who voted today” number.
+2. **Online now:** a low-frequency heartbeat (about 30–60s, keepalive/beacon) that only updates
+   `last_seen_at` for an existing visitor, then count rows with `last_seen_at` newer than a short
+   window (for example five minutes). Do not create a new identity from the heartbeat if the product
+   still wants lurkers uncookied; in that case the public number must be labeled as cookied/active
+   visitors, not “everyone on the page.”
+3. Keep this off the ranking path, rate-limit it with the existing public limiter, and never put IPs
+   or vote choices in the counter. Display is a later Owner decision; V0.1 does not show it.

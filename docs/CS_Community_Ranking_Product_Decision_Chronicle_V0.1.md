@@ -20,7 +20,7 @@
 </tbody>
 </table>
 
-**版本** V0.1.39
+**版本** V0.1.40
 
 **日期** 2026-08-24
 
@@ -101,6 +101,8 @@
 **Owner Event 决赛回采与页面微调** 2026-08-24（V0.1.38；EWC 决赛后同时回采 Rating 与奖金表成绩；Spirit 冠军 / FUT 亚军 / Legacy 季军 / FURIA 殿军；标题略缩小；冠军成绩加奖杯。后续赛事同步必须同时改选手数据和战队成绩）
 
 **Owner 默认字号** 2026-08-24（V0.1.39；公开 UI 根字号 110%，对应 Owner 在 Mac/Windows 上常用的浏览器缩放，而不是让访客自己放大）
+
+**Owner 关于页来源与在线人数调研** 2026-08-24（V0.1.40；作者/开源改成与候选池同类卡片；计票与节奏改为灵感来源与 HLTV 数据支持。当前在线/当日访客只做调研，不实现）
 
 **定位** 产品背景、决策记录与后续 Review Context
 
@@ -323,6 +325,8 @@ Owner 提供肖像保持不动。公开页面仍然不向 HLTV 发请求。同�
 512×512 PNG），本地保存后写入 `logoPath`。2026-08-19 Owner 要求把最初 70 张 Ranking-page 肖像也换成同一套选手主页 body shot，使全池头像风格一致；投票卡上无 Major 记录的选手（HLTV 未写出该字段、库中为 null）一律显示 🏆 0 Major，与明确记为 0 的选手相同；头像更清晰后投票卡照片略放大。MachineWJQ 仍为 Owner 提供肖像。公开页面仍然不向 HLTV 发请求。后续代理必须按 `docs/HLTV_PROFILE_PORTRAITS.md` 用同一套选手主页 body shot 回采，不得回到 Ranking-page 200×200。2026-08-20 Owner 要求榜单增加升序/降序开关；同分时先比胜率（无有效对决的胜率排在后面），仍平则有效对决次数多的在前；竞争名次仍只由分数决定。关于页去掉原口号标题，改为作者 Bilibili 与项目 GitHub 的筹码链接。同日 Owner 解冻有限 Event MVP：导航增加「当期赛事 - EWC」，路径 `/current-event`，计分是每位访客每个上海自然日给一名选手 +1，不改常驻榜的真随机与 +1/−1。名单取官方 HLTV `stats/players?event=8261` Rating 3.0 前 15；同分先比社区票再比赛事 Rating。步骤见 `docs/EVENT_MVP.md`。2026-08-21 Owner 把名单收成 Rating 前 10，表上增加 Maps，排名不再并列（票数 → Rating → 更多 Maps）。不在配对池的选手（xKacpersky、tenzy）补了本地肖像/战队/队标，仍不进 pairing。HLTV 赛事数据没有做成 Railway 小时级同步：现有 cron 不含 HLTV，直连仍 403，公开请求不得拉 HLTV。
 
 2026-08-23 Owner 要求手工回采当期赛事 HLTV Top 10（公开页仍不请求 HLTV）。同日关于页去掉「这不是客观真理」CTA 与页脚「社区意见，不是客观真理。」「规则与候选池」；「候选池」「计票与节奏」移到 01–03 之上。
+
+2026-08-24 Owner 把关于页作者/开源放进与候选池相同的卡片，并用「灵感来源 / 数据支持」替换「计票与节奏」（明日方舟六星干员强度投票箱、弗一把、HLTV）。同日调研公开「当前在线」与「当日访客」：现有 `product_event` 与 `anonymous_visitor.last_seen_at` 不够支撑诚实计数，未实现。结论见 `docs/OPEN_QUESTIONS.md`。
 
 <table>
 <colgroup>

@@ -81,7 +81,21 @@ test("supports ranking search, player details, informational pages, and persiste
   await page.getByRole("link", { name: "关于" }).click();
   await expect(page.getByRole("link", { name: "世界第一可爱睦子米" })).toBeVisible();
   await expect(page.getByRole("link", { name: "GitHub" })).toBeVisible();
+  await expect(page.getByText("作者与开源")).toBeVisible();
   await expect(page.getByText("候选池")).toBeVisible();
+  await expect(page.getByText("计票与节奏")).toHaveCount(0);
+  await expect(page.getByRole("link", { name: "明日方舟六星干员强度投票箱" })).toHaveAttribute(
+    "href",
+    "https://vote.ltsc.vip/",
+  );
+  await expect(page.getByRole("link", { name: "弗一把" })).toHaveAttribute(
+    "href",
+    "https://shnlfriberg.online/",
+  );
+  await expect(page.getByRole("link", { name: "HLTV" })).toHaveAttribute(
+    "href",
+    "https://www.hltv.org/",
+  );
   await expect(page.locator(".rule-strip span").first()).toHaveText("01");
   await expect(page.getByText("这不是客观真理")).toHaveCount(0);
   await expect(page.getByText("社区意见，不是客观真理。")).toHaveCount(0);

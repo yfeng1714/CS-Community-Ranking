@@ -1919,6 +1919,11 @@ The product must answer these without a third-party analytics dependency:
 - Parser/data freshness.
 - Vote API latency and error rate.
 
+Public “online now” / “daily unique visitors” counters were investigated on 2026-08-24 and are
+**not** in V0.1. Stored `product_event` and `anonymous_visitor.last_seen_at` do not support an
+honest headcount without a heartbeat and a decision to mint identity on read-only visits. See
+`docs/OPEN_QUESTIONS.md`. Do not add a third-party analytics script for this.
+
 Raw product events may be retained for an initial 90-day window, then aggregated or purged. Votes and ranking history have a separate retention policy and are preserved.
 
 The same cleanup framework nulls expired daily IP-risk keys while retaining the

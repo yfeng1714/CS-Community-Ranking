@@ -11,8 +11,10 @@ Milestone 5 is the first complete anonymous public journey. It provides:
   `每天可为一名选手投 1 票（+1）。当前赛事不影响社区总榜的+1/−1`. A 🏆 marks 冠军 in the 成绩 column.
 - `/player/{slug}` — public player identity, roster, score record, and approved stats;
 - `/about` — scoring, random-pairing, and Candidate Pool explanation, with author / GitHub chips
-  (Bilibili display name 世界第一可爱睦子米). Pool/rhythm copy sits above the 01–03 rule strip.
-  The public layout has no site footer tagline or “规则与候选池” link.
+  (Bilibili display name 世界第一可爱睦子米) in the same card style as 候选池. Inspiration chips
+  link to 明日方舟六星干员强度投票箱 and 弗一把; 数据支持 links to HLTV. Pool and inspiration
+  cards sit above the 01–03 rule strip. The public layout has no site footer tagline or
+  “规则与候选池” link.
 
 The top navigation contains Vote, Ranking, **当期赛事 - EWC**, and About. Player pages are reached through player links.
 The small community beta has no dedicated

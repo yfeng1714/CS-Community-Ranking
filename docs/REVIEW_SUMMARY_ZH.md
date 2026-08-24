@@ -299,7 +299,7 @@ Liquipedia、PandaScore、GRID 等只保留 Provider 扩展接口，不作为 V0
 
 ## About / Privacy
 
-简短解释规则、候选池、反作弊计票和数据来源。
+简短解释规则、候选池、灵感来源和 HLTV 数据支持。作者与开源使用与候选池相同的卡片。
 
 ---
 
