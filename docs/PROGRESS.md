@@ -44,7 +44,8 @@
   after the grand final added `huasopeek` and `flamez` (new Top 10), kept dropouts, and rewrote 成绩
   from the named HLTV prize table (Spirit 冠军 / FUT 亚军 / Legacy 季军 / FURIA 殿军). Future event
   syncs must always recapture stats **and** prize 成绩 together. The event page title is slightly
-  smaller than Ranking; champion 成绩 shows a trophy.
+  smaller than Ranking; champion 成绩 shows a trophy. Public pages use a 110% root type scale so
+  Mac/Windows browsers do not need a manual zoom for comfortable reading.
 
 - Vote cards slightly enlarge the nationality flag and Major/MVP chips. Public labels are
   **近三月 Rating 3.0** and **火力值**. If the three-month Rating is missing, an Owner-reviewed

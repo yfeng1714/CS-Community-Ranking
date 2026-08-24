@@ -107,6 +107,10 @@ First visit is always light mode, independent of operating-system preference. Th
 button switches to dark mode and stores only the selected theme in local storage. It does not affect
 visitor identity or voting.
 
+The root type scale is `html { font-size: 110% }` so rem-based type, spacing, and chrome match the
+Owner’s usual 110% browser zoom on Mac and Windows, without shrinking the layout viewport. Visitors
+can still zoom further. Header and ranking search/sort heights use rem so they grow with that scale.
+
 The interface has visible focus styles, semantic headings/tables/buttons, a skip-to-content link,
 ARIA live/focus handling for results, keyboard shortcuts, meaningful image fallbacks, reduced-motion
 support, responsive desktop/mobile layouts, and explicit loading, empty, error, missing, and stale
