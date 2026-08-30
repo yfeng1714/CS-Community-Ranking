@@ -1697,6 +1697,10 @@ Keep it short and direct:
 - Candidate Pool rules link;
 - data-source attribution link.
 
+The current public `/about` (Owner 2026-08-30) is two matching cards — 作者与开源 and
+灵感与数据 — with 作者 / 本项目已开源 / 灵感来源 / 数据支持 as labels beside chips. It has no
+Candidate Pool essay. See `docs/PUBLIC_UI.md`.
+
 For the small community beta, the Owner has deferred a dedicated privacy/contact page. The
 data-minimizing implementation remains unchanged: secure anonymous cookies, no raw-IP persistence,
 bounded product events, and retention cleanup. Reconsider a public policy/contact route when the

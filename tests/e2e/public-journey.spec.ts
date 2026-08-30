@@ -82,7 +82,10 @@ test("supports ranking search, player details, informational pages, and persiste
   await expect(page.getByRole("link", { name: "世界第一可爱睦子米" })).toBeVisible();
   await expect(page.getByRole("link", { name: "GitHub" })).toBeVisible();
   await expect(page.getByText("作者与开源")).toBeVisible();
-  await expect(page.getByText("候选池")).toBeVisible();
+  await expect(page.getByText("灵感与数据")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "作者", exact: true })).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: "灵感来源", exact: true })).toHaveCount(0);
+  await expect(page.getByText("先决定谁有资格出现，不替社区决定谁更强。")).toHaveCount(0);
   await expect(page.getByText("计票与节奏")).toHaveCount(0);
   await expect(page.getByRole("link", { name: "明日方舟六星干员强度投票箱" })).toHaveAttribute(
     "href",

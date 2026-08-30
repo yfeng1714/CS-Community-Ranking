@@ -4,7 +4,7 @@ import { BilibiliIcon, GitHubIcon } from "@/components/icons";
 
 export const metadata: Metadata = {
   title: "关于与规则",
-  description: "CS 野榜的计分、随机配对、候选池、灵感来源和数据支持。",
+  description: "CS 野榜的计分、随机配对、灵感来源和数据支持。",
 };
 
 export default function AboutPage() {
@@ -16,8 +16,8 @@ export default function AboutPage() {
       <div className="reading-grid">
         <section>
           <span className="eyebrow">作者与开源</span>
-          <h2>作者</h2>
           <p className="about-chip-row">
+            <span>作者</span>
             <a
               className="about-chip"
               href="https://space.bilibili.com/346373856"
@@ -42,20 +42,9 @@ export default function AboutPage() {
           </p>
         </section>
         <section>
-          <span className="eyebrow">候选池</span>
-          <h2>先决定谁有资格出现，不替社区决定谁更强。</h2>
-          <p>
-            每个自然年是一届独立 Edition。Core、Review Auto、Review Manual 和极少数 Special
-            只说明入池理由，不会改变随机概率或票的权重。
-          </p>
-          <p>
-            选手通常在当届保留到年底；退役或长期不活跃时可以停止进入新对决，但历史排名不会删除。
-          </p>
-        </section>
-        <section className="reading-grid__wide">
           <span className="eyebrow">灵感与数据</span>
-          <h2>灵感来源</h2>
           <p className="about-chip-row">
+            <span>灵感来源</span>
             <a
               className="about-chip"
               href="https://vote.ltsc.vip/"

@@ -26,16 +26,17 @@
   advent) were admitted for closed-beta pairing tests. Review Auto and the 2026 T1 whitelist remain
   deferred. Accepted post-launch limitations and alternatives are centralized in
   `docs/CURRENT_LIMITATIONS.md`.
-- **Last updated:** 2026-08-24
+- **Last updated:** 2026-08-30
 
 ## Completed in the repository
 
 - Ranking lists high scores first by default and can switch to low scores first. Equal scores still
   share a competition rank; display order inside a tie is win rate (defined rates before none), then
   valid PK count, then nickname. About replaces the old slogan header with author and GitHub
-  chips (Bilibili display name 世界第一可爱睦子米) in the same card style as 候选池. About no
-  longer has the “客观真理” CTA or a public footer tagline/“规则与候选池” link; 候选池 and
-  灵感与数据 sit above the 01–03 strip. Nationality flags are local SVGs so Windows
+  chips (Bilibili display name 世界第一可爱睦子米). About no longer has the Candidate Pool
+  essay, the “客观真理” CTA, or a public footer tagline/“规则与候选池” link; 作者与开源 and
+  灵感与数据 sit above the 01–03 strip, and 作者 / 灵感来源 are labels beside chips rather than
+  card titles. Nationality flags are local SVGs so Windows
   Chrome/Edge show BR/CN as flags rather than letters. The player-profile nickname is slightly
   smaller than the first oversized identity heading. Portrait recapture steps for future agents are `docs/HLTV_PROFILE_PORTRAITS.md`. Event MVP
   is a separate `/current-event` daily +1 list for EWC HLTV event Rating (`docs/EVENT_MVP.md`).

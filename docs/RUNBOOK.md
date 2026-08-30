@@ -67,9 +67,10 @@ Public-data smoke checks:
   score order switch.
 - `/player/sample-ace` shows identity, roster, ranking, and deliberate `—`/missing-data states.
 - `/about` explains random pairing and scoring without defining what “better” means. Author and
-  GitHub sit in a card like 候选池. Inspiration/data chips link to 明日方舟六星干员强度投票箱,
-  弗一把, and HLTV. It has no “客观真理” CTA box. The public layout has no footer tagline or
-  “规则与候选池” link.
+  GitHub sit in 作者与开源; 灵感与数据 sits beside it (not a Candidate Pool essay). 作者 and
+  灵感来源 are labels beside chips, same as 本项目已开源. Inspiration/data chips link to
+  明日方舟六星干员强度投票箱, 弗一把, and HLTV. It has no “客观真理” CTA box. The public layout
+  has no footer tagline or “规则与候选池” link.
 - Direct `/privacy` requests return
   the ordinary Next.js not-found response for the small community beta.
 

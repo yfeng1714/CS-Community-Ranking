@@ -2038,16 +2038,16 @@ button:disabled {
   background: var(--surface);
 }
 
-.reading-grid__wide {
-  grid-column: 1 / -1;
-}
-
 .reading-grid .about-chip-row {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 0.7rem 1rem;
   margin-top: 1rem;
+}
+
+.reading-grid .eyebrow + .about-chip-row {
+  margin-top: 1.5rem;
 }
 
 .reading-grid .about-chip-row span {
