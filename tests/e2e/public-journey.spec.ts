@@ -42,6 +42,8 @@ test("supports ranking search, player details, informational pages, and persiste
 }, testInfo) => {
   await page.goto("/ranking");
   await expect(page.getByRole("heading", { name: "社区榜单", exact: true })).toBeVisible();
+  await expect(page.getByText("入榜选手")).toBeVisible();
+  await expect(page.getByText("总计票数")).toBeVisible();
   await expect(page.locator("tbody tr")).toHaveCount(4);
   await expect(page.getByRole("button", { name: "高分在前" })).toHaveAttribute(
     "aria-pressed",

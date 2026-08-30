@@ -1,4 +1,4 @@
-import { and, desc, eq, inArray, isNull } from "drizzle-orm";
+import { and, count, desc, eq, inArray, isNull, ne } from "drizzle-orm";
 
 import {
   editions,
@@ -8,6 +8,7 @@ import {
   poolPlayerEntries,
   rosterMemberships,
   teams,
+  votes,
 } from "../../db/schema/index.ts";
 import type { AppDatabase } from "../database.ts";
 import { peakHltvTop20 } from "../external-data/top20.ts";
@@ -145,13 +146,25 @@ async function loadRankingRows(database: AppDatabase, editionId: bigint) {
     .where(eq(poolPlayerEntries.editionId, editionId));
 }
 
+async function countValidCommunityVotes(database: AppDatabase, editionId: bigint): Promise<number> {
+  const [row] = await database
+    .select({ value: count() })
+    .from(votes)
+    .where(and(eq(votes.editionId, editionId), eq(votes.status, "VALID"), ne(votes.choice, "SKIP")));
+  return toPublicCount(BigInt(row?.value ?? 0), "valid community votes");
+}
+
 export async function getPublicRanking(database: AppDatabase): Promise<PublicRanking> {
   const edition = await getActivePublicEdition(database);
   if (!edition) {
-    return { edition: null, players: [], updatedAt: null };
+    return { edition: null, players: [], updatedAt: null, validVoteCount: 0 };
   }
 
-  const players = presentRankingRows(await loadRankingRows(database, edition.id));
+  const [rows, validVoteCount] = await Promise.all([
+    loadRankingRows(database, edition.id),
+    countValidCommunityVotes(database, edition.id),
+  ]);
+  const players = presentRankingRows(rows);
   const updatedAt = players.reduce<string | null>(
     (latest, player) => (!latest || player.updatedAt > latest ? player.updatedAt : latest),
     null,
@@ -161,6 +174,7 @@ export async function getPublicRanking(database: AppDatabase): Promise<PublicRan
     edition: { code: edition.code, name: edition.name, status: edition.status },
     players,
     updatedAt,
+    validVoteCount,
   };
 }
 

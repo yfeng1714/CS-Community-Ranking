@@ -1437,6 +1437,13 @@ button:disabled {
   line-height: 1.6;
 }
 
+.ranking-pulses {
+  display: flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
 .ranking-pulse {
   display: grid;
   flex: 0 0 220px;
@@ -1445,6 +1452,11 @@ button:disabled {
   border-radius: 1.2rem;
   background: var(--surface);
   box-shadow: var(--shadow-soft);
+}
+
+.ranking-pulses .ranking-pulse {
+  flex: 1 1 10.5rem;
+  min-width: 9.5rem;
 }
 
 .ranking-pulse span,
@@ -2270,8 +2282,13 @@ button:disabled {
     font-size: clamp(2rem, 11vw, 3.4rem);
   }
 
+  .ranking-pulses,
   .ranking-pulse {
     width: 100%;
+  }
+
+  .ranking-pulses .ranking-pulse {
+    width: auto;
   }
 
   .ranking-board__toolbar {

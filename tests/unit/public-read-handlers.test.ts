@@ -8,6 +8,7 @@ const ranking: PublicRanking = {
   edition: { code: "2026", name: "2026 Edition", status: "ACTIVE" },
   players: [],
   updatedAt: null,
+  validVoteCount: 0,
 };
 
 const player: PublicPlayerProfile = {

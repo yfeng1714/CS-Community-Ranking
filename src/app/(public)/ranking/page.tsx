@@ -40,10 +40,17 @@ export default async function RankingPage() {
             每张有效票，胜者 +1，败者 -1。相同分数共享同一排名；同分先比胜率，再比有效对决次数。
           </p>
         </div>
-        <div className="ranking-pulse">
-          <span>入榜选手</span>
-          <strong>{ranking.players.length}</strong>
-          <small>更新：{formatDate(ranking.updatedAt)}</small>
+        <div className="ranking-pulses">
+          <div className="ranking-pulse">
+            <span>入榜选手</span>
+            <strong>{ranking.players.length.toLocaleString("zh-CN")}</strong>
+            <small>更新：{formatDate(ranking.updatedAt)}</small>
+          </div>
+          <div className="ranking-pulse">
+            <span>总计票数</span>
+            <strong>{ranking.validVoteCount.toLocaleString("zh-CN")}</strong>
+            <small>计入社区榜的有效票</small>
+          </div>
         </div>
       </header>
 

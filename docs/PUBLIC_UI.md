@@ -77,7 +77,9 @@ if the Skip response was lost, the same-choice resolve retry is idempotent.
 Ranking uses score descending and competition ranks (`1, 1, 3`). Equal-score display order is
 win rate descending (`null` last), then counted decisions descending, then nickname ascending;
 this ordering never changes the shared rank. The Ranking toolbar can reverse the whole list
-(低分在前) without rewriting those ranks.
+(低分在前) without rewriting those ranks. The hero shows **入榜选手** beside **总计票数**, which
+is the active Edition’s `VALID` non-Skip community votes (`LEFT`/`RIGHT` only). Event MVP +1,
+`THROTTLED`, `SUSPICIOUS`, `REVOKED`, and Skip rows are excluded.
 Desktop exposes the complete record. Mobile prioritizes rank, player, and score; the Player page
 contains the expanded record.
 

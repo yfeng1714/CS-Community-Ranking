@@ -28,6 +28,7 @@ export interface PublicRanking {
   edition: PublicEdition | null;
   players: PublicRankingPlayer[];
   updatedAt: string | null;
+  validVoteCount: number;
 }
 
 export interface PublicPlayerProfile {

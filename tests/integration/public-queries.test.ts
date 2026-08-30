@@ -121,6 +121,7 @@ describe("Milestone 5 public queries", () => {
     const ranking = await getPublicRanking(database);
 
     expect(ranking.edition?.code).toBe("2026");
+    expect(ranking.validVoteCount).toBe(0);
     expect(ranking.players.map(({ nickname, rank, score }) => ({ nickname, rank, score }))).toEqual(
       [
         { nickname: "Ace", rank: 1, score: 2 },

@@ -52,8 +52,15 @@ for (const header of requiredHeaders) {
 }
 if (page.headers.has("x-powered-by")) throw new Error("x-powered-by must not be exposed");
 
-const rankingBody = (await ranking.json()) as { players?: unknown };
+const rankingBody = (await ranking.json()) as { players?: unknown; validVoteCount?: unknown };
 if (!Array.isArray(rankingBody.players)) throw new Error("Ranking payload has no players array");
+if (
+  typeof rankingBody.validVoteCount !== "number" ||
+  !Number.isSafeInteger(rankingBody.validVoteCount) ||
+  rankingBody.validVoteCount < 0
+) {
+  throw new Error("Ranking payload has no valid vote count");
+}
 
 let mutation = "not requested";
 if (args["skip-vote"]) {
