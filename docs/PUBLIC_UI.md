@@ -6,9 +6,12 @@ Milestone 5 is the first complete anonymous public journey. It provides:
 
 - `/` — random Vote pair, expandable details, Skip, result, and explicit Next;
 - `/ranking` — active-Edition competition ranking, client-side search, and score sort direction;
-- `/current-event` — EWC Event MVP list (current HLTV Top 10 plus retained dropouts) with Maps, 成绩, unique ranks, and a daily +1.
+- `/current-event` — BLAST Open Porto 2026 (BLAST OPEN S2) Event MVP list (current HLTV Top 10 plus
+  retained dropouts) with Maps, 成绩, unique ranks, and a daily +1. Nav label **当期赛事 - BLAST S2**.
   The event title/subtitle are slightly smaller than Ranking’s `社区榜单` hero. Subtitle copy is
   `每天可为一名选手投 1 票（+1）。当前赛事不影响社区总榜的+1/−1`. A 🏆 marks 冠军 in the 成绩 column.
+- `/past-events` — archived Event MVP contests as a Ranking-style clickable list; `/past-events/{slug}`
+  is the same detailed table with voting closed. EWC lives here.
 - `/player/{slug}` — public player identity, roster, score record, and approved stats;
 - `/about` — scoring and random-pairing rules, plus two matching cards above the 01–03 strip:
   作者与开源 (作者 / 本项目已开源 as labels beside chips; Bilibili display name
@@ -16,7 +19,7 @@ Milestone 5 is the first complete anonymous public journey. It provides:
   link to 明日方舟六星干员强度投票箱, 弗一把, and HLTV). The public layout has no Candidate Pool
   essay, site footer tagline, or “规则与候选池” link.
 
-The top navigation contains Vote, Ranking, **当期赛事 - EWC**, and About. Player pages are reached through player links.
+The top navigation contains Vote, Ranking, **当期赛事 - BLAST S2**, **往期赛事**, and About. Player pages are reached through player links.
 The small community beta has no dedicated
 privacy/contact route; the Owner will reconsider one when the project has a custom domain or
 materially broader use. `CS 野榜` is a working identity pending the final name/domain/visual decision.

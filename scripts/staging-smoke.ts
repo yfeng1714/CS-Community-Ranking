@@ -42,6 +42,9 @@ const live = await expectResponse("/api/health/live");
 const ready = await expectResponse("/api/health/ready");
 const page = await expectResponse("/");
 await expectResponse("/ranking");
+await expectResponse("/current-event");
+await expectResponse("/past-events");
+await expectResponse("/about");
 const ranking = await expectResponse("/api/v1/rankings");
 
 for (const header of requiredHeaders) {

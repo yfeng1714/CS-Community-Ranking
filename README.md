@@ -9,7 +9,7 @@ Milestones 0–10 and Owner Review Gates E/F are complete. The Owner approved th
 on 2026-08-22 after the in-place cutover completed on 2026-08-15. The real `2026 Beta Edition` is
 ACTIVE on Railway, and the pairing Pool now contains 14 Core Teams/70 starters, four Review Manual
 Teams/20 starters, and two retired Specials (92 enabled Players total). Current Player stats,
-portraits, Team logos, the reviewed EWC Event MVP beta, production smoke, and live integrity checks
+portraits, Team logos, live BLAST S2 Event MVP plus archived EWC, production smoke, and live integrity checks
 are in place. Event MVP voting automatically remains open through two Shanghai calendar days after
 an event ends. A current production logical dump has also passed an exact 32-table scratch restore
 and has a verified private R2 copy. A dedicated Railway cron now creates and verifies a private R2
@@ -112,7 +112,7 @@ If port `5432` is already occupied, set `POSTGRES_PORT` to another host port in
 | `pnpm assets:import-hltv-portraits -- --capture <file> --bundles <dir,...>` | Identity-check and import reviewed local HLTV portrait bundles |
 | `pnpm assets:capture-hltv-profile-portraits` | Local Playwright capture of official HLTV player-profile body shots; see `docs/HLTV_PROFILE_PORTRAITS.md` |
 | `pnpm assets:import-hltv-profile-portraits` | Copy captured profile portraits into `public/images`, registry, and manifests |
-| `pnpm source:import-event-mvp` | Dry-run or apply the reviewed EWC Event MVP snapshot |
+| `pnpm source:import-event-mvp` | Dry-run or apply a reviewed Event MVP snapshot (default: current BLAST S2; pass `--file` for EWC archive) |
 | `pnpm assets:capture-hltv-team-logos` | Local Playwright capture of official HLTV team-page logos for the four Review Manual teams |
 | `pnpm assets:import-hltv-team-logos` | Copy captured team logos into `public/images`, registry, and the Review Manual manifest |
 | `pnpm teams:apply-logos -- --actor owner --apply --confirm-team-logos` | Write manifest `logoPath` values onto existing Team rows |

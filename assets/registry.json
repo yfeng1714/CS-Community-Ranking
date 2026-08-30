@@ -472,6 +472,18 @@
     {
       "assetPath": "/images/teams/mibr.webp",
       "permission": "OWNER_ACCEPTED_PENDING_RIGHTS"
+    },
+    {
+      "assetPath": "/images/players/jl.webp",
+      "permission": "OWNER_ACCEPTED_PENDING_RIGHTS"
+    },
+    {
+      "assetPath": "/images/players/cptkurtka023.webp",
+      "permission": "OWNER_ACCEPTED_PENDING_RIGHTS"
+    },
+    {
+      "assetPath": "/images/teams/inner-circle.webp",
+      "permission": "OWNER_ACCEPTED_PENDING_RIGHTS"
     }
   ]
 }

@@ -104,7 +104,8 @@ same additive field. It contains only a local public asset path, never the sourc
 
 ### `POST /api/v1/event-mvp/votes`
 
-Casts today's Event MVP +1 for the JSON body `{ "playerSlug": "..." }`. Same mutation guard and
+Casts today's Event MVP +1 for the JSON body `{ "playerSlug": "..." }` on the **ACTIVE** contest
+(currently BLAST Open S2). Same mutation guard and
 visitor cookie as Ballot resolve. One non-revoked vote per visitor per Shanghai calendar day. Success
 is `200` with `{ alreadyVoted, playerSlug, status }`. `409 EVENT_MVP_ALREADY_VOTED` if the visitor
 already voted for a different player today; `404 EVENT_MVP_PLAYER_NOT_FOUND` if the slug is not on

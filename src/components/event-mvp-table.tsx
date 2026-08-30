@@ -20,10 +20,12 @@ function rating(value: number): string {
 }
 
 export function EventMvpTable({
+  candidateLabel,
   players,
   todayVoteSlug,
   votingOpen,
 }: {
+  candidateLabel: string;
   players: EventMvpPlayer[];
   todayVoteSlug: string | null;
   votingOpen: boolean;
@@ -91,7 +93,7 @@ export function EventMvpTable({
     <section aria-labelledby="event-mvp-table-title" className="ranking-board">
       <div className="ranking-board__toolbar">
         <div>
-          <span className="eyebrow">EWC 候选</span>
+          <span className="eyebrow">{candidateLabel}</span>
           <h2 id="event-mvp-table-title">社区赛事 MVP</h2>
         </div>
         <label className="ranking-search">

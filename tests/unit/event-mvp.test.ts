@@ -41,6 +41,30 @@ describe("event MVP bundle and ordering", () => {
     );
   });
 
+  it("accepts the reviewed BLAST Open S2 candidate snapshot", async () => {
+    const blast = validateEventMvpBundle(
+      JSON.parse(
+        await readFile("data/reviewed-sources/hltv-blast-open-s2-2026-candidates.json", "utf8"),
+      ),
+    );
+    expect(blast.contest.slug).toBe("blast-open-s2-2026");
+    expect(blast.records).toHaveLength(10);
+    expect(blast.records.map((record) => record.slug)).toEqual([
+      "donk",
+      "m0nesy",
+      "kscerato",
+      "spinx",
+      "xelex",
+      "yekindar",
+      "xertion",
+      "starry",
+      "cptkurtka023",
+      "jl",
+    ]);
+    expect(blast.records.find((record) => record.slug === "starry")?.teamStanding).toBe("GROUP");
+    expect(blast.records.find((record) => record.slug === "jl")?.teamSlug).toBe("vitality");
+  });
+
   it("orders by votes, then event rating, then team standing, then maps, then nickname", () => {
     const rows = [
       { eventRating: 1.27, maps: 10, nickname: "Bolt", teamStanding: "GROUP" as const, votes: 2 },

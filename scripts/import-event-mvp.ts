@@ -3,7 +3,7 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { parseArgs } from "node:util";
 
-import { and, eq, gte, isNull, sql } from "drizzle-orm";
+import { and, eq, gte, isNull, ne, sql } from "drizzle-orm";
 
 import {
   eventMvpCandidates,
@@ -19,6 +19,7 @@ import { portraitAssetPath } from "../src/domain/assets/hltv-profile-portraits.t
 import type { AppDatabase } from "../src/domain/database.ts";
 import { DomainError } from "../src/domain/error.ts";
 import {
+  CURRENT_EVENT_MVP_SLUG,
   EVENT_MVP_BUNDLE_FILE,
   validateEventMvpBundle,
   type EventMvpBundle,
@@ -97,6 +98,16 @@ async function importEventMvpBundle(
   bundle: EventMvpBundle,
   actorAdminUserId: bigint,
 ) {
+  const isCurrent = bundle.contest.slug === CURRENT_EVENT_MVP_SLUG;
+  const status = isCurrent ? "ACTIVE" : "FROZEN";
+  if (isCurrent) {
+    await database
+      .update(eventMvpContests)
+      .set({ status: "FROZEN", updatedAt: new Date() })
+      .where(
+        and(eq(eventMvpContests.status, "ACTIVE"), ne(eventMvpContests.slug, bundle.contest.slug)),
+      );
+  }
   const [contest] = await database
     .insert(eventMvpContests)
     .values({
@@ -108,7 +119,7 @@ async function importEventMvpBundle(
       slug: bundle.contest.slug,
       sourceUrl: bundle.contest.sourceUrl,
       startsAt: bundle.contest.startsAt,
-      status: "ACTIVE",
+      status,
     })
     .onConflictDoUpdate({
       target: eventMvpContests.slug,
@@ -120,7 +131,7 @@ async function importEventMvpBundle(
         navLabel: bundle.contest.navLabel,
         sourceUrl: bundle.contest.sourceUrl,
         startsAt: bundle.contest.startsAt,
-        status: "ACTIVE",
+        status,
         updatedAt: new Date(),
       },
     })

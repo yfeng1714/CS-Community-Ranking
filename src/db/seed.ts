@@ -1,4 +1,4 @@
-import { and, eq, isNull } from "drizzle-orm";
+import { and, eq, isNull, ne } from "drizzle-orm";
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
 
 import * as schema from "./schema/index.ts";
@@ -254,11 +254,11 @@ export async function seedDevelopmentData(database: Database): Promise<void> {
         endsAt: "2026-08-23",
         hltvEventId: "8261",
         name: "Esports World Cup 2026",
-        navLabel: "当期赛事 - EWC",
+        navLabel: "EWC 2026",
         slug: "ewc-2026",
         sourceUrl: "https://www.hltv.org/stats/players?event=8261",
         startsAt: "2026-08-12",
-        status: "ACTIVE",
+        status: "FROZEN",
       })
       .onConflictDoUpdate({
         target: schema.eventMvpContests.slug,
@@ -266,43 +266,82 @@ export async function seedDevelopmentData(database: Database): Promise<void> {
           capturedAt: new Date("2026-08-21T01:10:00.000Z"),
           endsAt: "2026-08-23",
           name: "Esports World Cup 2026",
-          navLabel: "当期赛事 - EWC",
+          navLabel: "EWC 2026",
           sourceUrl: "https://www.hltv.org/stats/players?event=8261",
           startsAt: "2026-08-12",
-          status: "ACTIVE",
+          status: "FROZEN",
           updatedAt: new Date(),
         },
       })
       .returning({ id: schema.eventMvpContests.id });
     const contest = requireRow(contestRow, "event mvp contest");
+    await transaction
+      .update(schema.eventMvpContests)
+      .set({ status: "FROZEN", updatedAt: new Date() })
+      .where(
+        and(
+          eq(schema.eventMvpContests.status, "ACTIVE"),
+          ne(schema.eventMvpContests.slug, "blast-open-s2-2026"),
+        ),
+      );
+    const [blastRow] = await transaction
+      .insert(schema.eventMvpContests)
+      .values({
+        capturedAt: new Date("2026-08-30T04:13:00.000Z"),
+        endsAt: "2026-09-06",
+        hltvEventId: "8249",
+        name: "BLAST Open Porto 2026",
+        navLabel: "当期赛事 - BLAST S2",
+        slug: "blast-open-s2-2026",
+        sourceUrl: "https://www.hltv.org/stats/players?event=8249",
+        startsAt: "2026-08-26",
+        status: "ACTIVE",
+      })
+      .onConflictDoUpdate({
+        target: schema.eventMvpContests.slug,
+        set: {
+          capturedAt: new Date("2026-08-30T04:13:00.000Z"),
+          endsAt: "2026-09-06",
+          name: "BLAST Open Porto 2026",
+          navLabel: "当期赛事 - BLAST S2",
+          sourceUrl: "https://www.hltv.org/stats/players?event=8249",
+          startsAt: "2026-08-26",
+          status: "ACTIVE",
+          updatedAt: new Date(),
+        },
+      })
+      .returning({ id: schema.eventMvpContests.id });
+    const blast = requireRow(blastRow, "blast event mvp contest");
     const sampleRatings = [
       { maps: 8, rating: "1.65", slug: "sample-ace", standing: "SEMIFINAL" },
       { maps: 7, rating: "1.40", slug: "sample-bolt", standing: "QUARTERFINAL" },
       { maps: 6, rating: "1.21", slug: "sample-clutch", standing: "ROUND_OF_16" },
       { maps: 5, rating: "1.05", slug: "sample-drift", standing: "GROUP" },
     ] as const;
-    for (const [index, entry] of sampleRatings.entries()) {
-      const playerId = requireRow(playerIds.get(entry.slug), `player ${entry.slug}`);
-      await transaction
-        .insert(schema.eventMvpCandidates)
-        .values({
-          contestId: contest.id,
-          eventRating: entry.rating,
-          maps: entry.maps,
-          playerId,
-          sourceRank: index + 1,
-          teamStanding: entry.standing,
-        })
-        .onConflictDoUpdate({
-          target: [schema.eventMvpCandidates.contestId, schema.eventMvpCandidates.playerId],
-          set: {
+    for (const contestId of [contest.id, blast.id]) {
+      for (const [index, entry] of sampleRatings.entries()) {
+        const playerId = requireRow(playerIds.get(entry.slug), `player ${entry.slug}`);
+        await transaction
+          .insert(schema.eventMvpCandidates)
+          .values({
+            contestId,
             eventRating: entry.rating,
             maps: entry.maps,
+            playerId,
             sourceRank: index + 1,
             teamStanding: entry.standing,
-            updatedAt: new Date(),
-          },
-        });
+          })
+          .onConflictDoUpdate({
+            target: [schema.eventMvpCandidates.contestId, schema.eventMvpCandidates.playerId],
+            set: {
+              eventRating: entry.rating,
+              maps: entry.maps,
+              sourceRank: index + 1,
+              teamStanding: entry.standing,
+              updatedAt: new Date(),
+            },
+          });
+      }
     }
   });
 }

@@ -8,7 +8,8 @@ import { ThemeToggle } from "./theme-toggle";
 const links = [
   { href: "/", label: "投票" },
   { href: "/ranking", label: "榜单" },
-  { event: true, href: "/current-event", label: "当期赛事 - EWC" },
+  { event: true, href: "/current-event", label: "当期赛事 - BLAST S2" },
+  { href: "/past-events", label: "往期赛事" },
   { href: "/about", label: "关于" },
 ] as const;
 

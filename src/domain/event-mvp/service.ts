@@ -1,4 +1,4 @@
-import { and, count, eq, isNull, sql } from "drizzle-orm";
+import { and, count, desc, eq, inArray, isNull, ne, sql } from "drizzle-orm";
 
 import {
   anonymousVisitors,
@@ -32,6 +32,18 @@ export interface EventMvpPlayer {
   teamShortName: string | null;
   teamStanding: EventMvpStanding | null;
   votes: number;
+}
+
+export interface PastEventSummary {
+  candidateCount: number;
+  endsAt: string;
+  mvpNickname: string | null;
+  mvpPhotoUrl: string | null;
+  mvpSlug: string | null;
+  mvpVotes: number;
+  name: string;
+  slug: string;
+  startsAt: string;
 }
 
 export interface EventMvpBoard {
@@ -206,6 +218,83 @@ export class EventMvpService {
     };
   }
 
+  async listPastEvents(): Promise<PastEventSummary[]> {
+    const contests = await this.database
+      .select()
+      .from(eventMvpContests)
+      .where(ne(eventMvpContests.slug, CURRENT_EVENT_MVP_SLUG))
+      .orderBy(desc(eventMvpContests.endsAt), desc(eventMvpContests.startsAt));
+    if (contests.length === 0) return [];
+
+    const contestIds = contests.map((contest) => contest.id);
+    const rows = await this.database
+      .select({
+        contestId: eventMvpCandidates.contestId,
+        eventRating: eventMvpCandidates.eventRating,
+        maps: eventMvpCandidates.maps,
+        nickname: players.nickname,
+        photoUrl: players.photoPath,
+        playerId: players.id,
+        slug: players.slug,
+        teamStanding: eventMvpCandidates.teamStanding,
+      })
+      .from(eventMvpCandidates)
+      .innerJoin(players, eq(players.id, eventMvpCandidates.playerId))
+      .where(inArray(eventMvpCandidates.contestId, contestIds));
+
+    const voteRows = await this.database
+      .select({
+        contestId: eventMvpVotes.contestId,
+        playerId: eventMvpVotes.playerId,
+        votes: count(),
+      })
+      .from(eventMvpVotes)
+      .where(and(inArray(eventMvpVotes.contestId, contestIds), eq(eventMvpVotes.status, "VALID")))
+      .groupBy(eventMvpVotes.contestId, eventMvpVotes.playerId);
+    const votesByContestPlayer = new Map(
+      voteRows.map((row) => {
+        const votes = Number(row.votes);
+        if (!Number.isSafeInteger(votes) || votes < 0) {
+          throw new DomainError("EVENT_MVP_VOTE_COUNT_INVALID", "Event MVP vote count is invalid");
+        }
+        return [`${row.contestId}:${row.playerId}`, votes] as const;
+      }),
+    );
+
+    return contests.map((contest) => {
+      const ranked = withUniqueEventMvpRanks(
+        rows
+          .filter((row) => row.contestId === contest.id)
+          .map((row) => ({
+            eventRating: requireDomainValue(
+              toPublicMetric(row.eventRating),
+              "EVENT_MVP_RATING_INVALID",
+              `Event rating for ${row.slug} is not numeric`,
+            ),
+            maps: row.maps,
+            nickname: row.nickname,
+            photoUrl: row.photoUrl,
+            slug: row.slug,
+            teamStanding: isEventMvpStanding(row.teamStanding) ? row.teamStanding : null,
+            votes: votesByContestPlayer.get(`${contest.id}:${row.playerId}`) ?? 0,
+          }))
+          .sort(compareEventMvpPlayers),
+      );
+      const mvp = ranked[0];
+      return {
+        candidateCount: ranked.length,
+        endsAt: contest.endsAt,
+        mvpNickname: mvp?.nickname ?? null,
+        mvpPhotoUrl: mvp?.photoUrl ?? null,
+        mvpSlug: mvp?.slug ?? null,
+        mvpVotes: mvp?.votes ?? 0,
+        name: contest.name,
+        slug: contest.slug,
+        startsAt: contest.startsAt,
+      };
+    });
+  }
+
   async vote(input: {
     ipRiskKey: Buffer | null;
     playerSlug: string;
@@ -217,12 +306,7 @@ export class EventMvpService {
       const [contest] = await transaction
         .select()
         .from(eventMvpContests)
-        .where(
-          and(
-            eq(eventMvpContests.slug, CURRENT_EVENT_MVP_SLUG),
-            eq(eventMvpContests.status, "ACTIVE"),
-          ),
-        )
+        .where(eq(eventMvpContests.status, "ACTIVE"))
         .for("share")
         .limit(1);
       if (!contest) {

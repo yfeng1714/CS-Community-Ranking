@@ -39,7 +39,8 @@
   card titles. Nationality flags are local SVGs so Windows
   Chrome/Edge show BR/CN as flags rather than letters. The player-profile nickname is slightly
   smaller than the first oversized identity heading. Portrait recapture steps for future agents are `docs/HLTV_PROFILE_PORTRAITS.md`. Event MVP
-  is a separate `/current-event` daily +1 list for EWC HLTV event Rating (`docs/EVENT_MVP.md`).
+  is a separate `/current-event` daily +1 list for the live HLTV event (`docs/EVENT_MVP.md`);
+  EWC is archived at `/past-events`. The live nav label is **当期赛事 - BLAST S2**.
   Ranks are unique; Maps and 成绩 are columns; players who leave the HLTV Top 10 stay on the ballot;
   Event-only identity (photo/team/logo) does not admit pairing. The 2026-08-24 official recapture
   after the grand final added `huasopeek` and `flamez` (new Top 10), kept dropouts, and rewrote 成绩
@@ -386,7 +387,7 @@ Milestone 10 and Gate F are complete. The Owner approved public V0.1 launch on 2
 frozen implementation was committed, pushed, deployed, smoke-tested, integrity-checked, and backed
 up through the GitHub-connected Railway job. Continue normal post-launch operation: review failed
 jobs and spend alerts, confirm the daily R2 backup, monitor integrity/KPI/resource evidence, and
-freeze the final EWC Event MVP source after its voting window closes.
+freeze the live BLAST Event MVP source after its voting window closes. EWC is already archived.
 
 Review Auto, the 2026 T1 whitelist, a permitted low-frequency HLTV adapter, future roster/stat/asset
 refreshes, final Event MVP capture/freeze, broader branding, privacy/contact, a custom domain, and

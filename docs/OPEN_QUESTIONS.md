@@ -47,9 +47,10 @@ are not missing M9 inputs.
   career Rating; retired Specials remain outside automatic recapture. Direct `/stats/players/`
   automation is still disabled because of HTTP 403, so future refreshes use the bounded local
   browser-capture and reviewed-import workflow.
-- The EWC Event MVP beta closes voting automatically after a two-day Shanghai-calendar grace
-  period. EWC ends on 2026-08-23, accepts votes through 2026-08-25, and closes at the start of
-  2026-08-26 Shanghai time.
+- The EWC Event MVP beta closed after the two-day Shanghai-calendar grace
+  period (`endsAt` 2026-08-23, last vote date 2026-08-25). It is archived at `/past-events`.
+  BLAST Open Porto 2026 (`endsAt` 2026-09-06) is the live contest and accepts votes through
+  2026-09-08 Shanghai time.
 - The current production dump/restore drill, private R2 copy, and Railway-hosted daily cadence are
   complete. The dedicated backup job no longer depends on the Owner's Mac; monthly restore drills
   and the local fallback remain operator procedures.

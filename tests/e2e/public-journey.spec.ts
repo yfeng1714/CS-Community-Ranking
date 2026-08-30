@@ -59,9 +59,10 @@ test("supports ranking search, player details, informational pages, and persiste
   await expect(page.getByRole("heading", { name: "Ace" })).toBeVisible();
   await expect(page.getByText("数据待同步", { exact: true })).toBeVisible();
 
-  await expect(page.getByRole("link", { name: "当期赛事 - EWC" })).toBeVisible();
-  await page.getByRole("link", { name: "当期赛事 - EWC" }).click();
-  await expect(page.getByRole("heading", { name: "Esports World Cup 2026" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "当期赛事 - BLAST S2" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "往期赛事" })).toBeVisible();
+  await page.getByRole("link", { name: "当期赛事 - BLAST S2" }).click();
+  await expect(page.getByRole("heading", { name: "BLAST Open Porto 2026" })).toBeVisible();
   await expect(page.getByText("当前赛事不影响社区总榜的+1/−1")).toBeVisible();
   const mapsHeader = page.locator(".event-mvp-table th", { hasText: "Maps" });
   const standingHeader = page.locator(".event-mvp-table th", { hasText: "成绩" });
@@ -77,6 +78,12 @@ test("supports ranking search, player details, informational pages, and persiste
   ).toHaveText("#1");
   await page.getByRole("button", { name: "投票 +1" }).first().click();
   await expect(page.getByRole("button", { name: "今日已投" })).toBeVisible();
+
+  await page.getByRole("link", { name: "往期赛事", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "往期赛事", exact: true })).toBeVisible();
+  await page.getByRole("link", { name: /Esports World Cup 2026/ }).click();
+  await expect(page.getByRole("heading", { name: "Esports World Cup 2026" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "投票已结束" }).first()).toBeVisible();
 
   await page.getByRole("link", { name: "关于" }).click();
   await expect(page.getByRole("link", { name: "世界第一可爱睦子米" })).toBeVisible();
