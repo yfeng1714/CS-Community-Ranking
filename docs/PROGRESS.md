@@ -26,7 +26,7 @@
   advent) were admitted for closed-beta pairing tests. Review Auto and the 2026 T1 whitelist remain
   deferred. Accepted post-launch limitations and alternatives are centralized in
   `docs/CURRENT_LIMITATIONS.md`.
-- **Last updated:** 2026-08-30
+- **Last updated:** 2026-08-31
 
 ## Completed in the repository
 
@@ -48,7 +48,8 @@
   syncs must always recapture stats **and** prize 成绩 together. The event page title is slightly
   smaller than Ranking; champion 成绩 shows a trophy. Public pages use a 110% root type scale so
   Mac/Windows browsers do not need a manual zoom for comfortable reading. Ranking shows **总计票数**
-  beside **入榜选手**: the active Edition’s counted `VALID` non-Skip community votes.
+  beside **入榜选手**: the active Edition’s counted `VALID` non-Skip community votes. About shows the
+  current product version as a footnote under 01–03 (`V0.1.44`).
 
 - Vote cards slightly enlarge the nationality flag and Major/MVP chips. Public labels are
   **近三月 Rating 3.0** and **火力值**. If the three-month Rating is missing, an Owner-reviewed

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+
 import { ProductPageView } from "@/components/analytics/page-view";
 import { BilibiliIcon, GitHubIcon } from "@/components/icons";
+import { APP_VERSION } from "@/domain/app-version";
 
 export const metadata: Metadata = {
   title: "关于与规则",
@@ -93,6 +95,8 @@ export default function AboutPage() {
           <p>Skip 不改变分数，但会消耗这次随机机会并留下可审计记录。</p>
         </article>
       </section>
+
+      <p className="about-version">{APP_VERSION}</p>
     </main>
   );
 }

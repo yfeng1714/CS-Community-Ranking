@@ -2000,6 +2000,13 @@ button:disabled {
   height: 1.15rem;
 }
 
+.about-version {
+  margin: 1.15rem 0 0;
+  color: var(--muted);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+}
+
 .rule-strip {
   display: grid;
   grid-template-columns: repeat(3, 1fr);

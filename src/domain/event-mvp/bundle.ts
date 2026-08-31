@@ -7,7 +7,8 @@ export const CURRENT_EVENT_MVP_SLUG = "blast-open-s2-2026";
 export const CURRENT_EVENT_MVP_PATH = "/current-event";
 export const PAST_EVENTS_PATH = "/past-events";
 export const EVENT_MVP_TOP_N = 10;
-export const EVENT_MVP_BUNDLE_FILE = "data/reviewed-sources/hltv-blast-open-s2-2026-candidates.json";
+export const EVENT_MVP_BUNDLE_FILE =
+  "data/reviewed-sources/hltv-blast-open-s2-2026-candidates.json";
 export const ARCHIVED_EVENT_MVP_BUNDLE_FILE = "data/reviewed-sources/hltv-ewc-2026-candidates.json";
 
 const slug = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);

@@ -109,6 +109,7 @@ test("supports ranking search, player details, informational pages, and persiste
     "https://www.hltv.org/",
   );
   await expect(page.locator(".rule-strip span").first()).toHaveText("01");
+  await expect(page.locator(".about-version")).toHaveText("V0.1.44");
   await expect(page.getByText("这不是客观真理")).toHaveCount(0);
   await expect(page.getByText("社区意见，不是客观真理。")).toHaveCount(0);
   await expect(page.getByRole("link", { name: "规则与候选池" })).toHaveCount(0);

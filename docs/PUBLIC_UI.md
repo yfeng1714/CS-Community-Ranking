@@ -16,8 +16,9 @@ Milestone 5 is the first complete anonymous public journey. It provides:
 - `/about` — scoring and random-pairing rules, plus two matching cards above the 01–03 strip:
   作者与开源 (作者 / 本项目已开源 as labels beside chips; Bilibili display name
   世界第一可爱睦子米) and 灵感与数据 (灵感来源 / 数据支持 as the same kind of labels; chips
-  link to 明日方舟六星干员强度投票箱, 弗一把, and HLTV). The public layout has no Candidate Pool
-  essay, site footer tagline, or “规则与候选池” link.
+  link to 明日方舟六星干员强度投票箱, 弗一把, and HLTV). A quiet footnote under the 01–03 strip
+  shows the current product version (`V0.1.44`, from `src/domain/app-version.ts`). The public layout
+  has no Candidate Pool essay, site footer tagline, or “规则与候选池” link.
 
 The top navigation contains Vote, Ranking, **当期赛事 - BLAST S2**, **往期赛事**, and About. Player pages are reached through player links.
 The small community beta has no dedicated

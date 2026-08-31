@@ -96,7 +96,7 @@ Why that is not “online now” or “daily users”:
 
 If implemented later, the honest path is still first-party and cookie-based:
 
-1. **Daily unique visitors:** mint (or reuse) the visitor cookie on the first public mutation *or*
+1. **Daily unique visitors:** mint (or reuse) the visitor cookie on the first public mutation _or_
    a dedicated presence POST, then `COUNT(DISTINCT visitor_id)` for `Asia/Shanghai` midnight–midnight.
    KPI Ballot visitors can stay as a separate “people who voted today” number.
 2. **Online now:** a low-frequency heartbeat (about 30–60s, keepalive/beacon) that only updates

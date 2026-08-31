@@ -150,7 +150,9 @@ async function countValidCommunityVotes(database: AppDatabase, editionId: bigint
   const [row] = await database
     .select({ value: count() })
     .from(votes)
-    .where(and(eq(votes.editionId, editionId), eq(votes.status, "VALID"), ne(votes.choice, "SKIP")));
+    .where(
+      and(eq(votes.editionId, editionId), eq(votes.status, "VALID"), ne(votes.choice, "SKIP")),
+    );
   return toPublicCount(BigInt(row?.value ?? 0), "valid community votes");
 }
 
