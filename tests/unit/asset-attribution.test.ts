@@ -10,16 +10,23 @@ describe("local asset attribution", () => {
     const manifest = await loadAssetRegistry();
 
     expect(manifest.version).toBe(1);
-    expect(manifest.assets).toHaveLength(118);
+    expect(manifest.assets).toHaveLength(121);
     expect(
       manifest.assets.filter((asset) => asset.assetPath.startsWith("/images/teams/")),
-    ).toHaveLength(22);
+    ).toHaveLength(23);
     expect(
       manifest.assets.filter((asset) => asset.assetPath.startsWith("/images/players/")),
-    ).toHaveLength(96);
+    ).toHaveLength(98);
     expect(
       manifest.assets.filter((asset) => asset.permission === "OWNER_ACCEPTED_PENDING_RIGHTS"),
-    ).toHaveLength(117);
+    ).toHaveLength(120);
+    expect(manifest.assets.map((asset) => asset.assetPath)).toEqual(
+      expect.arrayContaining([
+        "/images/players/cptkurtka023.webp",
+        "/images/players/jl.webp",
+        "/images/teams/inner-circle.webp",
+      ]),
+    );
     expect(
       manifest.assets.find((asset) => asset.assetPath === "/images/players/MachineWJQ.webp"),
     ).toEqual({
