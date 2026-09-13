@@ -1,17 +1,18 @@
 # CS Community Ranking / CS 野榜
 
-Community-generated rankings for professional Counter-Strike players, built from
-simple pairwise votes.
+Community-powered rankings for professional Counter-Strike players, built from
+anonymous head-to-head votes, with a separate Event MVP ballot.
 
 ## Status
 
 Milestones 0–10 and Owner Review Gates E/F are complete. The Owner approved the public V0.1 launch
 on 2026-08-22 after the in-place cutover completed on 2026-08-15. The real `2026 Beta Edition` is
 ACTIVE on Railway, and the pairing Pool now contains 14 Core Teams/70 starters, four Review Manual
-Teams/20 starters, and two retired Specials (92 enabled Players total). Current Player stats,
-portraits, Team logos, live BLAST S2 Event MVP plus archived EWC, production smoke, and live integrity checks
-are in place. Event MVP voting automatically remains open through two Shanghai calendar days after
-an event ends. A current production logical dump has also passed an exact 32-table scratch restore
+Teams/20 starters, and two retired Specials (92 enabled Players total). Reviewed Player stats,
+portraits, Team logos, Event MVP pages for BLAST S2 and archived EWC, production smoke, and live
+integrity checks are in place. Event MVP voting automatically remains open through two Shanghai
+calendar days after an event ends; the BLAST S2 voting window closed on 2026-09-09 Shanghai time.
+A production logical dump has also passed an exact 32-table scratch restore
 and has a verified private R2 copy. A dedicated Railway cron now creates and verifies a private R2
 copy every day without depending on the Owner's Mac; the local command remains the manual recovery
 fallback. The runtime foundation, full V0.1 database schema, data-driven
@@ -70,11 +71,14 @@ Health endpoints:
 - [http://localhost:3000/api/health/live](http://localhost:3000/api/health/live)
 - [http://localhost:3000/api/health/ready](http://localhost:3000/api/health/ready)
 
-External sync jobs are deliberately separate from web requests. See `docs/DATA_SOURCES.md` before
-enabling HLTV or running `job:sync-vrs`, `job:sync-hltv`, or `job:build-pool-draft`.
+External sync jobs are deliberately separate from web requests. Automated HLTV retrieval remains
+disabled because provider requests return HTTP 403; reviewed local capture/import is the current
+fallback. See `docs/DATA_SOURCES.md` before running `job:sync-vrs`, `job:sync-hltv`, or
+`job:build-pool-draft`.
 
 The fictional seed activates its Edition only when no other Edition is active. Use `/` to vote,
 `/ranking` to search the current community ranking, and a ranking-row link to open a Player page.
+Event MVP lives at `/current-event`, with previous events at `/past-events`.
 The interface defaults to light mode and provides a persisted theme toggle. A true manual reload of
 the Vote page records the still-open Ballot as Skip and immediately shows the next Ballot; ordinary
 renders and API retries preserve it.
@@ -112,7 +116,7 @@ If port `5432` is already occupied, set `POSTGRES_PORT` to another host port in
 | `pnpm assets:import-hltv-portraits -- --capture <file> --bundles <dir,...>` | Identity-check and import reviewed local HLTV portrait bundles |
 | `pnpm assets:capture-hltv-profile-portraits` | Local Playwright capture of official HLTV player-profile body shots; see `docs/HLTV_PROFILE_PORTRAITS.md` |
 | `pnpm assets:import-hltv-profile-portraits` | Copy captured profile portraits into `public/images`, registry, and manifests |
-| `pnpm source:import-event-mvp` | Dry-run or apply a reviewed Event MVP snapshot (default: current BLAST S2; pass `--file` for EWC archive) |
+| `pnpm source:import-event-mvp` | Dry-run or apply a reviewed Event MVP snapshot (default: BLAST S2 bundle; pass `--file` for EWC archive) |
 | `pnpm assets:capture-hltv-team-logos` | Local Playwright capture of official HLTV team-page logos for the four Review Manual teams |
 | `pnpm assets:import-hltv-team-logos` | Copy captured team logos into `public/images`, registry, and the Review Manual manifest |
 | `pnpm teams:apply-logos -- --actor owner --apply --confirm-team-logos` | Write manifest `logoPath` values onto existing Team rows |
@@ -152,6 +156,7 @@ If port `5432` is already occupied, set `POSTGRES_PORT` to another host port in
 - [`docs/VOTE_RESOLUTION.md`](docs/VOTE_RESOLUTION.md) — exactly-once resolution, ranking, revocation, and integrity checks
 - [`docs/PUBLIC_UI.md`](docs/PUBLIC_UI.md) — public pages, display rules, reload orchestration, and accessibility
 - [`docs/IMAGE_SOURCING.md`](docs/IMAGE_SOURCING.md) — image source priorities, provisional-rights status, and local import workflow
+- [`docs/EVENT_MVP.md`](docs/EVENT_MVP.md) — current and archived Event MVP pages, voting cutoff, and reviewed import workflow
 - [`docs/HLTV_PROFILE_PORTRAITS.md`](docs/HLTV_PROFILE_PORTRAITS.md) — exact HLTV player-profile body-shot capture/import so portraits stay uniform
 - [`docs/ADMIN_CONSOLE.md`](docs/ADMIN_CONSOLE.md) — Admin sessions, mutation/audit workflows, and pending-review safety
 - [`docs/SECURITY.md`](docs/SECURITY.md) — security baseline
