@@ -1,5 +1,10 @@
 # Local image attribution
 
+The root MIT license covers the project's original source code and documentation,
+not the Player portraits, Team logos, or other third-party media in this
+directory or `public/images`. Their rights are tracked separately as described
+below. Vendored flags have their own notice in `public/flags/LICENSE`.
+
 Player photos and Team logos are copied into `public/images/players` or `public/images/teams` and
 must have one matching entry in tracked `registry.json` and one detailed source record in local
 `attribution.json`. Runtime hotlinking remains prohibited.

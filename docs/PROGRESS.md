@@ -1,5 +1,12 @@
 # Implementation Progress
 
+## Public availability update — 2026-09-24
+
+The public beta has ended. The Owner intentionally took the website offline
+while collecting feedback; there is no live public demo at present. The
+milestone and launch records below describe the earlier beta implementation
+and historical production checks, not current website availability.
+
 ## Current position
 
 - **Milestone:** 10 — Candidate Pool V1, closed beta, and launch (**complete; Gate F approved and

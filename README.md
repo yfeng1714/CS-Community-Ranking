@@ -1,55 +1,39 @@
-# CS Community Ranking / CS 野榜
+# CS 野榜 / CS Community Ranking
 
-Community-powered rankings for professional Counter-Strike players, built from
-anonymous head-to-head votes, with a separate Event MVP ballot.
+English · [简体中文](README.zh-CN.md)
 
-## Status
+> Two players. Pick one. Or skip.
 
-Milestones 0–10 and Owner Review Gates E/F are complete. The Owner approved the public V0.1 launch
-on 2026-08-22 after the in-place cutover completed on 2026-08-15. The real `2026 Beta Edition` is
-ACTIVE on Railway, and the pairing Pool now contains 14 Core Teams/70 starters, four Review Manual
-Teams/20 starters, and two retired Specials (92 enabled Players total). Reviewed Player stats,
-portraits, Team logos, Event MVP pages for BLAST S2 and archived EWC, production smoke, and live
-integrity checks are in place. Event MVP voting automatically remains open through two Shanghai
-calendar days after an event ends; the BLAST S2 voting window closed on 2026-09-09 Shanghai time.
-A production logical dump has also passed an exact 32-table scratch restore
-and has a verified private R2 copy. A dedicated Railway cron now creates and verifies a private R2
-copy every day without depending on the Owner's Mac; the local command remains the manual recovery
-fallback. The runtime foundation, full V0.1 database schema, data-driven
-Candidate Pool, secure anonymous visitor identity, atomic random Ballot issuance, exactly-once
-Vote/ranking transactions, and the responsive public Vote/Ranking/Player vertical slice are in
-place, together with the authenticated Admin Console, fixture-tested VRS/HLTV adapters, external
-snapshot approval, freshness, and review-only Candidate Pool drafts. Gate D remains the governing
-import boundary: no provider result becomes a live Pool change automatically. M8 adds daily
-privacy-preserving network risk keys, observe/enforce risk collection, first-party analytics/KPIs,
-integrity and retention jobs, bounded public API protection, and site-wide security headers. The
-production image, migration-gated Railway topology, scheduled-service configs, smoke/load tooling,
-and backup/restore verification are versioned. The direct Railway beta is live at
-`https://yebangtv.up.railway.app`; `docs/LAUNCH_GATE_F.md` is the governing M10 sign-off record.
+CS 野榜 is a community vote on professional Counter-Strike players. Each choice
+helps shape a season ranking. The result reflects this community's votes, not
+an objective measure of player skill.
 
-Players may carry an optional validated HLTV profile URL for human reference. It is managed through
-the audited Admin flow and shown on the public Player page, while external provider identities
-remain separate synchronization records.
+## What you can do
 
-The small community beta intentionally has no public privacy/contact page. Existing data-minimizing
-cookie, IP-risk-key, and retention safeguards remain in place; a dedicated policy/contact surface
-will be reconsidered when the product has a custom domain or materially broader use. Real images may
-be imported for the beta under explicit Owner acceptance. Minimal path/review state is tracked while
-exact source records remain Git/Docker-ignored local Dev/Ops evidence. See `docs/IMAGE_SOURCING.md`.
+- **Vote:** See a random pair of eligible players, choose one, or skip. A
+  counted vote gives the chosen player **+1** and the other player **−1**;
+  skipping changes neither score. Refreshing an unresolved pair counts as a
+  skip and presents another pair.
+- **Explore the ranking:** Search players, compare their community scores, and
+  open player pages for team, win/loss/skip totals, and available stats.
+- **Vote for Event MVP:** A separate event ballot lets each visitor support one
+  player per Shanghai calendar day with **+1**. It does not change the season
+  ranking. Past events remain available as read-only results.
 
-## Technology
+Voting is anonymous and does not require an account. The candidate pool is
+curated from reviewed roster and ranking evidence; new players are not admitted
+automatically. Player stats and event data come from reviewed snapshots and may
+be older than the latest source pages.
 
-- Node.js 24 LTS and TypeScript
-- Next.js App Router and React
-- PostgreSQL and Drizzle ORM
-- Tailwind CSS
-- Vitest and Playwright
+## Availability
 
-Exact runtime and dependency versions are pinned in the repository.
+As of 2026-09-24, the public beta has ended and the website is intentionally
+offline while feedback is collected. There is no live public demo at present.
+The project can still be run locally.
 
-## Getting started
+## Run locally
 
-Prerequisites: Node.js `24.14.0`, pnpm `11.16.0`, and Docker.
+You need Node.js `24.14.0`, pnpm `11.16.0`, and Docker.
 
 ```bash
 pnpm install --frozen-lockfile
@@ -60,120 +44,47 @@ pnpm db:seed
 pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+Open [http://localhost:3000](http://localhost:3000). The local seed uses
+fictional development data; it does not copy the former beta's database or
+Event MVP snapshots. To create a local Admin, run
+`pnpm admin:create -- --username=owner`; the CLI prompts for a password.
 
-Create an Admin with `pnpm admin:create -- --username=owner`, then open
-[http://localhost:3000/admin](http://localhost:3000/admin). The CLI prompts for a hidden password;
-there is no web registration.
+If port `5432` is occupied, set `POSTGRES_PORT` and the matching
+`DATABASE_URL` in `.env`. Stop the database with
+`docker compose stop postgres`. On macOS, quit Docker Desktop when it is no
+longer needed to release its CPU and memory.
 
-Health endpoints:
+## Project documentation
 
-- [http://localhost:3000/api/health/live](http://localhost:3000/api/health/live)
-- [http://localhost:3000/api/health/ready](http://localhost:3000/api/health/ready)
+- [Product Decision Chronicle](docs/CS_Community_Ranking_Product_Decision_Chronicle_V0.1.md)
+  explains the product choices.
+- [Public UI](docs/PUBLIC_UI.md), [Candidate Pool](docs/CANDIDATE_POOL.md),
+  and [Event MVP](docs/EVENT_MVP.md) describe the visible features and rules.
+- [Implementation progress](docs/PROGRESS.md) and
+  [current limitations](docs/CURRENT_LIMITATIONS.md) record the beta's
+  implementation and known gaps.
+- [Runbook](docs/RUNBOOK.md) covers setup, data imports, operations, and
+  backups. Available commands are defined in [package.json](package.json).
+- [Image sourcing](docs/IMAGE_SOURCING.md) records the asset review process.
 
-External sync jobs are deliberately separate from web requests. Automated HLTV retrieval remains
-disabled because provider requests return HTTP 403; reviewed local capture/import is the current
-fallback. See `docs/DATA_SOURCES.md` before running `job:sync-vrs`, `job:sync-hltv`, or
-`job:build-pool-draft`.
+When documents disagree about product intent, use the Product Decision
+Chronicle and record important changes.
 
-The fictional seed activates its Edition only when no other Edition is active. Use `/` to vote,
-`/ranking` to search the current community ranking, and a ranking-row link to open a Player page.
-Event MVP lives at `/current-event`, with previous events at `/past-events`.
-The interface defaults to light mode and provides a persisted theme toggle. A true manual reload of
-the Vote page records the still-open Ballot as Skip and immediately shows the next Ballot; ordinary
-renders and API retries preserve it.
+## Technical summary
 
-Stop the local database with `docker compose stop postgres`. On macOS, quit Docker Desktop afterward
-when no other project needs it so the Docker VM releases its CPU and memory. The named PostgreSQL
-volume remains available for the next start.
+The app uses Next.js, React, TypeScript, PostgreSQL, Drizzle ORM, and Tailwind
+CSS. Vitest and Playwright cover tests. Automated HLTV retrieval remains
+disabled after HTTP 403 responses; reviewed local capture and import are the
+current fallback. The historical public launch and Railway backup setup are
+documented in [Gate F](docs/LAUNCH_GATE_F.md) and the
+[runbook](docs/RUNBOOK.md).
 
-If port `5432` is already occupied, set `POSTGRES_PORT` to another host port in
-`.env` and use the same port in `DATABASE_URL`.
+## License and assets
 
-## Commands
-
-| Command | Purpose |
-| --- | --- |
-| `pnpm dev` | Start the development server |
-| `pnpm build` | Create a production build |
-| `pnpm start` | Start the production server |
-| `pnpm lint` | Run ESLint |
-| `pnpm format:check` | Check formatting |
-| `pnpm typecheck` | Check TypeScript |
-| `pnpm test:unit` | Run unit tests |
-| `pnpm test:integration` | Run integration tests |
-| `pnpm test:e2e` | Run end-to-end tests |
-| `pnpm db:migrate` | Apply committed PostgreSQL migrations |
-| `pnpm db:seed` | Load repeatable fictional development data |
-| `pnpm db:check` | Check the Drizzle migration journal |
-| `pnpm admin:create -- --username=<name>` | Create an active Admin with a hidden Argon2id password prompt |
-| `pnpm pool:add-player -- ...` | Create and admit an individual Special player |
-| `pnpm pool:disable-player -- ...` | Disable future pairing without deleting history |
-| `pnpm score:check -- --edition <code>` | Verify zero-sum and Vote/ranking/aggregate integrity |
-| `pnpm report:kpi -- --edition <code> [--date YYYY-MM-DD]` | Generate the first-party daily KPI report |
-| `pnpm launch:check -- --edition <code>` | Produce the fail-closed, read-only pre-activation readiness report |
-| `pnpm canonical:bootstrap [-- ...]` | Validate the DRAFT canonical manifest; explicit approved flags are required to apply it to an empty DB |
-| `pnpm assets:import-hltv-portraits -- --capture <file> --bundles <dir,...>` | Identity-check and import reviewed local HLTV portrait bundles |
-| `pnpm assets:capture-hltv-profile-portraits` | Local Playwright capture of official HLTV player-profile body shots; see `docs/HLTV_PROFILE_PORTRAITS.md` |
-| `pnpm assets:import-hltv-profile-portraits` | Copy captured profile portraits into `public/images`, registry, and manifests |
-| `pnpm source:import-event-mvp` | Dry-run or apply a reviewed Event MVP snapshot (default: BLAST S2 bundle; pass `--file` for EWC archive) |
-| `pnpm assets:capture-hltv-team-logos` | Local Playwright capture of official HLTV team-page logos for the four Review Manual teams |
-| `pnpm assets:import-hltv-team-logos` | Copy captured team logos into `public/images`, registry, and the Review Manual manifest |
-| `pnpm teams:apply-logos -- --actor owner --apply --confirm-team-logos` | Write manifest `logoPath` values onto existing Team rows |
-| `pnpm source:approve-ranking -- --snapshot <id> [...]` | Review an immutable ranking snapshot; explicit actor, reason, apply, and confirmation inputs are required to approve it |
-| `pnpm source:import-reviewed-hltv [-- ...]` | Validate the checksum-locked reviewed HLTV top-12 fallback; guarded apply records and approves it when live retrieval is blocked |
-| `pnpm source:capture-reviewed-hltv-stats [-- ...]` | Local Playwright capture of official HLTV player profiles into the ignored reviewed-stats JSON; see `docs/HLTV_PLAYER_STATS.md` |
-| `pnpm source:preview-reviewed-hltv-stats [-- ...]` | Write a local HTML table of a captured reviewed-stats JSON for Owner spot-check |
-| `pnpm job:build-pool-draft -- --edition <code>` | Build review-only Pool proposals from the latest approved HLTV/VRS snapshots |
-| `pnpm pending:review -- --id <id>[,<id>...] [...]` | Preview exact pending proposals; guarded apply reviews each through the ordinary audited Gate D service |
-| `pnpm job:integrity-check -- --edition <code>` | Check ranking, Pool, Vote, aggregate, and risk-key integrity |
-| `pnpm job:expire-ballots [-- --batch <count>]` | Batch-expire overdue open Ballots |
-| `pnpm job:retention-cleanup` | Apply configured analytics and IP-risk-key retention |
-| `pnpm ops:smoke -- --origin <https-origin>` | Verify staging health, public routes, payloads, and security headers |
-| `pnpm ops:load -- --origin <https-origin> --confirm-staging` | Run a bounded, SKIP-only staging concurrency scenario |
-| `pnpm backup:create -- --output <file.dump>` | Create a portable PostgreSQL dump plus row-count manifest |
-| `pnpm backup:manifest -- --dump <file.dump>` | Generate or refresh a size/checksum/all-table manifest for an existing dump |
-| `pnpm backup:compare -- --dump <file.dump>` | Compare a restored database with every count in the dump's manifest |
-| `pnpm backup:verify -- --dump <file.dump>` | Restore into a separate empty DB and verify all application-table counts, size, and checksum |
-| `pnpm backup:upload-r2 -- --dump <file.dump> --prefix <prefix>` | Idempotently upload and verify a dump/manifest pair in the private R2 bucket |
-| `pnpm backup:production` | Create a Railway-side production dump, retain its 32-table manifest locally, and verify their private R2 copies |
-| `pnpm backup:railway` | Run the Railway cron entry point locally with explicit database/R2 variables; production runs it from the dedicated backup image |
-
-## Documentation
-
-- [`docs/CS_Community_Ranking_Product_Decision_Chronicle_V0.1.md`](docs/CS_Community_Ranking_Product_Decision_Chronicle_V0.1.md) — product intent and decision history
-- [`docs/IMPLEMENTATION_PLAN_V0.1.md`](docs/IMPLEMENTATION_PLAN_V0.1.md) — milestone implementation plan
-- [`docs/PROGRESS.md`](docs/PROGRESS.md) — current implementation status
-- [`docs/CURRENT_LIMITATIONS.md`](docs/CURRENT_LIMITATIONS.md) — candid register of current drawbacks, accepted tradeoffs, and available alternatives
-- [`docs/IMPLEMENTATION_REVIEW_2026-08-12.md`](docs/IMPLEMENTATION_REVIEW_2026-08-12.md) — independent Gate D findings, corrections, and verification evidence
-- [`docs/RUNBOOK.md`](docs/RUNBOOK.md) — development and operational procedures
-- [`docs/API.md`](docs/API.md) — API conventions
-- [`docs/DATABASE.md`](docs/DATABASE.md) — database conventions
-- [`docs/CANDIDATE_POOL.md`](docs/CANDIDATE_POOL.md) — Candidate Pool rules, services, cache, and CLI
-- [`docs/CANONICAL_BOOTSTRAP.md`](docs/CANONICAL_BOOTSTRAP.md) — fail-closed real-data manifest review and empty-DB bootstrap boundary
-- [`docs/CANONICAL_DATA_REVIEW_2026-08-14.md`](docs/CANONICAL_DATA_REVIEW_2026-08-14.md) — proposed 14-Team roster sheet, source conflicts, and Owner review record
-- [`docs/BALLOT_ISSUANCE.md`](docs/BALLOT_ISSUANCE.md) — visitor identity, quota, random pairing, and issuance transaction
-- [`docs/VOTE_RESOLUTION.md`](docs/VOTE_RESOLUTION.md) — exactly-once resolution, ranking, revocation, and integrity checks
-- [`docs/PUBLIC_UI.md`](docs/PUBLIC_UI.md) — public pages, display rules, reload orchestration, and accessibility
-- [`docs/IMAGE_SOURCING.md`](docs/IMAGE_SOURCING.md) — image source priorities, provisional-rights status, and local import workflow
-- [`docs/EVENT_MVP.md`](docs/EVENT_MVP.md) — current and archived Event MVP pages, voting cutoff, and reviewed import workflow
-- [`docs/HLTV_PROFILE_PORTRAITS.md`](docs/HLTV_PROFILE_PORTRAITS.md) — exact HLTV player-profile body-shot capture/import so portraits stay uniform
-- [`docs/ADMIN_CONSOLE.md`](docs/ADMIN_CONSOLE.md) — Admin sessions, mutation/audit workflows, and pending-review safety
-- [`docs/SECURITY.md`](docs/SECURITY.md) — security baseline
-- [`docs/STAGING_GATE_E.md`](docs/STAGING_GATE_E.md) — staging evidence checklist and Owner Review Gate E
-- [`docs/LAUNCH_GATE_F.md`](docs/LAUNCH_GATE_F.md) — M10 production Pool, closed-beta, and launch sign-off record
-
-When documents disagree about product intent, use the Product Decision Chronicle
-as the primary reference and record important changes.
-
-## Core ranking rules
-
-- A valid vote gives the winner `+1` and the loser `-1`.
-- A skip changes neither score.
-- Pairing is uniformly random across the active candidate pool.
-- The first version has no Elo, Bradley–Terry model, weighted votes, or required
-  public login.
-
-## License
-
-To be determined.
+The project's original source code and documentation are available under the
+[MIT License](LICENSE). This license does **not** grant rights to player
+portraits, photographs, team logos, trademarks, or externally sourced data.
+Some images in this repository were accepted for provisional beta use and do
+not have confirmed reuse rights; see [image sourcing](docs/IMAGE_SOURCING.md)
+and [asset records](assets/README.md). Vendored country flags retain their
+[own MIT notice](public/flags/LICENSE).
